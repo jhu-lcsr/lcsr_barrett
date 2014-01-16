@@ -16,19 +16,26 @@ barrett_hw_manager.configureWam7("wam");
 barrett_hw_manager.rosparam.getComponentPrivate("wam");
 
 /* Publish joint state to ROS */
-stream("barrett_hw_manager.wam.joint_state_out",rostopic.connection("joint_states"));
+stream("barrett_hw_manager.wam.joint_state_out",rostopic.connection("~/joint_states"));
 
-/* Create calibration PID controller */
+/* Create calibration PID controller loop */
 ros.import("lcsr_controllers");
 loadComponent("cal_pid","lcsr_controllers::JointPIDController");
 loadComponent("cal_traj","lcsr_controllers::JointTrajGeneratorKDL");
 loadComponent("cal_sac","lcsr_controllers::SemiAbsoluteCalibrationController");
 
-connect("cal_pid.joint_position_in", "cal_sac.joint_position_estimate_out", ConnPolicy());
-connect("cal_pid.joint_velocity_in", "barrett_hw_manager.wam.velocity_out", ConnPolicy());
-connect("cal_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
+connect("barrett_hw_manager.wam.position_out", "cal_sac.joint_position_in", ConnPolicy());
+connect("barrett_hw_manager.wam.resolver_offset_out", "cal_sac.resolver_offset_in", ConnPolicy());
 
-connect("cal_traj.joint_position_out", "cal_pid.joint_position_in", ConnPolicy());
+connect("cal_sac.joint_position_estimate_out", "cal_pid.joint_position_in", ConnPolicy());
+connect("barrett_hw_manager.wam.velocity_out", "cal_pid.joint_velocity_in", ConnPolicy());
+connect("cal_traj.joint_position_out", "cal_pid.joint_position_cmd_in", ConnPolicy());
+connect("cal_traj.joint_velocity_out", "cal_pid.joint_velocity_cmd_in", ConnPolicy());
+
+connect("cal_sac.joint_position_estimate_out", "cal_traj.joint_position_in", ConnPolicy());
+connect("cal_sac.joint_position_desired_out", "cal_traj.joint_position_cmd_in", ConnPolicy());
+
+connect("cal_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
 
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
@@ -36,13 +43,37 @@ setActivity("scheme",0.001,HighestPriority,ORO_SCHED_RT)
 loadService("scheme","conman_ros")
 
 /* Slave the barrett manager's activity to the scheme */
+//barrett_hw_manager.conman_hook.setDesiredMinPeriod(0.0);
 addPeer("scheme","barrett_hw_manager");
+addPeer("scheme","cal_pid");
+addPeer("scheme","cal_traj");
+addPeer("scheme","cal_sac");
+
 scheme.addBlock("barrett_hw_manager");
-barrett_hw_manager.conman_hook.setDesiredMinPeriod(0.0);
-barrett_hw_manager.start();
+scheme.latchInputs("barrett_hw_manager",true);
+
+scheme.addBlock("cal_pid");
+scheme.addBlock("cal_traj");
+scheme.addBlock("cal_sac");
+
+scheme.addGroup("devices");
+scheme.addToGroup("barrett_hw_manager","devices");
+
+scheme.addGroup("calibration");
+scheme.addToGroup("cal_pid","calibration");
+scheme.addToGroup("cal_traj","calibration");
+scheme.addToGroup("cal_sac","calibration");
 
 /* Start the Scheme */
-scheme.configure()
+scheme.configure();
+
+cal_pid.configure();
+cal_sac.configure();
+cal_traj.configure();
+
+scheme.enableBlock("devices",false);
+scheme.enableBlock("calibration",false);
+
 scheme.start();
 
 /* Calibrate joint positions */

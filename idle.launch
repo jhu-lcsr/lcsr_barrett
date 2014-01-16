@@ -2,16 +2,28 @@
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find conman_barrett)/idle.ops"/>
-    <arg name="LOG_LEVEL" value="info"/>
+    <arg name="LOG_LEVEL" value="debug"/>
     <arg name="DEBUG" value="false"/>
   </include>
 
-  <group ns="barrett/barrett_hw_manager">
-    <param name="bus_id" value="0"/>
+  <group ns="barrett">
     <rosparam>
-      wam:
-        home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-        home_resolver_offset: [0.42644, 0.62126, 0.96947, -1.23025, 1.81463, 0.59365, 2.4942]
+      barrett_hw_manager:
+        bus_id: 0
+        wam:
+          home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+          home_resolver_offset: [0.42644, 0.62126, 0.96947, -1.23025, 1.81463, 0.59365, 2.4942]
+      cal_pid:
+        root_link: wam/base_link
+        tip_link: wam/wrist_yaw_link
+      cal_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_yaw_link
+        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      cal_sac:
+        root_link: wam/base_link
+        tip_link: wam/wrist_yaw_link
     </rosparam>
   </group>
 
