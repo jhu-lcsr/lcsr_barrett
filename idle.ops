@@ -37,6 +37,19 @@ connect("cal_sac.joint_position_desired_out", "cal_traj.joint_position_cmd_in", 
 
 connect("cal_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
 
+/* Create manual controller loop */
+loadComponent("man_pid","lcsr_controllers::JointPIDController");
+loadComponent("man_traj","lcsr_controllers::JointTrajGeneratorKDL");
+
+connect("barrett_hw_manager.wam.position_out", "man_pid.joint_position_in", ConnPolicy());
+connect("barrett_hw_manager.wam.velocity_out", "man_pid.joint_velocity_in", ConnPolicy());
+connect("man_traj.joint_position_out", "man_pid.joint_position_cmd_in", ConnPolicy());
+connect("man_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPolicy());
+
+connect("barrett_hw_manager.wam.position_out", "man_traj.joint_position_in", ConnPolicy());
+
+connect("man_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
+
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
 setActivity("scheme",0.001,HighestPriority,ORO_SCHED_RT)
@@ -48,21 +61,22 @@ addPeer("scheme","barrett_hw_manager");
 addPeer("scheme","cal_pid");
 addPeer("scheme","cal_traj");
 addPeer("scheme","cal_sac");
-
-scheme.addBlock("barrett_hw_manager");
-scheme.latchInputs("barrett_hw_manager",true);
-
-scheme.addBlock("cal_pid");
-scheme.addBlock("cal_traj");
-scheme.addBlock("cal_sac");
+addPeer("scheme","man_pid");
+addPeer("scheme","man_traj");
 
 scheme.addGroup("devices");
 scheme.addToGroup("barrett_hw_manager","devices");
+scheme.latchInputs("barrett_hw_manager",true);
+barrett_hw_manager.conman_hook.setInputExclusivity("wam.effort_in",1)
 
 scheme.addGroup("calibration");
 scheme.addToGroup("cal_pid","calibration");
 scheme.addToGroup("cal_traj","calibration");
 scheme.addToGroup("cal_sac","calibration");
+
+scheme.addGroup("manual");
+scheme.addToGroup("man_pid","manual");
+scheme.addToGroup("man_traj","manual");
 
 /* Start the Scheme */
 scheme.configure();
@@ -70,6 +84,9 @@ scheme.configure();
 cal_pid.configure();
 cal_sac.configure();
 cal_traj.configure();
+
+man_pid.configure();
+man_traj.configure();
 
 scheme.enableBlock("devices",false);
 scheme.enableBlock("calibration",false);

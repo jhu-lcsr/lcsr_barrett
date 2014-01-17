@@ -3,7 +3,7 @@
     <arg name="NAME" value="barrett"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find conman_barrett)/idle.ops"/>
     <arg name="LOG_LEVEL" value="debug"/>
-    <arg name="DEBUG" value="false"/>
+    <arg name="DEBUG" value="true"/>
   </include>
 
   <group ns="barrett">
@@ -15,15 +15,23 @@
           home_resolver_offset: [0.42644, 0.62126, 0.96947, -1.23025, 1.81463, 0.59365, 2.4942]
       cal_pid:
         root_link: wam/base_link
-        tip_link: wam/wrist_yaw_link
+        tip_link: wam/wrist_palm_link
       cal_traj:
         root_link: wam/base_link
-        tip_link: wam/wrist_yaw_link
+        tip_link: wam/wrist_palm_link
         trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       cal_sac:
         root_link: wam/base_link
-        tip_link: wam/wrist_yaw_link
+        tip_link: wam/wrist_palm_link
+      man_pid:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+      man_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     </rosparam>
   </group>
 
