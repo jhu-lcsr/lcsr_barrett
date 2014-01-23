@@ -1,6 +1,11 @@
 LCSR Barrett Configuration
 ==========================
 
+## Building
+
+This package requires all repositories listed in the lcsr_wam LCSR Rosinstall:
+https://github.com/jhu-lcsr/rosinstalls/blob/master/applications/lcsr_wam.rosinstall
+
 ## Debugging
 
 You can command the manual trapezoidal trajectory generator from ROS like so:
