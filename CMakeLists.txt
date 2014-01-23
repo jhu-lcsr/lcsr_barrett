@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-project(conman_barrett)
+project(lcsr_barrett)
 
 find_package(catkin REQUIRED
   COMPONENTS 
@@ -30,7 +30,7 @@ link_directories(
   ${USE_OROCOS_LIBRARY_DIRS})
 
 #orocos_component(${PROJECT_NAME}
-  #src/conman_barrett.cpp
+  #src/lcsr_barrett.cpp
   #)
 
 #target_link_libraries(

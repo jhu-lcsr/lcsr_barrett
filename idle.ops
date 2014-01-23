@@ -3,6 +3,7 @@ import("rtt_ros");
 ros.import("oro_barrett_hw");
 ros.import("conman");
 ros.import("conman_ros");
+ros.import("conman_blocks");
 
 /* Create the barrett manager */
 loadComponent("barrett_hw_manager","oro_barrett_hw::BarrettHWManager");
@@ -15,8 +16,13 @@ barrett_hw_manager.configure();
 barrett_hw_manager.configureWam7("wam");
 barrett_hw_manager.rosparam.getComponentPrivate("wam");
 
+barrett_hw_manager.configureHand("wam/bhand");
+
 /* Publish joint state to ROS */
-stream("barrett_hw_manager.wam.joint_state_out",rostopic.connection("~/joint_states"));
+stream("barrett_hw_manager.wam.joint_state_out",rostopic.connection("wam_joint_states"));
+stream("barrett_hw_manager.hand.joint_state_out",rostopic.connection("hand_joint_states"));
+
+stream("barrett_hw_manager.hand.joint_cmd_in",rostopic.connection("hand_cmd"));
 
 /* Create calibration PID controller loop */
 ros.import("lcsr_controllers");
@@ -37,9 +43,15 @@ connect("cal_sac.joint_position_desired_out", "cal_traj.joint_position_cmd_in", 
 
 connect("cal_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
 
+/* Create Feed-Forward  component */
+loadComponent("inverse_dynamics","lcsr_controllers::IDControllerKDL");
+connect("barrett_hw_manager.wam.position_out", "inverse_dynamics.joint_position_in", ConnPolicy());
+connect("barrett_hw_manager.wam.velocity_out", "inverse_dynamics.joint_velocity_in", ConnPolicy());
+
 /* Create manual controller loop */
 loadComponent("man_pid","lcsr_controllers::JointPIDController");
 loadComponent("man_traj","lcsr_controllers::JointTrajGeneratorKDL");
+loadComponent("wam_effort_sum","conman_blocks::VectorSum");
 
 connect("barrett_hw_manager.wam.position_out", "man_pid.joint_position_in", ConnPolicy());
 connect("barrett_hw_manager.wam.velocity_out", "man_pid.joint_velocity_in", ConnPolicy());
@@ -48,7 +60,10 @@ connect("man_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPoli
 
 connect("barrett_hw_manager.wam.position_out", "man_traj.joint_position_in", ConnPolicy());
 
-connect("man_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
+connect("man_pid.joint_effort_out", "wam_effort_sum.addends_in", ConnPolicy());
+connect("inverse_dynamics.joint_effort_out", "wam_effort_sum.addends_in", ConnPolicy());
+
+connect("wam_effort_sum.sum_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
 
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
@@ -58,11 +73,13 @@ loadService("scheme","conman_ros")
 /* Slave the barrett manager's activity to the scheme */
 //barrett_hw_manager.conman_hook.setDesiredMinPeriod(0.0);
 addPeer("scheme","barrett_hw_manager");
+addPeer("scheme","wam_effort_sum");
 addPeer("scheme","cal_pid");
 addPeer("scheme","cal_traj");
 addPeer("scheme","cal_sac");
 addPeer("scheme","man_pid");
 addPeer("scheme","man_traj");
+addPeer("scheme","inverse_dynamics");
 
 scheme.addGroup("devices");
 scheme.addToGroup("barrett_hw_manager","devices");
@@ -77,6 +94,9 @@ scheme.addToGroup("cal_sac","calibration");
 scheme.addGroup("manual");
 scheme.addToGroup("man_pid","manual");
 scheme.addToGroup("man_traj","manual");
+scheme.addToGroup("wam_effort_sum","manual");
+
+scheme.addBlock("inverse_dynamics");
 
 /* Start the Scheme */
 scheme.configure();
@@ -87,9 +107,14 @@ cal_traj.configure();
 
 man_pid.configure();
 man_traj.configure();
+wam_effort_sum.configure();
 
+inverse_dynamics.configure();
+
+/* Set initially running blocks */
 scheme.enableBlock("devices",false);
-scheme.enableBlock("calibration",false);
+scheme.disableBlock("calibration");
+scheme.enableBlock("manual",false);
 
 scheme.start();
 

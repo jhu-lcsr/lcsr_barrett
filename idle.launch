@@ -1,9 +1,9 @@
 <launch>
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find conman_barrett)/idle.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/idle.ops"/>
     <arg name="LOG_LEVEL" value="debug"/>
-    <arg name="DEBUG" value="true"/>
+    <arg name="DEBUG" value="false"/>
   </include>
 
   <group ns="barrett">
@@ -12,7 +12,8 @@
         bus_id: 0
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          home_resolver_offset: [0.42644, 0.62126, 0.96947, -1.23025, 1.81463, 0.59365, 2.4942]
+          home_resolver_offset: [0.544563, -2.09235, 0.944932, -1.35757, 2.11383, 1.18423, 2.23808]
+      wam_effort_sum: { dim: 7 }
       cal_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -27,20 +28,33 @@
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
+        p_gains: [200.0, 200.0, 200.0, 200.0, 40.0, 40.0, 20.0]
+        d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
       man_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
-        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
+        trap_max_accs: [0.2, 0.6, 0.6, 0.4, 0.6, 0.6, 0.6]
+        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      inverse_dynamics:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        gravity: [-9.8, 0.0, 0.0]
     </rosparam>
   </group>
 
   <param name="robot_description" command="$(find xacro)/xacro.py
-    '$(find barrett_model)/robots/wam_7dof_wam.urdf.xacro'" />
+    '$(find barrett_model)/robots/wam_7dof_wam_bhand.urdf.xacro'" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
     <param name="publish_frequency" value="50"/>
     <remap from="joint_states" to="wam_joint_states"/>
+  </node>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher"
+    name="hand_state_publisher">
+    <param name="publish_frequency" value="50"/>
+    <remap from="joint_states" to="hand_joint_states"/>
   </node>
 </launch>
