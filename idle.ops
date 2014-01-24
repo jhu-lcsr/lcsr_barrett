@@ -47,6 +47,7 @@ connect("cal_pid.joint_effort_out", "barrett_hw_manager.wam.effort_in", ConnPoli
 loadComponent("inverse_dynamics","lcsr_controllers::IDControllerKDL");
 connect("barrett_hw_manager.wam.position_out", "inverse_dynamics.joint_position_in", ConnPolicy());
 connect("barrett_hw_manager.wam.velocity_out", "inverse_dynamics.joint_velocity_in", ConnPolicy());
+connect("barrett_hw_manager.hand.center_of_mass_out", "inverse_dynamics.end_effector_masses_in", ConnPolicy());
 
 /* Create manual controller loop */
 loadComponent("man_pid","lcsr_controllers::JointPIDController");
