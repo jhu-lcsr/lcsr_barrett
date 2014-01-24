@@ -51,7 +51,7 @@ connect("barrett_hw_manager.wam.velocity_out", "inverse_dynamics.joint_velocity_
 /* Create manual controller loop */
 loadComponent("man_pid","lcsr_controllers::JointPIDController");
 loadComponent("man_traj","lcsr_controllers::JointTrajGeneratorKDL");
-loadComponent("wam_effort_sum","conman_blocks::VectorSum");
+loadComponent("wam_effort_sum","conman_blocks::FeedForwardFeedBack");
 
 connect("barrett_hw_manager.wam.position_out", "man_pid.joint_position_in", ConnPolicy());
 connect("barrett_hw_manager.wam.velocity_out", "man_pid.joint_velocity_in", ConnPolicy());
@@ -60,8 +60,8 @@ connect("man_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPoli
 
 connect("barrett_hw_manager.wam.position_out", "man_traj.joint_position_in", ConnPolicy());
 
-connect("man_pid.joint_effort_out", "wam_effort_sum.addends_in", ConnPolicy());
-connect("inverse_dynamics.joint_effort_out", "wam_effort_sum.addends_in", ConnPolicy());
+connect("man_pid.joint_effort_out", "wam_effort_sum.feedback_in", ConnPolicy());
+connect("inverse_dynamics.joint_effort_out", "wam_effort_sum.feedforward_in", ConnPolicy());
 
 connect("wam_effort_sum.sum_out", "barrett_hw_manager.wam.effort_in", ConnPolicy());
 
