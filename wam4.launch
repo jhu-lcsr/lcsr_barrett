@@ -1,0 +1,50 @@
+<launch>
+
+  <arg name="LOG_LEVEL" default="info"/>
+  <arg name="DEBUG" default="false"/>
+
+  <include file="$(find rtt_ros)/launch/deployer.launch">
+    <arg name="NAME" value="barrett"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/wam4.ops"/>
+    <arg name="LOG_LEVEL" value="debug"/>
+    <arg name="DEBUG" value="$(arg DEBUG)"/>
+  </include>
+
+  <group ns="barrett">
+    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
+    <rosparam>
+      barrett_manager:
+        bus_id: 0
+        wam:
+          home_position: [0.0, -1.5708, 0.0, 3.1415]
+          home_resolver_offset: [0.544563, -2.09235, 0.944932, -1.35757]
+      wam_effort_sum: { dim: 4 }
+      man_pid:
+        root_link: wam/base_link
+        tip_link: wam/stump_link
+        p_gains: [400.0, 350.0, 250.0, 200.0]
+        d_gains: [3.0, 3.0, 2.0, 2.0]
+      man_traj:
+        root_link: wam/base_link
+        tip_link: wam/stump_link
+        trap_max_vels:      [0.2, 0.4, 1.5, 0.8]
+        trap_max_accs:      [0.2, 0.6, 0.6, 0.4]
+        position_tolerance: [0.1, 0.1, 0.1, 0.1]
+        velocity_tolerance: [0.1, 0.1, 0.1, 0.1]
+      inverse_dynamics:
+        root_link: wam/base_link
+        tip_link: wam/stump_link
+        end_effector_frame_link: wam/wrist_palm_link
+        gravity: [-9.8, 0.0, 0.0]
+    </rosparam>
+  </group>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py
+    '$(find barrett_model)/robots/wam_4dof_wam.urdf.xacro'" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher"
+    name="wam_state_publisher">
+    <param name="publish_frequency" value="50"/>
+    <remap from="joint_states" to="wam_joint_states"/>
+  </node>
+</launch>

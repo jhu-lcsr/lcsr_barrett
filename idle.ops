@@ -116,6 +116,7 @@ inverse_dynamics.configure();
 scheme.enableBlock("devices",false);
 scheme.disableBlock("calibration");
 scheme.enableBlock("manual",false);
+scheme.enableBlock("inverse_dynamics",false);
 
 scheme.start();
 

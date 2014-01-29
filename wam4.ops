@@ -1,0 +1,22 @@
+
+import("rtt_ros");
+import("rtt_rospack");
+
+/* Load conman */
+runScript(rospack.find("lcsr_barrett")+"/ops/conman.ops");
+
+/* Load barrett manager, 4-dof wam */
+runScript(rospack.find("lcsr_barrett")+"/ops/barrett_manager.ops");
+runScript(rospack.find("lcsr_barrett")+"/ops/wam4.ops");
+
+/* Load manual controllers */
+runScript(rospack.find("lcsr_barrett")+"/ops/comp_manual.ops");
+
+/* Set initially running blocks */
+scheme.enableBlock("devices",false);
+scheme.enableBlock("manual",false);
+scheme.enableBlock("inverse_dynamics",false);
+
+/* Calibrate joint positions */
+// barrett_manager.wam.initialize()
+// barrett_manager.wam.run()

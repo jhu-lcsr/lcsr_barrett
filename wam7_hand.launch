@@ -5,14 +5,15 @@
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/idle.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/wam7_hand.ops"/>
     <arg name="LOG_LEVEL" value="debug"/>
     <arg name="DEBUG" value="$(arg DEBUG)"/>
   </include>
 
   <group ns="barrett">
+    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
     <rosparam>
-      barrett_hw_manager:
+      barrett_manager:
         bus_id: 0
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]

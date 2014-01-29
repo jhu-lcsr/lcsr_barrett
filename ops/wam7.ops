@@ -1,0 +1,10 @@
+
+/* Create a 7-DOF WAM */
+barrett_manager.configureWam7("wam");
+barrett_manager.rosparam.getComponentPrivate("wam");
+
+/* Configure conman interface */
+barrett_manager.conman_hook.setInputExclusivity("wam.effort_in",1)
+
+/* Publish joint state to ROS */
+stream("barrett_manager.wam.joint_state_out",rostopic.connection("wam_joint_states"));

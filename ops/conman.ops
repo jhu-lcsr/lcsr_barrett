@@ -1,0 +1,13 @@
+
+ros.import("conman");
+ros.import("conman_ros");
+
+/* Create the conman scheme */
+loadComponent("scheme","conman::Scheme");
+setActivity("scheme",0.001,HighestPriority,ORO_SCHED_RT)
+loadService("scheme","conman_ros")
+
+/* Start the Scheme */
+scheme.configure();
+
+scheme.start();

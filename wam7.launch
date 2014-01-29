@@ -5,14 +5,15 @@
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/idle.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/wam7.ops"/>
     <arg name="LOG_LEVEL" value="debug"/>
     <arg name="DEBUG" value="$(arg DEBUG)"/>
   </include>
 
   <group ns="barrett">
+    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
     <rosparam>
-      barrett_hw_manager:
+      barrett_manager:
         bus_id: 0
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
@@ -50,17 +51,11 @@
   </group>
 
   <param name="robot_description" command="$(find xacro)/xacro.py
-    '$(find barrett_model)/robots/wam_7dof_wam_bhand.urdf.xacro'" />
+    '$(find barrett_model)/robots/wam_7dof_wam.urdf.xacro'" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
     <param name="publish_frequency" value="50"/>
     <remap from="joint_states" to="wam_joint_states"/>
-  </node>
-
-  <node pkg="robot_state_publisher" type="robot_state_publisher"
-    name="hand_state_publisher">
-    <param name="publish_frequency" value="50"/>
-    <remap from="joint_states" to="hand_joint_states"/>
   </node>
 </launch>
