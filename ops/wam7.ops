@@ -1,4 +1,6 @@
 
+ros.import("conman_blocks");
+
 /* Create a 7-DOF WAM */
 barrett_manager.configureWam7("wam");
 barrett_manager.rosparam.getComponentPrivate("wam");
@@ -8,3 +10,9 @@ barrett_manager.conman_hook.setInputExclusivity("wam.effort_in",1)
 
 /* Publish joint state to ROS */
 stream("barrett_manager.wam.joint_state_out",rostopic.connection("wam_joint_states"));
+
+/* Load the feedforward/feedback filter */
+loadComponent("wam_effort_sum","conman_blocks::FeedForwardFeedBack");
+wam_effort_sum.configure();
+addPeer("scheme","wam_effort_sum");
+scheme.addToGroup("wam_effort_sum","devices");

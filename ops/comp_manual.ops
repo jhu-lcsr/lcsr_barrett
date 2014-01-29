@@ -1,5 +1,4 @@
 
-ros.import("conman_blocks");
 ros.import("lcsr_controllers");
 
 /* Create Feed-Forward inverse dynamics component */
@@ -10,7 +9,6 @@ connect("barrett_manager.wam.velocity_out", "inverse_dynamics.joint_velocity_in"
 /* Create manual joint-space PID controller loop */
 loadComponent("man_pid","lcsr_controllers::JointPIDController");
 loadComponent("man_traj","lcsr_controllers::JointTrajGeneratorKDL");
-loadComponent("wam_effort_sum","conman_blocks::FeedForwardFeedBack");
 
 connect("barrett_manager.wam.position_out", "man_pid.joint_position_in", ConnPolicy());
 connect("barrett_manager.wam.velocity_out", "man_pid.joint_velocity_in", ConnPolicy());
@@ -26,21 +24,17 @@ connect("wam_effort_sum.sum_out", "barrett_manager.wam.effort_in", ConnPolicy())
 
 man_pid.configure();
 man_traj.configure();
-wam_effort_sum.configure();
 inverse_dynamics.configure();
 
 /* Configure conman interface */
 addPeer("scheme","man_pid");
 addPeer("scheme","man_traj");
-addPeer("scheme","wam_effort_sum");
 addPeer("scheme","inverse_dynamics");
 
 /* Create manual group  */
 scheme.addGroup("manual");
 scheme.addToGroup("man_pid","manual");
 scheme.addToGroup("man_traj","manual");
-scheme.addToGroup("wam_effort_sum","manual");
 
 /* Add ID controller */
 scheme.addBlock("inverse_dynamics");
-
