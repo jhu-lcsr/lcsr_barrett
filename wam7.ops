@@ -12,10 +12,14 @@ runScript(rospack.find("lcsr_barrett")+"/ops/wam7.ops");
 /* Load manual controllers */
 runScript(rospack.find("lcsr_barrett")+"/ops/comp_manual.ops");
 
+/* Load JTNS controller */
+runScript(rospack.find("lcsr_barrett")+"/ops/jtns.ops");
+
 /* Set initially running blocks */
 scheme.enableBlock("devices",false);
-scheme.enableBlock("manual",false);
+//scheme.enableBlock("manual",false);
 scheme.enableBlock("inverse_dynamics",false);
+scheme.enableBlock("jtns",false);
 
 /* Calibrate joint positions */
 // barrett_manager.wam.initialize()
