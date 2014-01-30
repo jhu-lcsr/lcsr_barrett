@@ -17,7 +17,7 @@
         bus_id: 0
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          home_resolver_offset: [0.544563, -2.09235, 0.944932, -1.35757, 2.11383, 1.18423, 2.23808]
+          home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
       wam_effort_sum: { dim: 7 }
       cal_pid:
         root_link: wam/base_link
