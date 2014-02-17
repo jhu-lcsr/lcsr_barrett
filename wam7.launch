@@ -18,7 +18,9 @@
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
           home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
-      wam_effort_sum: { dim: 7 }
+      wam_effort_sum:
+        dim: 7
+        require_heartbeat: false
       cal_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -42,6 +44,15 @@
         trap_max_accs: [0.2, 0.6, 0.6, 0.4, 0.6, 0.6, 0.6]
         position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
         velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      rml_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        sampling_resolution: 0.005
+        max_velocities: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
+        max_accelerations: [0.2, 0.6, 0.6, 0.4, 0.6, 0.6, 0.6]
+        max_jerks: [500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0]
+        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
       inverse_dynamics:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -58,6 +69,7 @@
         linear_position_threshold: 0.075
         angular_effort_threshold: 5.0
         angular_position_threshold: 0.5
+        joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
     </rosparam>
   </group>
 

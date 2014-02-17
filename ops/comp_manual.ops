@@ -22,6 +22,14 @@ connect("inverse_dynamics.joint_effort_out", "wam_effort_sum.feedforward_in", Co
 
 connect("wam_effort_sum.sum_out", "barrett_manager.wam.effort_in", ConnPolicy());
 
+/* Create RML traj generator */
+loadComponent("rml_traj","lcsr_controllers::JointTrajGeneratorRML");
+//connect("rml_traj.joint_position_out", "man_pid.joint_position_cmd_in", ConnPolicy());
+//connect("rml_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPolicy());
+
+connect("barrett_manager.wam.position_out", "rml_traj.joint_position_in", ConnPolicy());
+connect("barrett_manager.wam.velocity_out", "rml_traj.joint_velocity_in", ConnPolicy());
+
 man_pid.configure();
 man_traj.configure();
 inverse_dynamics.configure();
@@ -30,6 +38,7 @@ inverse_dynamics.configure();
 addPeer("scheme","man_pid");
 addPeer("scheme","man_traj");
 addPeer("scheme","inverse_dynamics");
+addPeer("scheme","rml_traj");
 
 /* Create manual group  */
 scheme.addGroup("manual");
@@ -38,3 +47,4 @@ scheme.addToGroup("man_traj","manual");
 
 /* Add ID controller */
 scheme.addBlock("inverse_dynamics");
+scheme.addBlock("rml_traj");
