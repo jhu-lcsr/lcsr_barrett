@@ -24,8 +24,8 @@ connect("wam_effort_sum.sum_out", "barrett_manager.wam.effort_in", ConnPolicy())
 
 /* Create RML traj generator */
 loadComponent("rml_traj","lcsr_controllers::JointTrajGeneratorRML");
-//connect("rml_traj.joint_position_out", "man_pid.joint_position_cmd_in", ConnPolicy());
-//connect("rml_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPolicy());
+connect("rml_traj.joint_position_out", "man_pid.joint_position_cmd_in", ConnPolicy());
+connect("rml_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPolicy());
 
 connect("barrett_manager.wam.position_out", "rml_traj.joint_position_in", ConnPolicy());
 connect("barrett_manager.wam.velocity_out", "rml_traj.joint_velocity_in", ConnPolicy());
@@ -33,6 +33,7 @@ connect("barrett_manager.wam.velocity_out", "rml_traj.joint_velocity_in", ConnPo
 man_pid.configure();
 man_traj.configure();
 inverse_dynamics.configure();
+rml_traj.configure();
 
 /* Configure conman interface */
 addPeer("scheme","man_pid");

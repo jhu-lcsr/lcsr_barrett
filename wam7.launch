@@ -16,6 +16,7 @@
       barrett_manager:
         bus_id: 0
         wam:
+          velocity_smoothing_factor: 0.95
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
           home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
       wam_effort_sum:
@@ -35,24 +36,24 @@
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
-        p_gains: [400.0, 350.0, 250.0, 200.0, 40.0, 40.0, 10.0]
-        d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
+        p_gains: [400.0, 400.0, 300.0, 300.0, 40.0, 40.0, 10.0]
+        d_gains: [20.0, 20.0, 20.0, 20.0, 0.5, 0.5, 0.08]
       man_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
         trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
-        trap_max_accs: [0.2, 0.6, 0.6, 0.4, 0.6, 0.6, 0.6]
+        trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
         position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
         velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
       rml_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
         sampling_resolution: 0.005
-        max_velocities: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
-        max_accelerations: [0.2, 0.6, 0.6, 0.4, 0.6, 0.6, 0.6]
-        max_jerks: [500.0, 500.0, 500.0, 500.0, 500.0, 500.0, 500.0]
-        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        max_velocities: [0.2, 0.4, 1.0, 0.8, 1.0, 1.0, 1.0]
+        max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        position_tolerance: [0.02, 0.02, 0.02, 0.02, 0.05, 0.05, 0.05]
+        velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
       inverse_dynamics:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link

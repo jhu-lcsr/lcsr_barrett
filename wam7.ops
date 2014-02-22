@@ -19,7 +19,8 @@ runScript(rospack.find("lcsr_barrett")+"/ops/jtns.ops");
 scheme.enableBlock("devices",false);
 //scheme.enableBlock("manual",false);
 scheme.enableBlock("inverse_dynamics",false);
-scheme.enableBlock("jtns",false);
+scheme.enableBlock("man_pid",false);
+scheme.enableBlock("rml_traj",false);
 
 /* Calibrate joint positions */
 // barrett_manager.wam.initialize()
