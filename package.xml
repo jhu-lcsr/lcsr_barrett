@@ -13,7 +13,6 @@
   <build_depend>rtt_sensor_msgs</build_depend>
   <build_depend>kdl_urdf_tools</build_depend>
   <build_depend>control_toolbox</build_depend>
-  <build_depend>orocos_barrett</build_depend>
   <build_depend>conman</build_depend>
 
 
@@ -23,6 +22,5 @@
   <run_depend>rtt_sensor_msgs</run_depend>
   <run_depend>kdl_urdf_tools</run_depend>
   <run_depend>control_toolbox</run_depend>
-  <run_depend>orocos_barrett</run_depend>
   <run_depend>conman</run_depend>
 </package>
