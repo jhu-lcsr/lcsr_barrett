@@ -1,0 +1,17 @@
+
+import("rtt_ros");
+
+loadService("barrett_manager","rosparam");
+
+barrett_manager.rosparam.getAll();
+barrett_manager.rosparam.getAbsolute("robot_description");
+barrett_manager.configure();
+
+/* Configure conman interface */
+/* Slave the barrett manager's activity to the scheme */
+addPeer("scheme","barrett_manager");
+scheme.addGroup("devices");
+scheme.addToGroup("barrett_manager","devices");
+scheme.latchInputs("barrett_manager",true);
+//barrett_manager.conman_hook.setDesiredMinPeriod(0.0);
+

@@ -1,0 +1,96 @@
+<launch>
+
+  <arg name="LOG_LEVEL" default="debug"/>
+  <arg name="DEBUG" default="false"/>
+  <!-- roslaunch arguments -->
+  <arg name="debug" default="false"/>
+  <arg name="gui" default="true"/>
+  <arg name="TAO" default="false"/>
+
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
+    <!--<arg name="world_name" value="$(find rtt_gazebo_world)/worlds/rtt_gazebo.world"/>-->
+    <arg name="debug" value="$(arg debug)" />
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="headless" value="false"/>
+  </include>
+
+  <param name="robot_description" command="$(find xacro)/xacro.py
+    '$(find lcsr_barrett)/sim/wam7.urdf.xacro'" />
+
+  <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+	args="-urdf -model wam -param robot_description"/>
+
+  <group ns="gazebo">
+    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
+    <rosparam>
+      barrett_manager:
+        bus_id: 0
+        wam:
+          velocity_smoothing_factor: 0.95
+          home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+          home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
+      wam_effort_sum:
+        dim: 7
+        require_heartbeat: false
+      cal_pid:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+      cal_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+      cal_sac:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+      man_pid:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        p_gains: [400.0, 400.0, 300.0, 300.0, 40.0, 40.0, 10.0]
+        d_gains: [20.0, 20.0, 20.0, 20.0, 0.5, 0.5, 0.08]
+      man_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
+        trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
+        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      rml_traj:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        sampling_resolution: 0.005
+        max_velocities: [0.2, 0.4, 1.0, 0.8, 1.0, 1.0, 1.0]
+        max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+        position_tolerance: [0.02, 0.02, 0.02, 0.02, 0.05, 0.05, 0.05]
+        velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
+      inverse_dynamics:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        end_effector_frame_link: wam/wrist_palm_link
+        gravity: [0.0, 0.0, -9.8]
+      jtns:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        linear_p_gain: 300.0
+        linear_d_gain: 30.0
+        angular_p_gain: 5.0
+        angular_d_gain: 0.1
+        linear_effort_threshold: 50.0
+        linear_position_threshold: 0.075
+        angular_effort_threshold: 5.0
+        angular_position_threshold: 0.5
+        joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
+    </rosparam>
+  </group>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher"
+    name="wam_state_publisher">
+    <param name="publish_frequency" value="50"/>
+    <remap from="joint_states" to="wam_joint_states"/>
+  </node>
+</launch>
