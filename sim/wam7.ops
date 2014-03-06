@@ -11,8 +11,9 @@ ros.import("conman_ros");
 
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
-setActivity("scheme",0.001,LowestPriority,ORO_SCHED_OTHER)
 scheme.setPeriod(0.001);
+//setActivity("scheme",0.001,LowestPriority,ORO_SCHED_OTHER)
+loadService("scheme","sim_clock_activity");
 loadService("scheme","conman_ros");
 
 /* Start the Scheme */
@@ -20,14 +21,14 @@ scheme.configure();
 scheme.start();
 
 /* Load barrett manager, 7-dof wam */
-runScript(rospack.find("lcsr_barrett")+"/ops/barrett_sim_manager.ops");
-runScript(rospack.find("lcsr_barrett")+"/ops/wam7.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/barrett_sim_manager.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/wam7.ops");
 
 /* Load manual controllers */
-runScript(rospack.find("lcsr_barrett")+"/ops/comp_manual.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/comp_manual.ops");
 
 /* Load JTNS controller */
-runScript(rospack.find("lcsr_barrett")+"/ops/jtns.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/jtns.ops");
 
 /* Set initially running blocks */
 scheme.enableBlock("devices",false);

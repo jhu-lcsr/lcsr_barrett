@@ -15,6 +15,7 @@
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="headless" value="false"/>
+    <arg name="world_name" value="$(find lcsr_barrett)/sim/wam.world"/>
   </include>
 
   <param name="robot_description" command="$(find xacro)/xacro.py
@@ -50,8 +51,8 @@
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
-        p_gains: [400.0, 400.0, 300.0, 300.0, 40.0, 40.0, 10.0]
-        d_gains: [20.0, 20.0, 20.0, 20.0, 0.5, 0.5, 0.08]
+        p_gains: [400.0, 400.0, 400.0, 400.0, 1.0, 1.0, 0.2]
+        d_gains: [15.0, 15.0, 15.0, 15.0, 0.5, 0.5, 0.5]
       man_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -64,7 +65,7 @@
         tip_link: wam/wrist_palm_link
         sampling_resolution: 0.005
         max_velocities: [0.2, 0.4, 1.0, 0.8, 1.0, 1.0, 1.0]
-        max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+        max_accelerations: [0.5, 0.5, 0.5, 0.5, 2.5, 2.5, 2.5]
         max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
         position_tolerance: [0.02, 0.02, 0.02, 0.02, 0.05, 0.05, 0.05]
         velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
@@ -91,6 +92,6 @@
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
     <param name="publish_frequency" value="50"/>
-    <remap from="joint_states" to="wam_joint_states"/>
+    <remap from="joint_states" to="gazebo/wam/joint_state"/>
   </node>
 </launch>
