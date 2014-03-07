@@ -19,7 +19,7 @@
   <!-- Root link is in the world frame-->
   <link name="world"/>
 
-  <xacro:wam_7dof prefix="wam" parent_link="world" xyz="0.02 0.46 1" rpy="0 0 0" />
+  <xacro:wam_7dof prefix="wam" parent_link="world" xyz="0.0 0.0 1" rpy="${PI} ${-PI/2} 0" />
 
 </robot>
 
