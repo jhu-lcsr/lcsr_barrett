@@ -1,16 +1,15 @@
 <launch>
-
-  <arg name="LOG_LEVEL" default="debug"/>
-  <arg name="DEBUG" default="false"/>
-  <!-- roslaunch arguments -->
-  <arg name="debug" default="false"/>
-  <arg name="gui" default="true"/>
-  <arg name="TAO" default="false"/>
+  <!--
+    This launchfile brings up a single 7-DOF WAM robot in the gazebo simulator.
+    -->
+  <arg name="log_level" default="debug" description="Set the Orocos log level"/>
+  <arg name="debug" default="false" description="(bool) Launch in debug mode"/>
+  <arg name="gui" default="true" description="(bool) Launch the gazebo GUI"/>
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
     <!--<arg name="world_name" value="$(find rtt_gazebo_world)/worlds/rtt_gazebo.world"/>-->
-    <arg name="debug" value="$(arg debug)" />
+    <env name="RTT_LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
@@ -18,36 +17,32 @@
     <arg name="world_name" value="$(find lcsr_barrett)/sim/wam.world"/>
   </include>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py
-    '$(find lcsr_barrett)/sim/wam7.urdf.xacro'" />
+  <!-- Load WAM URDF -->
+  <param name="robot_description" 
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro'" />
 
   <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-	args="-urdf -model wam -param robot_description"/>
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+    args="-urdf -model wam -param robot_description"/>
 
+  <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
-    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
-    <rosparam>
+
+    <!-- Publish TF frames for the WAM -->
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="wam_state_publisher">
+      <param name="publish_frequency" value="50"/>
+      <remap from="joint_states" to="wam/joint_state"/>
+    </node>
+
+    <!-- RTT Component parameters -->
+    <rosparam subst_value="true">
       barrett_manager:
-        bus_id: 0
         wam:
           velocity_smoothing_factor: 0.95
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
       wam_effort_sum:
         dim: 7
         require_heartbeat: false
-      cal_pid:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-      cal_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-      cal_sac:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -88,10 +83,4 @@
         joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
     </rosparam>
   </group>
-
-  <node pkg="robot_state_publisher" type="robot_state_publisher"
-    name="wam_state_publisher">
-    <param name="publish_frequency" value="50"/>
-    <remap from="joint_states" to="gazebo/wam/joint_state"/>
-  </node>
 </launch>

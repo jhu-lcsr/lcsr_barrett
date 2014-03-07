@@ -1,3 +1,5 @@
+/* Note: at this point, barrett_manager has alreadu been loaded */
+
 import("rtt_ros");
 ros.import("rtt_rosnode");
 ros.import("rtt_rospack");
