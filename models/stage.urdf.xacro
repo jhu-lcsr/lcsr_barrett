@@ -1,0 +1,56 @@
+<robot name="stage"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- Includea all the WAM stuff -->
+  <!--<xacro:include filename="$(find barrett_model)/models/wam_top.urdf.xacro"/>-->
+
+  <!-- Root link is in the world frame-->
+
+  <link name="world"/>
+  <!-- Fix this robot to the world -->
+  <joint name="world_joint"  type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="bench_link"/>
+  </joint>
+
+
+  <link name = "bench_link">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="100" />
+      <inertia
+        ixx="1" ixy="0"   ixz="0"
+                iyy="1"   iyz="0"
+                          izz="1" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0 " xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lcsr_barrett/models/meshes/bench_lattice.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0 " xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lcsr_barrett/models/meshes/bench_lattice.stl"/>
+      </geometry>
+    </collision>
+  </link>
+
+<!--
+   -  <gazebo reference="base_link">
+   -    <static>true</static>
+   -    <turnGravityOff>true</turnGravityOff>
+   -  </gazebo>
+   -
+   -->
+<!--
+   -  <xacro:wam_7dof prefix="wam_left" parent_link="bench_link" xyz="0.02 0.46 1" rpy="${PI} ${-PI/2} 0"/>
+   -  <xacro:bhand prefix="wam_left/bhand" parent_link="wam_left/wrist_palm_link" xyz="0 0 0.06" rpy="0 0 0"/>
+   -  [>xacro:barrett_hand prefix="wam_left" /<]
+   -
+   -  <xacro:wam_7dof prefix="wam_right" parent_link="bench_link" xyz="0.0 -0.46 1" rpy="${PI} ${-PI/2} 0" />
+   -  [><xacro:bhand prefix="wam_right" parent_link="wam_right/wrist_palm_link" xyz="0 0 0.06" rpy="0 0 0"/><]
+   -->
+</robot>
