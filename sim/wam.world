@@ -11,9 +11,9 @@
     </include>
     <physics type="ode">
       <gravity>0 0 -9.8</gravity>
-      <max_step_size>0.0001</max_step_size>
+      <max_step_size>0.0005</max_step_size>
       <real_time_factor>1.0</real_time_factor>
-      <real_time_update_rate>10000</real_time_update_rate>
+      <real_time_update_rate>2000</real_time_update_rate>
     </physics>
   </world>
 </sdf>

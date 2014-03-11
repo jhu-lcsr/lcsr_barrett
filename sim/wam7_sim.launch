@@ -51,8 +51,8 @@
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
-        p_gains: [400.0, 400.0, 400.0, 400.0, 1.0, 1.0, 0.2]
-        d_gains: [15.0, 15.0, 15.0, 15.0, 0.5, 0.5, 0.5]
+        p_gains: [300.0, 300.0, 300.0, 300.0, 1.0, 1.0, 0.2]
+        d_gains: [45.0, 45.0, 45.0, 45.0, 1.5, 1.5, 1.5]
       man_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
