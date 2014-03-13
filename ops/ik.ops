@@ -1,3 +1,4 @@
+
 ros.import("lcsr_controllers");
 loadComponent("ikcon","lcsr_controllers::IKController")
 
@@ -6,6 +7,12 @@ stream("wam_pose.trajectories_out",ros.topic("wam_rtt/wam_pose/trajectories_out"
 
 connect("barrett_manager.wam.position_out", "ikcon.joint_position_in", ConnPolicy());
 connect("barrett_manager.wam.velocity_out", "ikcon.joint_velocity_in", ConnPolicy());
+// torques out
+// trajectories out -- already handled in comp_manual.ops for now
+
+
+/* input from phantom or space nav remapped to goal_frame */
+ikcon.target_frame = "goal_frame";
 
 ikcon.configure();
 

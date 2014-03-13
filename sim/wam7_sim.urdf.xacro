@@ -9,7 +9,7 @@
         <type>oro_barrett_sim::BarrettSimManager</type>
         <name>barrett_manager</name>
       </component>
-      <opsScriptFile>$(find lcsr_barrett)/sim/wam7_sim.ops</opsScriptFile>
+      <opsScriptFile>$(arg ops_script)</opsScriptFile>
     </plugin>
   </gazebo>
 

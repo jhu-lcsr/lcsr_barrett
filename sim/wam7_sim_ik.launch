@@ -19,7 +19,7 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:=$(find lcsr_barrett)/sim/wam7_sim.ops" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:=$(find lcsr_barrett)/sim/wam7_sim_ik.ops" />
 
   <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
