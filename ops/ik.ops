@@ -1,9 +1,15 @@
 
+// Set up TF
+import("rtt_tf")
+loadComponent("tf","rtt_tf::RTT_TF")
+tf.configure()
+tf.start()
+
 ros.import("lcsr_controllers");
 loadComponent("ikcon","lcsr_controllers::IKController")
 
-connectPeers("tf","wam_pose")
-stream("wam_pose.trajectories_out",ros.topic("wam_rtt/wam_pose/trajectories_out"))
+connectPeers("tf","ikcon")
+stream("ikcon.trajectories_out",ros.topic("rtt/ik/trajectories_out"))
 
 connect("barrett_manager.wam.position_out", "ikcon.joint_position_in", ConnPolicy());
 connect("barrett_manager.wam.velocity_out", "ikcon.joint_velocity_in", ConnPolicy());
