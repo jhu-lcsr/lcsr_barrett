@@ -30,6 +30,8 @@
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
     args="-urdf -model stage -param stage_model"/>
 
+  <!--<node pkg="spacenav_node" type="spacenav_node" name="spacenav_node" />-->
+
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
 
@@ -86,6 +88,11 @@
         angular_effort_threshold: 5.0
         angular_position_threshold: 0.5
         joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
+      ikcon:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        kp: [300.0, 300.0, 300.0, 300.0, 5.0, 5.0, 0.2]
+        kd: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
     </rosparam>
   </group>
 </launch>
