@@ -19,7 +19,7 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:=$(find lcsr_barrett)/sim/wam7_sim.ops" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:=$(find lcsr_barrett)/sim/wam7_sim_ik.ops" />
 
   <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
@@ -86,6 +86,11 @@
         angular_effort_threshold: 5.0
         angular_position_threshold: 0.5
         joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
+      ikcon:
+        root_link: wam/base_link
+        tip_link: wam/wrist_palm_link
+        kp: [300.0, 300.0, 300.0, 300.0, 5.0, 5.0, 0.2]
+        kd: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
     </rosparam>
   </group>
 </launch>
