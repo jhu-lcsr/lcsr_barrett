@@ -30,8 +30,6 @@
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
     args="-urdf -model stage -param stage_model"/>
 
-  <!--<node pkg="spacenav_node" type="spacenav_node" name="spacenav_node" />-->
-
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
 
