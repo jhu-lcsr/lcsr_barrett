@@ -1,14 +1,13 @@
 <launch>
-  <!--
+  <description>
     This launchfile brings up a single 7-DOF WAM robot in the gazebo simulator.
-    -->
-  <arg name="log_level" default="debug" description="Set the Orocos log level"/>
-  <arg name="debug" default="false" description="(bool) Launch in debug mode"/>
-  <arg name="gui" default="true" description="(bool) Launch the gazebo GUI"/>
+  </description>
 
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+  <arg name="log_level" default="debug" doc="(bool) Set the Orocos log level"/>
+  <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
+  <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
+
   <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
-    <!--<arg name="world_name" value="$(find rtt_gazebo_world)/worlds/rtt_gazebo.world"/>-->
     <env name="RTT_LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="false"/>
@@ -29,30 +28,37 @@
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
     args="-urdf -model stage -param stage_model"/>
+  <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
+    args="0 0 0 0 0 0 /world /stage_link 50"/>
 
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
-
-    <!-- Publish TF frames for the WAM -->
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="wam_state_publisher">
-      <param name="publish_frequency" value="50"/>
-      <remap from="joint_states" to="wam/joint_state"/>
-    </node>
-
-    <!-- RTT Component parameters -->
-    <rosparam subst_value="true">
-      barrett_manager:
+    <group ns="barrett_manager">
+      <rosparam>
         wam:
           velocity_smoothing_factor: 0.95
           home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+      </rosparam>
+      <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
+        <rosparam param="source_list">["wam/joint_states", "hand/joint_states"]</rosparam>
+        <param name="rate" value="50"/>
+        <remap from="robot_description" to="/robot_description"/>
+      </node>
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
+        <param name="publish_frequency" value="50"/>
+      </node>
+    </group>
+
+    <!-- RTT Component parameters -->
+    <rosparam subst_value="true">
       wam_effort_sum:
         dim: 7
         require_heartbeat: false
       man_pid:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
-        p_gains: [300.0, 300.0, 300.0, 300.0, 1.0, 1.0, 0.2]
-        d_gains: [45.0, 45.0, 45.0, 45.0, 1.5, 1.5, 1.5]
+        p_gains: [400.0, 400.0, 400.0, 350.0, 20.0, 10.0, 0.2]
+        d_gains: [45.0, 45.0, 45.0, 45.0, 4.5, 4.5, 1.5]
       man_traj:
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
@@ -64,10 +70,10 @@
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
         sampling_resolution: 0.005
-        max_velocities: [0.2, 0.4, 1.0, 0.8, 1.0, 1.0, 1.0]
+        max_velocities: [0.2, 0.5, 1.0, 0.5, 1.0, 1.0, 1.0]
         max_accelerations: [0.5, 0.5, 0.5, 0.5, 2.5, 2.5, 2.5]
         max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        position_tolerance: [0.02, 0.02, 0.02, 0.02, 0.05, 0.05, 0.05]
+        position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
         velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
       inverse_dynamics:
         root_link: wam/base_link
@@ -88,4 +94,6 @@
         joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
     </rosparam>
   </group>
+
+
 </launch>
