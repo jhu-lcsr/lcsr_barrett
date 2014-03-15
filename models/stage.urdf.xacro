@@ -2,15 +2,16 @@
   xmlns:xacro="http://www.ros.org/wiki/xacro">
 
   <link name="world"/>
+
   <!-- Fix this robot to the world -->
   <joint name="world_joint"  type="fixed">
     <origin xyz="0 0 0" rpy="0 0 0" />
     <parent link="world"/>
-    <child link="bench_link"/>
+    <child link="stage_link"/>
   </joint>
 
 
-  <link name = "bench_link">
+  <link name = "stage_link">
     <inertial>
       <origin xyz="0 0 0" />
       <mass value="100" />
