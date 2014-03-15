@@ -70,7 +70,7 @@
         root_link: wam/base_link
         tip_link: wam/wrist_palm_link
         sampling_resolution: 0.005
-        max_velocities: [0.2, 0.5, 1.0, 0.5, 1.0, 1.0, 1.0]
+        max_velocities: [0.3, 0.6, 0.7, 0.8, 0.8, 0.8, 0.8]
         max_accelerations: [0.5, 0.5, 0.5, 0.5, 2.5, 2.5, 2.5]
         max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
         position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
