@@ -30,6 +30,9 @@ connect("rml_traj.joint_velocity_out", "man_pid.joint_velocity_cmd_in", ConnPoli
 connect("barrett_manager.wam.position_out", "rml_traj.joint_position_in", ConnPolicy());
 connect("barrett_manager.wam.velocity_out", "rml_traj.joint_velocity_in", ConnPolicy());
 
+//loadService("rml_traj","actionlib");
+//rml_traj.actionlib.connect("/some/ros/namespace/my_action");
+
 man_pid.configure();
 man_traj.configure();
 inverse_dynamics.configure();
