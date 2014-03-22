@@ -9,7 +9,10 @@
         <type>oro_barrett_sim::BarrettSimManager</type>
         <name>barrett_manager</name>
       </component>
-      <opsScriptFile>$(arg ops_script)</opsScriptFile>
+      <orocosScript><filename>$(arg ops_script)</filename></orocosScript>
+      <xacro:if value="$(arg hand)">
+        <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>
+      </xacro:if>
     </plugin>
   </gazebo>
 
@@ -20,7 +23,9 @@
   <link name="world"/>
 
   <xacro:wam_7dof prefix="wam" parent_link="world" xyz="0.04 0.46 1" rpy="${PI} ${-PI/2} 0"/>
-  <xacro:bhand prefix="wam/hand" parent_link="wam/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+  <xacro:if value="$(arg hand)">
+    <xacro:bhand prefix="wam/hand" parent_link="wam/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+  </xacro:if>
 
 </robot>
 

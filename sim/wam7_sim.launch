@@ -11,6 +11,7 @@
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
+  <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
 
   <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
     <env name="ORO_LOGLEVEL" value="$(arg log_level)"/>
@@ -23,7 +24,7 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:=$(find lcsr_barrett)/sim/wam7_sim.ops" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:='$(find lcsr_barrett)/sim/wam7_sim.ops' hand:=$(arg hand)" />
 
   <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 

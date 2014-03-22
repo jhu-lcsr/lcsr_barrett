@@ -32,9 +32,6 @@ runScript(ros.find("lcsr_barrett")+"/ops/comp_manual.ops");
 /* Load JTNS controller */
 runScript(ros.find("lcsr_barrett")+"/ops/jtns.ops");
 
-barrett_manager.configureHand("wam/hand");
-connect("barrett_manager.hand.center_of_mass_out", "inverse_dynamics.end_effector_masses_in", ConnPolicy());
-
 /* Set initially running blocks */
 scheme.enableBlock("devices",false);
 //scheme.enableBlock("manual",false);
@@ -46,5 +43,3 @@ scheme.enableBlock("rml_traj",true);
 barrett_manager.wam.initialize()
 barrett_manager.wam.run()
 
-barrett_manager.hand.initialize()
-barrett_manager.hand.run()
