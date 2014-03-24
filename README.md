@@ -71,3 +71,14 @@ You can command the gripper over ros as well:
 ```
 rostopic pub  /hand_cmd oro_barrett_msgs/BHandCmd "{ cmd: [2.0, 2.0, 2.0, 0.0], mode: [2,2,2,1] }" 
 ```
+
+## Simulation
+
+## Note On Performance
+
+The following are notes on simulation realtime performance for various machines and configurations:
+
+* Intel Core i7-3520M
+  * ODE
+    * Single WAM arm: 99% 
+    * Single WAM arm + BHand: 92% (open) 82% (grasping)

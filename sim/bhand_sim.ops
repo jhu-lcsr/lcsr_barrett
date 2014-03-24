@@ -1,0 +1,6 @@
+
+barrett_manager.configureHand("wam/hand");
+connect("barrett_manager.hand.center_of_mass_out", "inverse_dynamics.end_effector_masses_in", ConnPolicy());
+
+barrett_manager.hand.initialize()
+barrett_manager.hand.run()
