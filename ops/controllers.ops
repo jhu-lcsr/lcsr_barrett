@@ -1,0 +1,87 @@
+
+ros.import("lcsr_controllers");
+
+/* Set up TF component */
+import("rtt_tf")
+loadComponent("tf","rtt_tf::RTT_TF")
+tf.configure()
+tf.start()
+
+/* Create Feed-Forward inverse dynamics component */
+loadComponent("wam_inverse_dynamics","lcsr_controllers::IDControllerKDL");
+connect("barrett_manager.wam.position_out", "wam_inverse_dynamics.joint_position_in", ConnPolicy());
+connect("barrett_manager.wam.velocity_out", "wam_inverse_dynamics.joint_velocity_in", ConnPolicy());
+connect(                                    "wam_inverse_dynamics.joint_effort_out", "wam_effort_sum.feedforward_in", ConnPolicy());
+
+/* Create joint-space PID controller loop */
+loadComponent("wam_pid","lcsr_controllers::JointPIDController");
+connect("barrett_manager.wam.position_out", "wam_pid.joint_position_in", ConnPolicy());
+connect("barrett_manager.wam.velocity_out", "wam_pid.joint_velocity_in", ConnPolicy());
+connect(                                    "wam_pid.joint_effort_out", "wam_effort_sum.feedback_in", ConnPolicy());
+
+/* Create joint-space trapezoidal trajectory generation with KDL */
+loadComponent("wam_traj_kdl","lcsr_controllers::JointTrajGeneratorKDL");
+connect("barrett_manager.wam.position_out", "wam_traj_kdl.joint_position_in", ConnPolicy());
+connect(                                    "wam_traj_kdl.joint_position_out", "wam_pid.joint_position_cmd_in", ConnPolicy());
+connect(                                    "wam_traj_kdl.joint_velocity_out", "wam_pid.joint_velocity_cmd_in", ConnPolicy());
+
+/* Create joint-space RML trajectory generator */
+loadComponent("wam_traj_rml","lcsr_controllers::JointTrajGeneratorRML");
+connect("barrett_manager.wam.position_out", "wam_traj_rml.joint_position_in", ConnPolicy());
+connect("barrett_manager.wam.velocity_out", "wam_traj_rml.joint_velocity_in", ConnPolicy());
+connect(                                    "wam_traj_rml.joint_position_out", "wam_pid.joint_position_cmd_in", ConnPolicy());
+connect(                                    "wam_traj_rml.joint_velocity_out", "wam_pid.joint_velocity_cmd_in", ConnPolicy());
+
+/* Create a cartesian impedance controller (jacobian transpose) */
+loadComponent("wam_jtns","lcsr_controllers::JTNullspaceController");
+connect("barrett_manager.wam.position_out", "wam_jtns.joint_position_in", ConnPolicy());
+connect("barrett_manager.wam.velocity_out", "wam_jtns.joint_velocity_in", ConnPolicy());
+connect(                                    "wam_jtns.joint_effort_out", "wam_effort_sum.feedback_in", ConnPolicy());
+
+/* Create an IK controller */
+loadComponent("wam_ik","lcsr_controllers::IKController");
+connectPeers("tf","wam_ik");
+connect("barrett_manager.wam.position_out", "wam_ik.positions_in", ConnPolicy());
+connect(                                    "wam_ik.trajectories_out", "wam_traj_rml.joint_traj_cmd_in", ConnPolicy());
+
+/* Configure all components */
+wam_inverse_dynamics.configure();
+wam_pid.configure();
+wam_traj_kdl.configure();
+wam_traj_rml.configure();
+wam_jtns.configure();
+wam_ik.configure();
+
+/* Add to the conman scheme */
+addPeer("scheme","wam_inverse_dynamics");
+addPeer("scheme","wam_pid");
+addPeer("scheme","wam_traj_kdl");
+addPeer("scheme","wam_traj_rml");
+addPeer("scheme","wam_jtns");
+addPeer("scheme","wam_ik");
+
+/* Add blocks to the scheme */
+scheme.addBlock("wam_inverse_dynamics");
+scheme.addBlock("wam_pid");
+scheme.addBlock("wam_traj_kdl");
+scheme.addBlock("wam_traj_rml");
+scheme.addBlock("wam_jtns");
+scheme.addBlock("wam_ik");
+
+/* Create joint control group */
+scheme.addGroup("joint_control");
+scheme.addToGroup("wam_inverse_dynamics","joint_control");
+scheme.addToGroup("wam_pid","joint_control");
+scheme.addToGroup("wam_traj_rml","joint_control");
+
+/* Create cart impedance control group */
+scheme.addGroup("cart_imp_control");
+scheme.addToGroup("wam_inverse_dynamics","cart_imp_control");
+scheme.addToGroup("wam_jtns","cart_imp_control");
+
+/* Create an IK control group */
+scheme.addGroup("ik_control");
+scheme.addToGroup("wam_inverse_dynamics","ik_control");
+scheme.addToGroup("wam_ik","ik_control");
+scheme.addToGroup("wam_traj_rml","ik_control");
+scheme.addToGroup("wam_pid","ik_control");

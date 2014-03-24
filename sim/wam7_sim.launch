@@ -13,6 +13,7 @@
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
   <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
 
+  <!-- Gazebo -->
   <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
     <env name="ORO_LOGLEVEL" value="$(arg log_level)"/>
     <arg name="gui" value="$(arg gui)" />
@@ -26,10 +27,11 @@
   <param name="robot_description" 
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' ops_script:='$(find lcsr_barrett)/sim/wam7_sim.ops' hand:=$(arg hand)" />
 
-  <!-- Call a python script to the run a service call to gazebo_ros to spawn a URDF robot -->
+  <!-- Spawn the robot in Gazebo -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
     args="-urdf -model wam -param robot_description"/>
 
+  <!-- Spawn the lcsr stage in Gazebo -->
   <param name="stage_model" 
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
@@ -39,14 +41,14 @@
 
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
-    <group ns="barrett_manager">
-      <rosparam>
-        wam:
-          velocity_smoothing_factor: 0.95
-          home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-      </rosparam>
-    </group>
+    <!-- Barrett parameters -->
+    <rosparam ns="barrett_manager">
+      wam:
+        velocity_smoothing_factor: 0.95
+        home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+    </rosparam>
 
+    <!-- Aggregate wam and hand joint states -->
     <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
       <rosparam param="source_list">["barrett_manager/wam/joint_states", "barrett_manager/hand/joint_states"]</rosparam>
       <param name="rate" value="50"/>
@@ -55,79 +57,11 @@
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
       <param name="publish_frequency" value="50"/>
     </node>
-      
-    <group if="$(arg planning)">
-      <include file="$(find barrett_wam_moveit_config)/launch/move_group.launch">
-        <param name="allow_trajectory_execution" value="true"/>
-        <arg name="info" value="true"/>
-      </include>
-
-      <include file="$(find barrett_wam_moveit_config)/launch/planning_context.launch">
-        <arg name="load_robot_description" value="false"/>
-        <arg name="robot_description" value="/robot_description"/>
-      </include>
-
-      <group ns="move_group">
-        <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
-        <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
-        <rosparam>
-          controller_list:
-            - name: rml_traj
-              action_ns: action
-              type: FollowJointTrajectory
-              default: true
-              joints:  ['wam/base_yaw_joint', 'wam/shoulder_pitch_joint', 'wam/shoulder_yaw_joint', 'wam/elbow_pitch_joint', 'wam/wrist_yaw_joint', 'wam/wrist_pitch_joint', 'wam/palm_yaw_joint']
-        </rosparam>
-      </group>
-    </group>
 
     <!-- RTT Component parameters -->
-    <rosparam subst_value="true">
-      wam_effort_sum:
-        dim: 7
-        require_heartbeat: false
-      man_pid:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        p_gains: [400.0, 400.0, 400.0, 350.0, 50.0, 40.0, 40.0]
-        d_gains: [20.0, 20.0, 20.0, 20.0, 3.5, 2.5, 1.5]
-      rml_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        sampling_resolution: 0.003
-        #note: absolute max joint velocity: 2.0 rad/s
-        #note: safe joint velocity: 0.5 rad/s
-        max_velocities: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-        max_accelerations: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
-        position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
-        velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
-        max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-      inverse_dynamics:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        end_effector_frame_link: wam/wrist_palm_link
-        gravity: [-9.8, 0.0, 0.0]
-      jtns:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        linear_p_gain: 300.0
-        linear_d_gain: 30.0
-        angular_p_gain: 5.0
-        angular_d_gain: 0.1
-        linear_effort_threshold: 50.0
-        linear_position_threshold: 0.075
-        angular_effort_threshold: 5.0
-        angular_position_threshold: 0.5
-        joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
-      man_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
-        trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
-        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-    </rosparam>
+    <include file="$(find lcsr_barrett)/sim/orocos_component_params.launch"/>
+      
+    <!-- Moveit -->
+    <include if="$(arg planning)" file="$(find lcsr_barrett)/sim/planning.launch"/>
   </group>
-
-
 </launch>

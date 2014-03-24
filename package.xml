@@ -23,4 +23,17 @@
   <run_depend>kdl_urdf_tools</run_depend>
   <run_depend>control_toolbox</run_depend>
   <run_depend>conman</run_depend>
+
+  <export>
+    <rtt_ros>
+      <plugin_depend>rtt_rosnode</plugin_depend>
+      <plugin_depend>rtt_rospack</plugin_depend>
+      <plugin_depend>rtt_rosparam</plugin_depend>
+      <plugin_depend>rtt_rosclock</plugin_depend>
+      <plugin_depend>rtt_roscomm</plugin_depend>
+      <plugin_depend>conman</plugin_depend>
+      <plugin_depend>conman_ros</plugin_depend>
+      <plugin_depend>conman_blocks</plugin_depend>
+    </rtt_ros>
+  </export>
 </package>

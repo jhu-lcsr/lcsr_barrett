@@ -9,6 +9,7 @@
         <type>oro_barrett_sim::BarrettSimManager</type>
         <name>barrett_manager</name>
       </component>
+      <!--<orocosXML><inline>$(arg ops_script)</inline></orocosXML>-->
       <orocosScript><filename>$(arg ops_script)</filename></orocosScript>
       <xacro:if value="$(arg hand)">
         <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>

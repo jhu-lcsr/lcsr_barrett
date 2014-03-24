@@ -1,45 +1,29 @@
-/* Note: at this point, barrett_manager has alreadu been loaded */
 
 import("rtt_ros");
-ros.import("rtt_rosnode");
-ros.import("rtt_rospack");
-ros.import("rtt_rosparam");
-ros.import("rtt_rosclock");
-ros.import("rtt_roscomm");
-
-/* Load conman */
-ros.import("conman");
-ros.import("conman_ros");
+ros.import("lcsr_barrett");
 
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
 scheme.setPeriod(0.001);
-//setActivity("scheme",0.001,LowestPriority,ORO_SCHED_OTHER)
 loadService("scheme","sim_clock_activity");
 loadService("scheme","conman_ros");
-
-/* Start the Scheme */
 scheme.configure();
-scheme.start();
 
 /* Load barrett manager, 7-dof wam */
 runScript(ros.find("lcsr_barrett")+"/ops/barrett_sim_manager.ops");
 runScript(ros.find("lcsr_barrett")+"/ops/wam7.ops");
 
-/* Load manual controllers */
-runScript(ros.find("lcsr_barrett")+"/ops/comp_manual.ops");
+/* Load controllers */
+runScript(ros.find("lcsr_barrett")+"/ops/controllers.ops");
 
-/* Load JTNS controller */
-runScript(ros.find("lcsr_barrett")+"/ops/jtns.ops");
+/* Set of initially running blocks */
+scheme.enableBlock("devices",true);
+scheme.enableBlock("joint_control",true);
 
-/* Set initially running blocks */
-scheme.enableBlock("devices",false);
-//scheme.enableBlock("manual",false);
-scheme.enableBlock("inverse_dynamics",false);
-scheme.enableBlock("man_pid",false);
-scheme.enableBlock("rml_traj",true);
+/* Start the Scheme */
+scheme.start();
 
-/* Calibrate joint positions */
+/* Start the WAM */
 barrett_manager.wam.initialize()
 barrett_manager.wam.run()
 

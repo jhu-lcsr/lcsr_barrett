@@ -1,4 +1,5 @@
 
+import("rtt_ros");
 ros.import("conman_blocks");
 
 /* Create a 7-DOF WAM */
@@ -10,6 +11,8 @@ barrett_manager.conman_hook.setInputExclusivity("wam.effort_in",1)
 
 /* Load the feedforward/feedback filter */
 loadComponent("wam_effort_sum","conman_blocks::FeedForwardFeedBack");
+connect("wam_effort_sum.sum_out", "barrett_manager.wam.effort_in", ConnPolicy());
 wam_effort_sum.configure();
+
 addPeer("scheme","wam_effort_sum");
 scheme.addToGroup("wam_effort_sum","devices");
