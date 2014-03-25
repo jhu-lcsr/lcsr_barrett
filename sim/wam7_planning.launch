@@ -1,0 +1,24 @@
+<launch>
+  <include file="$(find barrett_wam_moveit_config)/launch/move_group.launch">
+    <param name="allow_trajectory_execution" value="true"/>
+    <arg name="info" value="true"/>
+  </include>
+
+  <include file="$(find barrett_wam_moveit_config)/launch/planning_context.launch">
+    <arg name="load_robot_description" value="false"/>
+    <arg name="robot_description" value="/robot_description"/>
+  </include>
+
+  <group ns="move_group">
+    <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
+    <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+    <rosparam>
+      controller_list:
+        - name: rml_traj
+          action_ns: action
+          type: FollowJointTrajectory
+          default: true
+          joints:  ['wam/base_yaw_joint', 'wam/shoulder_pitch_joint', 'wam/shoulder_yaw_joint', 'wam/elbow_pitch_joint', 'wam/wrist_yaw_joint', 'wam/wrist_pitch_joint', 'wam/palm_yaw_joint']
+    </rosparam>
+  </group>
+</launch>

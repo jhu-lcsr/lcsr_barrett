@@ -42,7 +42,15 @@
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
     <!-- Barrett parameters -->
-    <rosparam ns="barrett_manager">
+    <rosparam ns="barrett_manager" subst_value="true">
+      # Auto-configuration
+      auto_configure_wam: true
+      auto_configure_hand: $(arg hand)
+      wam_dof: 7
+      wam_urdf_prefix: wam
+      hand_urdf_prefix: wam/hand
+
+      # WAM Parameters
       wam:
         velocity_smoothing_factor: 0.95
         home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
