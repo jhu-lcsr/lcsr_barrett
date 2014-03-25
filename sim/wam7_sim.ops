@@ -2,6 +2,12 @@
 import("rtt_ros");
 ros.import("lcsr_barrett");
 
+/* Set up TF component */
+import("rtt_tf")
+loadComponent("tf","rtt_tf::RTT_TF")
+tf.configure()
+tf.start()
+
 /* Create the conman scheme */
 loadComponent("scheme","conman::Scheme");
 scheme.setPeriod(0.001);
@@ -15,13 +21,14 @@ runScript(ros.find("lcsr_barrett")+"/ops/wam7.ops");
 
 /* Load controllers */
 runScript(ros.find("lcsr_barrett")+"/ops/controllers.ops");
-
-/* Set of initially running blocks */
-scheme.enableBlock("devices",true);
-scheme.enableBlock("joint_control",true);
+load_controllers("wam");
 
 /* Start the Scheme */
 scheme.start();
+
+/* Set of initially running blocks */
+scheme.enableBlock("devices",true);
+scheme.enableBlock("wam_joint_control",true);
 
 /* Start the WAM */
 barrett_manager.wam.initialize()
