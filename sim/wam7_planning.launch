@@ -1,4 +1,7 @@
 <launch>
+  <arg name="oro_prefix" default="" doc="This prefix is used for orocos component names"/>
+  <arg name="tf_prefix" default="wam" doc="This prefix is used for TF frames"/>
+
   <include file="$(find barrett_wam_moveit_config)/launch/move_group.launch">
     <param name="allow_trajectory_execution" value="true"/>
     <arg name="info" value="true"/>
@@ -12,13 +15,13 @@
   <group ns="move_group">
     <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
     <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
-    <rosparam>
+    <rosparam subst_value="true">
       controller_list:
-        - name: rml_traj
+        - name: $(arg oro_prefix)traj_rml
           action_ns: action
           type: FollowJointTrajectory
           default: true
-          joints:  ['wam/base_yaw_joint', 'wam/shoulder_pitch_joint', 'wam/shoulder_yaw_joint', 'wam/elbow_pitch_joint', 'wam/wrist_yaw_joint', 'wam/wrist_pitch_joint', 'wam/palm_yaw_joint']
+          joints:  ['$(arg tf_prefix)/base_yaw_joint', '$(arg tf_prefix)/shoulder_pitch_joint', '$(arg tf_prefix)/shoulder_yaw_joint', '$(arg tf_prefix)/elbow_pitch_joint', '$(arg tf_prefix)/wrist_yaw_joint', '$(arg tf_prefix)/wrist_pitch_joint', '$(arg tf_prefix)/palm_yaw_joint']
     </rosparam>
   </group>
 </launch>

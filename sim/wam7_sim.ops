@@ -18,17 +18,18 @@ scheme.configure();
 /* Load barrett manager, 7-dof wam */
 runScript(ros.find("lcsr_barrett")+"/ops/barrett_sim_manager.ops");
 runScript(ros.find("lcsr_barrett")+"/ops/wam7.ops");
+load_effort_sum("");
 
 /* Load controllers */
 runScript(ros.find("lcsr_barrett")+"/ops/controllers.ops");
-load_controllers("wam");
+load_controllers("");
 
 /* Start the Scheme */
 scheme.start();
 
 /* Set of initially running blocks */
 scheme.enableBlock("devices",true);
-scheme.enableBlock("wam_joint_control",true);
+scheme.enableBlock("joint_control",true);
 
 /* Start the WAM */
 barrett_manager.wam.initialize()

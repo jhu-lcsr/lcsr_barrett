@@ -3,85 +3,85 @@ ros.import("lcsr_controllers");
 
 export void load_controllers(string prefix) {
   /* Create Feed-Forward inverse dynamics component */
-  loadComponent(prefix+"_inverse_dynamics","lcsr_controllers::IDControllerKDL");
-  connect("barrett_manager.wam.position_out", prefix+"_inverse_dynamics.joint_position_in", ConnPolicy());
-  connect("barrett_manager.wam.velocity_out", prefix+"_inverse_dynamics.joint_velocity_in", ConnPolicy());
-  connect(                                    prefix+"_inverse_dynamics.joint_effort_out", prefix+"_effort_sum.feedforward_in", ConnPolicy());
+  loadComponent(prefix+"inverse_dynamics","lcsr_controllers::IDControllerKDL");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"inverse_dynamics.joint_position_in", ConnPolicy());
+  connect(prefix+"barrett_manager.wam.velocity_out", prefix+"inverse_dynamics.joint_velocity_in", ConnPolicy());
+  connect(                                           prefix+"inverse_dynamics.joint_effort_out", prefix+"effort_sum.feedforward_in", ConnPolicy());
 
   /* Create joint-space PID controller loop */
-  loadComponent(prefix+"_pid","lcsr_controllers::JointPIDController");
-  connect("barrett_manager.wam.position_out", prefix+"_pid.joint_position_in", ConnPolicy());
-  connect("barrett_manager.wam.velocity_out", prefix+"_pid.joint_velocity_in", ConnPolicy());
-  connect(                                    prefix+"_pid.joint_effort_out", prefix+"_effort_sum.feedback_in", ConnPolicy());
+  loadComponent(prefix+"pid","lcsr_controllers::JointPIDController");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"pid.joint_position_in", ConnPolicy());
+  connect(prefix+"barrett_manager.wam.velocity_out", prefix+"pid.joint_velocity_in", ConnPolicy());
+  connect(                                           prefix+"pid.joint_effort_out", prefix+"effort_sum.feedback_in", ConnPolicy());
 
   /* Create joint-space trapezoidal trajectory generation with KDL */
-  loadComponent(prefix+"_traj_kdl","lcsr_controllers::JointTrajGeneratorKDL");
-  connect("barrett_manager.wam.position_out", prefix+"_traj_kdl.joint_position_in", ConnPolicy());
-  connect(                                    prefix+"_traj_kdl.joint_position_out", prefix+"_pid.joint_position_cmd_in", ConnPolicy());
-  connect(                                    prefix+"_traj_kdl.joint_velocity_out", prefix+"_pid.joint_velocity_cmd_in", ConnPolicy());
+  loadComponent(prefix+"traj_kdl","lcsr_controllers::JointTrajGeneratorKDL");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"traj_kdl.joint_position_in", ConnPolicy());
+  connect(                                           prefix+"traj_kdl.joint_position_out", prefix+"pid.joint_position_cmd_in", ConnPolicy());
+  connect(                                           prefix+"traj_kdl.joint_velocity_out", prefix+"pid.joint_velocity_cmd_in", ConnPolicy());
 
   /* Create joint-space RML trajectory generator */
-  loadComponent(prefix+"_traj_rml","lcsr_controllers::JointTrajGeneratorRML");
-  connect("barrett_manager.wam.position_out", prefix+"_traj_rml.joint_position_in", ConnPolicy());
-  connect("barrett_manager.wam.velocity_out", prefix+"_traj_rml.joint_velocity_in", ConnPolicy());
-  connect(                                    prefix+"_traj_rml.joint_position_out", prefix+"_pid.joint_position_cmd_in", ConnPolicy());
-  connect(                                    prefix+"_traj_rml.joint_velocity_out", prefix+"_pid.joint_velocity_cmd_in", ConnPolicy());
+  loadComponent(prefix+"traj_rml","lcsr_controllers::JointTrajGeneratorRML");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"traj_rml.joint_position_in", ConnPolicy());
+  connect(prefix+"barrett_manager.wam.velocity_out", prefix+"traj_rml.joint_velocity_in", ConnPolicy());
+  connect(                                           prefix+"traj_rml.joint_position_out", prefix+"pid.joint_position_cmd_in", ConnPolicy());
+  connect(                                           prefix+"traj_rml.joint_velocity_out", prefix+"pid.joint_velocity_cmd_in", ConnPolicy());
 
   /* Create a cartesian impedance controller (jacobian transpose) */
-  loadComponent(prefix+"_jtns","lcsr_controllers::JTNullspaceController");
-  connect("barrett_manager.wam.position_out", prefix+"_jtns.joint_position_in", ConnPolicy());
-  connect("barrett_manager.wam.velocity_out", prefix+"_jtns.joint_velocity_in", ConnPolicy());
-  connect(                                    prefix+"_jtns.joint_effort_out", prefix+"_effort_sum.feedback_in", ConnPolicy());
+  loadComponent(prefix+"jtns","lcsr_controllers::JTNullspaceController");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"jtns.joint_position_in", ConnPolicy());
+  connect(prefix+"barrett_manager.wam.velocity_out", prefix+"jtns.joint_velocity_in", ConnPolicy());
+  connect(                                           prefix+"jtns.joint_effort_out", prefix+"effort_sum.feedback_in", ConnPolicy());
 
   /* Create an IK controller */
-  loadComponent(prefix+"_ik","lcsr_controllers::IKController");
-  connectPeers("tf",prefix+"_ik");
-  connect("barrett_manager.wam.position_out", prefix+"_ik.positions_in", ConnPolicy());
-  connect(                                    prefix+"_ik.trajectories_out", prefix+"_traj_rml.joint_traj_cmd_in", ConnPolicy());
+  loadComponent(prefix+"ik","lcsr_controllers::IKController");
+  connectPeers("tf",prefix+"ik");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"ik.positions_in", ConnPolicy());
+  connect(                                           prefix+"ik.trajectories_out", prefix+"traj_rml.joint_traj_cmd_in", ConnPolicy());
 
   /* Configure all components */
-  configureComponent(prefix+"_inverse_dynamics");
-  configureComponent(prefix+"_pid");
-  configureComponent(prefix+"_traj_kdl");
-  configureComponent(prefix+"_traj_rml");
-  configureComponent(prefix+"_jtns");
-  configureComponent(prefix+"_ik");
+  configureComponent(prefix+"inverse_dynamics");
+  configureComponent(prefix+"pid");
+  configureComponent(prefix+"traj_kdl");
+  configureComponent(prefix+"traj_rml");
+  configureComponent(prefix+"jtns");
+  configureComponent(prefix+"ik");
 
   /* Add to the conman scheme */
-  addPeer("scheme",prefix+"_inverse_dynamics");
-  addPeer("scheme",prefix+"_pid");
-  addPeer("scheme",prefix+"_traj_kdl");
-  addPeer("scheme",prefix+"_traj_rml");
-  addPeer("scheme",prefix+"_jtns");
-  addPeer("scheme",prefix+"_ik");
+  addPeer("scheme",prefix+"inverse_dynamics");
+  addPeer("scheme",prefix+"pid");
+  addPeer("scheme",prefix+"traj_kdl");
+  addPeer("scheme",prefix+"traj_rml");
+  addPeer("scheme",prefix+"jtns");
+  addPeer("scheme",prefix+"ik");
 
   /* Add blocks to the scheme */
-  scheme.addBlock(prefix+"_inverse_dynamics");
-  scheme.addBlock(prefix+"_pid");
-  scheme.addBlock(prefix+"_traj_kdl");
-  scheme.addBlock(prefix+"_traj_rml");
-  scheme.addBlock(prefix+"_jtns");
-  scheme.addBlock(prefix+"_ik");
+  scheme.addBlock(prefix+"inverse_dynamics");
+  scheme.addBlock(prefix+"pid");
+  scheme.addBlock(prefix+"traj_kdl");
+  scheme.addBlock(prefix+"traj_rml");
+  scheme.addBlock(prefix+"jtns");
+  scheme.addBlock(prefix+"ik");
 
   /* Create joint control group */
-  var string joint_control = prefix+"_joint_control"
+  var string joint_control = prefix+"joint_control"
   scheme.addGroup(joint_control);
-  scheme.addToGroup(prefix+"_inverse_dynamics",joint_control);
-  scheme.addToGroup(prefix+"_pid",joint_control);
-  scheme.addToGroup(prefix+"_traj_rml",joint_control);
+  scheme.addToGroup(prefix+"inverse_dynamics",joint_control);
+  scheme.addToGroup(prefix+"pid",joint_control);
+  scheme.addToGroup(prefix+"traj_rml",joint_control);
 
   /* Create cart impedance control group */
-  var string cart_imp_control = prefix+"_cart_imp_control"
+  var string cart_imp_control = prefix+"cart_imp_control"
   scheme.addGroup(cart_imp_control);
-  scheme.addToGroup(prefix+"_inverse_dynamics",cart_imp_control);
-  scheme.addToGroup(prefix+"_jtns",cart_imp_control);
+  scheme.addToGroup(prefix+"inverse_dynamics",cart_imp_control);
+  scheme.addToGroup(prefix+"jtns",cart_imp_control);
 
   /* Create an IK control group */
-  var string ik_control = prefix+"_ik_control"
+  var string ik_control = prefix+"ik_control"
   scheme.addGroup(ik_control);
-  scheme.addToGroup(prefix+"_inverse_dynamics",ik_control);
-  scheme.addToGroup(prefix+"_ik",ik_control);
-  scheme.addToGroup(prefix+"_traj_rml",ik_control);
-  scheme.addToGroup(prefix+"_pid",ik_control);
+  scheme.addToGroup(prefix+"inverse_dynamics",ik_control);
+  scheme.addToGroup(prefix+"ik",ik_control);
+  scheme.addToGroup(prefix+"traj_rml",ik_control);
+  scheme.addToGroup(prefix+"pid",ik_control);
 }
 

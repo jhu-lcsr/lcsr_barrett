@@ -9,10 +9,26 @@
         <type>oro_barrett_sim::BarrettSimManager</type>
         <name>barrett_manager</name>
       </component>
-      <!--<orocosXML><inline>$(arg ops_script)</inline></orocosXML>-->
       <orocosScript><filename>$(arg ops_script)</filename></orocosScript>
+      <!--
+         -<orocosScript>
+         -  <inline>
+         -    barrett_manager.wam.initialize();
+         -    barrett_manager.wam.run();
+         -  </inline>
+         -</orocosScript>
+         -->
       <xacro:if value="$(arg hand)">
         <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>
+        <!--
+           -<orocosScript>
+           -  <inline>
+           -    load_hand("");
+           -    barrett_manager.hand.initialize();
+           -    barrett_manager.hand.run();
+           -  </inline>
+           -</orocosScript>
+           -->
       </xacro:if>
     </plugin>
   </gazebo>
@@ -23,9 +39,9 @@
   <!-- Root link is in the world frame-->
   <link name="world"/>
 
-  <xacro:wam_7dof prefix="wam" parent_link="world" xyz="0.04 0.46 1" rpy="${PI} ${-PI/2} 0"/>
+  <xacro:wam_7dof prefix="$(arg prefix)" parent_link="world" xyz="0.04 0.46 1" rpy="${PI} ${-PI/2} 0"/>
   <xacro:if value="$(arg hand)">
-    <xacro:bhand prefix="wam/hand" parent_link="wam/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+    <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
   </xacro:if>
 
 </robot>

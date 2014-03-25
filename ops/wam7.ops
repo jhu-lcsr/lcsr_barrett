@@ -6,9 +6,11 @@ ros.import("conman_blocks");
 barrett_manager.conman_hook.setInputExclusivity("wam.effort_in",1)
 
 /* Load the feedforward/feedback filter */
-loadComponent("wam_effort_sum","conman_blocks::FeedForwardFeedBack");
-connect("wam_effort_sum.sum_out", "barrett_manager.wam.effort_in", ConnPolicy());
-configureComponent("wam_effort_sum");
+export void load_effort_sum(string prefix) {
+  loadComponent(prefix+"effort_sum","conman_blocks::FeedForwardFeedBack");
+  connect(prefix+"effort_sum.sum_out", prefix+"barrett_manager.wam.effort_in", ConnPolicy());
+  configureComponent(prefix+"effort_sum");
 
-addPeer("scheme","wam_effort_sum");
-scheme.addToGroup("wam_effort_sum","devices");
+  addPeer("scheme",prefix+"effort_sum");
+  scheme.addToGroup(prefix+"effort_sum","devices");
+}

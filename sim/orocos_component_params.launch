@@ -1,32 +1,27 @@
 <launch>
-  <arg name="prefix" default="wam" doc="This prefix is used for both TF frames and orocos component names"/>
+  <arg name="oro_prefix" default="" doc="This prefix is used for orocos component names"/>
+  <arg name="tf_prefix" default="wam" doc="This prefix is used for TF frames"/>
 
   <rosparam subst_value="true">
-    $(arg prefix)_effort_sum:
-      dim: 7
-      require_heartbeat: false
-  </rosparam>
-
-  <rosparam subst_value="true">
-    $(arg prefix)_inverse_dynamics:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
-      end_effector_frame_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)inverse_dynamics:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+      end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link
       gravity: [-9.8, 0.0, 0.0]
   </rosparam>
 
   <rosparam subst_value="true">
-    $(arg prefix)_pid:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)pid:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
       p_gains: [400.0, 400.0, 400.0, 350.0, 50.0, 40.0, 40.0]
       d_gains: [20.0, 20.0, 20.0, 20.0, 3.5, 2.5, 1.5]
   </rosparam>
 
   <rosparam subst_value="true">
-    $(arg prefix)_traj_rml:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)traj_rml:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
       sampling_resolution: 0.003
       #note: absolute max joint velocity: 2.0 rad/s
       #note: safe joint velocity: 0.5 rad/s
@@ -38,9 +33,9 @@
   </rosparam>
 
   <rosparam subst_value="true">
-    $(arg prefix)_jtns:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)jtns:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
       linear_p_gain: 300.0
       linear_d_gain: 30.0
       angular_p_gain: 5.0
@@ -53,9 +48,9 @@
   </rosparam>
 
   <rosparam subst_value="true">
-    $(arg prefix)_traj_kdl:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)traj_kdl:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
       trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
       trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
@@ -63,8 +58,8 @@
   </rosparam>
 
   <rosparam subst_value="true">
-    $(arg prefix)_ik:
-      root_link: $(arg prefix)/base_link
-      tip_link: $(arg prefix)/wrist_palm_link
+    $(arg oro_prefix)ik:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
   </rosparam>
 </launch>
