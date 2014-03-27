@@ -57,9 +57,21 @@
       velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
   </rosparam>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)ik:
+  <group ns="$(arg oro_prefix)ik">
+    <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
-  </rosparam>
+      target_frame: $(arg tf_prefix)/cmd
+    </rosparam>
+
+    <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
+      args="0 0 0 0 0 0 /world /ik/world 50"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
+      <remap from="joint_states" to="joint_state_desired"/>
+      <param name="publish_frequency" value="50"/>
+      <param name="tf_prefix" value="ik"/>
+      <remap from="robot_description" to="/robot_description"/>
+    </node>
+  </group>
+
 </launch>

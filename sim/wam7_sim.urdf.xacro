@@ -18,9 +18,9 @@
          -  </inline>
          -</orocosScript>
          -->
-      <xacro:if value="$(arg hand)">
-        <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>
-        <!--
+       <xacro:if value="$(arg hand)">
+         <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>
+         <!--
            -<orocosScript>
            -  <inline>
            -    load_hand("");
