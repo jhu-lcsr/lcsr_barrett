@@ -21,6 +21,7 @@
   <!-- Gazebo -->
   <include file="$(find rtt_gazebo_examples)/test/empty_world.launch">
     <env name="ORO_LOGLEVEL" value="$(arg log_level)"/>
+    <arg name="debug" value="$(arg debug)" />
     <arg name="gui" value="$(arg gui)" />
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>

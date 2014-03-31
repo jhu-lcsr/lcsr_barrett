@@ -31,6 +31,7 @@ scheme.start();
 scheme.enableBlock("devices",true);
 //scheme.enableBlock("joint_control",true);
 scheme.enableBlock("ik_control",true);
+//scheme.enableBlock("cart_imp_control",true);
 
 /* Start the WAM */
 barrett_manager.wam.initialize()
