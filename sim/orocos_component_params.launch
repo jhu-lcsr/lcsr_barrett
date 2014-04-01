@@ -22,14 +22,14 @@
     $(arg oro_prefix)traj_rml:
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
-      sampling_resolution: 0.003
+      sampling_resolution: 0.002
       #note: absolute max joint velocity: 2.0 rad/s
       #note: safe joint velocity: 0.5 rad/s
-      max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
-      max_accelerations: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
-      position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
+      position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.10]
       velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-      max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
+      max_accelerations: [1.5, 1.5, 1.5, 1.5, 5.5, 5.5, 5.5]
+      max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
   </rosparam>
 
   <rosparam subst_value="true">
@@ -45,15 +45,15 @@
       linear_effort_threshold: 50.0
       linear_position_threshold: 0.075
       angular_effort_threshold: 5.0
-      angular_position_threshold: 0.5
-      joint_d_gains: [1.0, 1.0, 1.0, 1.0, 0.1, 0.1, 0.01]
+      angular_position_threshold: 1.5
+      joint_d_gains: [5.5, 5.5, 5.5, 5.5, 1.01, 1.01, 1.01]
   </rosparam>
 
   <rosparam subst_value="true">
     $(arg oro_prefix)traj_kdl:
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
-      trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
+      trap_max_vels: [0.5, 0.5, 1.5, 0.8, 4.0, 4.0, 8.0]
       trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
       velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
@@ -64,6 +64,8 @@
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
       target_frame: $(arg tf_prefix)/cmd
+      hint_modes: [0, 0, 0, 2, 0, 0, 0]
+      hint_positions: [0.0, 0.0, 0.0, 1.5707, 0.0, 0.0, 0.0]
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
