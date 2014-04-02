@@ -11,7 +11,7 @@ ros.import("lcsr_barrett");
 /* Get ROS Parameters */
 loadService("barrett_manager","rosparam");
 barrett_manager.rosparam.getAll();
-barrett_manager.rosparam.getAbsolute("robot_description");
+barrett_manager.rosparam.getParam("/robot_description","robot_description");
 configureComponent("barrett_manager");
 
 /* Configure conman interface */
