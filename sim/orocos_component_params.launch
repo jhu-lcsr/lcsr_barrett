@@ -67,6 +67,7 @@
       target_frame: $(arg tf_prefix)/cmd
       hint_modes: [0, 0, 0, 2, 0, 0, 0]
       hint_positions: [0.0, 0.0, 0.0, 1.5707, 0.0, 0.0, 0.0]
+      damping: 0.5
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
