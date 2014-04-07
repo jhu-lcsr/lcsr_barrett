@@ -39,8 +39,8 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
       target_frame: $(arg tf_prefix)/cmd
       singularity_avoidance_gain: 1.0
-      linear_p_gain: 500.0
-      linear_d_gain: 35.0
+      linear_p_gain: 1000.0
+      linear_d_gain: 100.0
       angular_p_gain: 10.0
       angular_d_gain: 0.05
       linear_effort_threshold: 50.0
