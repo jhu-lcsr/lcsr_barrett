@@ -1,4 +1,5 @@
 
+import("rtt_ros");
 ros.import("conman");
 ros.import("conman_ros");
 
@@ -9,5 +10,3 @@ loadService("scheme","conman_ros")
 
 /* Start the Scheme */
 scheme.configure();
-
-scheme.start();

@@ -1,85 +1,62 @@
 <launch>
 
-  <arg name="LOG_LEVEL" default="debug"/>
-  <arg name="DEBUG" default="false"/>
+  <arg name="log_level" default="info" doc="(int) Set the Orocos log level (0:none) (4:warn) (5:info) (6:debug)"/>
+  <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
+  <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
+  <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
+  <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
+  <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/wam7.ops"/>
-    <arg name="LOG_LEVEL" value="debug"/>
-    <arg name="DEBUG" value="$(arg DEBUG)"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam7.ops"/>
+    <arg name="LOG_LEVEL" value="$(arg log_level)"/>
+    <arg name="DEBUG" value="$(arg debug)"/>
   </include>
 
-  <group ns="barrett">
-    <param name="barrett_manager/config_path" value="$(find lcsr_barrett)/config/libbarrett.conf"/>
-    <rosparam>
-      barrett_manager:
-        bus_id: 0
-        wam:
-          velocity_smoothing_factor: 0.95
-          home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
-      wam_effort_sum:
-        dim: 7
-        require_heartbeat: false
-      cal_pid:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-      cal_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        trap_max_vels: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        trap_max_accs: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-      cal_sac:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-      man_pid:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        p_gains: [400.0, 400.0, 300.0, 300.0, 40.0, 40.0, 10.0]
-        d_gains: [20.0, 20.0, 20.0, 20.0, 0.5, 0.5, 0.08]
-      man_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        trap_max_vels: [0.2, 0.4, 1.5, 0.8, 4.0, 4.0, 8.0]
-        trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
-        position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-      rml_traj:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        sampling_resolution: 0.005
-        max_velocities: [0.2, 0.4, 1.0, 0.8, 1.0, 1.0, 1.0]
-        max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-        max_jerks: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-        position_tolerance: [0.02, 0.02, 0.02, 0.02, 0.05, 0.05, 0.05]
-        velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 1.5]
-      inverse_dynamics:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        end_effector_frame_link: wam/wrist_palm_link
-        gravity: [-9.8, 0.0, 0.0]
-      jtns:
-        root_link: wam/base_link
-        tip_link: wam/wrist_palm_link
-        linear_p_gain: 300.0
-        linear_d_gain: 30.0
-        angular_p_gain: 5.0
-        angular_d_gain: 0.1
-        linear_effort_threshold: 50.0
-        linear_position_threshold: 0.075
-        angular_effort_threshold: 5.0
-        angular_position_threshold: 0.5
-        joint_d_gains: [3.0, 3.0, 2.0, 2.0, 0.5, 0.5, 0.08]
-    </rosparam>
-  </group>
-
-  <param name="robot_description" command="$(find xacro)/xacro.py
-    '$(find barrett_model)/robots/wam_7dof_wam.urdf.xacro'" />
+  <param name="robot_description" 
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
     <param name="publish_frequency" value="50"/>
     <remap from="joint_states" to="wam_joint_states"/>
   </node>
+
+  <group ns="barrett">
+    <group ns="barrett_manager">
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+        <param name="publish_frequency" value="50"/>
+        <remap from="joint_states" to="wam/joint_states"/>
+      </node>
+
+      <rosparam subst_value="true">
+        bus_id: 0
+        config_path: $(find lcsr_barrett)/config/libbarrett.conf
+        
+        # Auto-configuration
+        auto_configure_wam: true
+        wam_dof: 7
+        wam_urdf_prefix: wam
+
+        # WAM Parameters
+        wam:
+          home_position: [0.0, -1.5708, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+          home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
+          velocity_smoothing_factor: 0.98
+          velocity_cutoff: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0]
+      </rosparam>
+    </group>
+
+    <rosparam ns="effort_sum" subst_value="true">
+      dim: 7
+      require_heartbeat: false
+    </rosparam>
+
+    <!-- RTT Component parameters -->
+    <include file="$(find lcsr_barrett)/hw/orocos_component_params.launch">
+      <arg name="ee_empty" value="true"/>
+    </include>
+
+  </group>
 </launch>
