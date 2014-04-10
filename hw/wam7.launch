@@ -4,7 +4,8 @@
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
-  <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
+  <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
+  <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
@@ -15,7 +16,7 @@
   </include>
 
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">

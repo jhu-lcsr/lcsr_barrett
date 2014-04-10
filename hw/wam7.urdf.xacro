@@ -11,5 +11,8 @@
   <xacro:if value="$(arg hand)">
     <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
   </xacro:if>
+  <xacro:if value="$(arg ball)">
+    <xacro:bball prefix="$(arg prefix)/ball" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+  </xacro:if>
 
 </robot>
