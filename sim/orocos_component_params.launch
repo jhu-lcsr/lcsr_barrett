@@ -17,6 +17,8 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
       p_gains: [400.0, 400.0, 400.0, 350.0, 50.0, 40.0, 40.0]
       d_gains: [20.0, 20.0, 20.0, 20.0, 3.5, 2.5, 1.5]
+      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
+      velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
   </rosparam>
 
   <rosparam subst_value="true">
