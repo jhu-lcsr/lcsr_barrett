@@ -5,15 +5,25 @@
   <arg name="ee_empty" default="false" doc="(bool) True if there is no end-effector"/>
   <arg name="ee_ball" default="false" doc="(bool) True if there is no end-effector"/>
   <arg name="ee_bhand" default="false" doc="(bool) True if there is no end-effector"/>
+  <arg name="ee_bumblebee" default="false" doc="(bool) True if there is no end-effector"/>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)inverse_dynamics:
+  <group ns="$(arg oro_prefix)inverse_dynamics">
+    <rosparam subst_value="true">
       robot_description_param: /robot_description
       root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
       end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link
       gravity: [-9.8, 0.0, 0.0]
-  </rosparam>
+    </rosparam>
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)//bball_base_link
+    </rosparam>
+    <rosparam if="$(arg ee_bumblebee)" subst_value="true">
+      tip_link: $(arg tf_prefix)/bumblebee_mount_link
+    </rosparam>
+  </group>
 
   <group ns="$(arg oro_prefix)pid">
     <rosparam subst_value="true">
@@ -34,6 +44,16 @@
     <rosparam if="$(arg ee_ball)" subst_value="true">
       p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 0.0]
       d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.0]
+      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
+      velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+    </rosparam>
+    <rosparam if="$(arg ee_bumblebee)" subst_value="true">
+      #p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 2.0]
+      #d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.1]
+      #position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
+      #velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+      p_gains: [20.0, 10.0, 20.0, 5.0, 0.4, 0.4, 1.5]
+      d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.1]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -79,9 +99,12 @@
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1000.0]
       velocity_tolerance: [0.2, 0.2, 0.2, 0.2, 1.0, 1.0, 1000.0]
     </rosparam>
-    <rosparam if="$(arg ee_bhand)" subst_value="true">
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1000.0]
-      velocity_tolerance: [0.2, 0.2, 0.2, 0.2, 1.0, 1.0, 1000.0]
+    <rosparam if="$(arg ee_bumblebee)" subst_value="true">
+      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2]
+      velocity_tolerance: [0.2, 0.2, 0.2, 0.2, 1.0, 1.0, 1.0]
+      max_velocities: [1.5, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0]
+      max_accelerations: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.5]
+      max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
   </group>
 

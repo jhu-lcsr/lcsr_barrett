@@ -4,8 +4,10 @@
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
+  <arg name="empty" default="false" doc="(bool) Launch the robot with an open palm"/>
   <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
+  <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
@@ -16,7 +18,7 @@
   </include>
 
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
@@ -56,7 +58,9 @@
 
     <!-- RTT Component parameters -->
     <include file="$(find lcsr_barrett)/hw/orocos_component_params.launch">
-      <arg name="ee_empty" value="true"/>
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
+      <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
     </include>
 
   </group>

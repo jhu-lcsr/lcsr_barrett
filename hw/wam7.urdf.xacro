@@ -3,6 +3,7 @@
 
   <!-- Includea all the WAM stuff -->
   <xacro:include filename="$(find barrett_model)/models/wam_top.urdf.xacro"/>
+  <xacro:include filename="$(find lcsr_barrett)/models/bumblebee_ee.urdf.xacro"/>
 
   <!-- Root link is in the world frame-->
   <link name="world"/>
@@ -13,6 +14,9 @@
   </xacro:if>
   <xacro:if value="$(arg ball)">
     <xacro:bball prefix="$(arg prefix)/ball" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+  </xacro:if>
+  <xacro:if value="$(arg bumblebee)">
+    <xacro:bumblebee_palm prefix="$(arg prefix)" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
   </xacro:if>
 
 </robot>

@@ -1,0 +1,53 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find barrett_model)/models/common.urdf.xacro"/>
+  <xacro:include filename="$(find lcsr_camera_models)/cameras/bumblebee/bumblebee2.urdf.xacro"/>
+
+  <!-- High-leveel hand macro -->
+  <xacro:macro name="bumblebee_palm" params="parent_link prefix xyz rpy">
+    <joint name="${prefix}/bumblebee_palm_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${prefix}/bumblebee_palm_link"/>
+      <origin xyz="${xyz}" rpy="${rpy}"/>
+    </joint>
+    <link name="${prefix}/bumblebee_palm_link">
+      <inertial>
+        <origin xyz="0 0 0.032" rpy="0 0 0"/>
+        <mass value="0.240" />
+        <inertia
+          ixx="0.000001" ixy="0"  ixz="0"
+          iyy="0.000001" iyz="0"
+          izz="0.000001" />
+      </inertial>
+
+      <visual>
+        <material name="WAMGrey">
+          <color rgba="0.9 0.9 0.9 0.0"/>
+        </material>
+        <origin xyz="0 0 .0035" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.0415" length="0.007"/>
+        </geometry>
+      </visual>
+      <visual>
+        <material name="WAMGrey">
+          <color rgba="0.9 0.9 0.9 0.0"/>
+        </material>
+        <origin xyz="0 0 0.0335" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.0127" length="0.06"/>
+        </geometry>
+      </visual>
+    </link>
+
+    <xacro:bumblebee2_66
+      parent_link="${prefix}/bumblebee_palm_link"
+      xyz="0 ${-0.02-0.036/2.0} 0.071"
+      rpy="0 0 0"
+      ns="bumblebee"
+      frame_prefix="${prefix}/bumblebee_"
+      high_res="false"/>
+
+  </xacro:macro>
+
+</robot>
