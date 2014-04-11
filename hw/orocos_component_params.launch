@@ -48,12 +48,12 @@
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
     <rosparam if="$(arg ee_bumblebee)" subst_value="true">
-      #p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 2.0]
+      #p_gains: [20.0, 10.0, 20.0, 5.0, 0.4, 0.4, 1.5]
       #d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.1]
       #position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
       #velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
-      p_gains: [20.0, 10.0, 20.0, 5.0, 0.4, 0.4, 1.5]
-      d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.1]
+      p_gains: [350.0, 350.0, 350.0, 300.0, 20.0, 20.0, 1.5]
+      d_gains: [20.0, 20.0, 20.0, 10.0, 0.4, 0.4, 0.15]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -125,15 +125,20 @@
       joint_d_gains: [5.5, 5.5, 5.5, 5.5, 1.01, 1.01, 1.01]
   </rosparam>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)traj_kdl:
+  <group ns="$(arg oro_prefix)traj_kdl">
+    <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
       trap_max_vels: [0.5, 0.5, 1.5, 0.8, 4.0, 4.0, 8.0]
       trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
       velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-  </rosparam>
+    </rosparam>
+    <rosparam subst_value="true">
+      max_velocities: [1.5, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0]
+      max_accelerations: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.5]
+    </rosparam>
+  </group>
 
   <group ns="$(arg oro_prefix)ik">
     <rosparam subst_value="true">
