@@ -79,6 +79,8 @@
     </rosparam>
   </group>
 
+  <!-- deadman safety control, to be used with a wiimote -->
+  <!-- trigger is momentary deadman, zombie mode is the 3-button sequence: minus, home, plus -->
   <node if="$(arg deadman)" pkg="lcsr_controllers" type="heartbeat_mux.py" name="heartbeat_mux" output="screen">
     <remap from="heartbeats" to="/effort_sum/heartbeats"/>
     <rosparam>
