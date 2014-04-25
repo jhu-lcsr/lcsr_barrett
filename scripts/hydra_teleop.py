@@ -30,6 +30,7 @@ class HydraTeleop(object):
         self.side = side
 
         self.joy_sub = rospy.Subscriber('hydra_joy',sensor_msgs.msg.Joy,self.joy_cb)
+        self.hand_joint_state_sub = rospy.Subscriber('hand/joint_states',sensor_msgs.msg.JointState,self.hand_state_cb)
 
         self.hand_pub = rospy.Publisher('hand/cmd',oro_barrett_msgs.msg.BHandCmd)
 
@@ -39,23 +40,36 @@ class HydraTeleop(object):
         self.last_buttons = [0] * 16
 
         self.hand_cmd = oro_barrett_msgs.msg.BHandCmd()
+        self.last_hand_cmd = rospy.Time.now()
+
+    def hand_state_cb(self,msg):
+        self.hand_position = [msg.position[2],msg.position[3],msg.position[4],msg.position[0]]
 
     def joy_cb(self,msg):
         side = self.side
 
         # Check if the deadman is engaged
-        if msg.buttons[DEADMAN[side]]:
-            if not self.last_buttons[DEADMAN[side]]:
+        if msg.buttons[self.DEADMAN[side]]:
+            if not self.last_buttons[self.DEADMAN[side]]:
                 # Capture the current position
                 try:
-                    self.origin = fromTf(self.listener.lookupTransform('/hydra_base', '/hydra_'+SIDE_STR[side]+'_pivot', rospy.Time(0)))
+                    self.origin = fromTf(self.listener.lookupTransform('/hydra_base', '/hydra_'+self.SIDE_STR[side]+'_pivot', rospy.Time(0)))
                 except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
                     exit(-1)
 
             # Generate bhand command
-            self.hand_cmd.mode = [BHandCmd.MODE_TRAPEZOIDAL] * 4
-            self.hand_cmd.cmd = [min(0,max(2.5,msg.axes[TRIGGER[side]]))] * 3 + [min(0,max(3.14,self.hand_cmd.cmd + msg.axes[THUMB_Y[side]]))]
-            self.hand_pub.publish(self.hand_cmd)
+            if (rospy.Time.now() - self.last_hand_cmd) > rospy.Duration(0.1):
+                finger_cmd = max(0,min(2.5,2.5*(msg.axes[self.TRIGGER[side]])))
+                spread_cmd = max(0,min(3.14,self.hand_cmd.cmd[3] + 0.1*msg.axes[self.THUMB_Y[side]]))
+                #if abs(finger_cmd-self.hand_cmd.cmd[0]) > 0.01 or abs(spread_cmd-self.hand_cmd.cmd[3]) > 0.01:
+                new_cmd = [finger_cmd, finger_cmd, finger_cmd, spread_cmd]
+                print new_cmd
+                print self.hand_position
+                if any([abs(old-new) > 0.05 and abs(cur-new) > 0.01 for (old,cur,new) in zip(self.hand_cmd.cmd, self.hand_position, new_cmd)]):
+                    self.hand_cmd.mode = [oro_barrett_msgs.msg.BHandCmd.MODE_TRAPEZOIDAL] * 3 + [oro_barrett_msgs.msg.BHandCmd.MODE_TRAPEZOIDAL]
+                    self.hand_cmd.cmd = new_cmd
+                    self.hand_pub.publish(self.hand_cmd)
+                    self.last_hand_cmd = rospy.Time.now()
 
 def main():
     rospy.init_node('hydra_teleop')
