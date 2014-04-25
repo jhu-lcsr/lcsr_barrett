@@ -9,6 +9,7 @@
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
+  <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
 
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
@@ -28,9 +29,15 @@
 
   <group ns="barrett">
     <group ns="barrett_manager">
-      <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+      <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
+        <rosparam param="source_list" subst_value="true">
+          ["wam/joint_states", "hand/joint_states"]
+        </rosparam>
+        <param name="rate" value="50"/>
+        <remap from="robot_description" to="/robot_description"/>
+      </node>
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
         <param name="publish_frequency" value="50"/>
-        <remap from="joint_states" to="wam/joint_states"/>
       </node>
 
       <rosparam subst_value="true">
@@ -39,6 +46,7 @@
         
         # Auto-configuration
         auto_configure_wam: true
+        auto_configure_hand: $(arg hand)
         wam_dof: 7
         wam_urdf_prefix: wam
 
@@ -48,20 +56,37 @@
           home_resolver_offset: [0.34668, -1.75027, 0.75932, -1.58307, 0.75932, 1.00936, 0.796136]
           velocity_smoothing_factor: 0.98
           velocity_cutoff: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0]
+          torque_scales: [1.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      </rosparam>
+
+      <rosparam if="$(arg hand)" subst_value="true">
+        hand_urdf_prefix: wam/hand
       </rosparam>
     </group>
-
-    <rosparam ns="effort_sum" subst_value="true">
-      dim: 7
-      require_heartbeat: false
-    </rosparam>
 
     <!-- RTT Component parameters -->
     <include file="$(find lcsr_barrett)/hw/orocos_component_params.launch">
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
       <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
     </include>
-
+    
+    <rosparam ns="effort_sum" subst_value="true">
+      dim: 7
+      require_heartbeat: $(arg deadman)
+      heartbeat_max_period: 0.075
+    </rosparam>
   </group>
+
+  <!-- deadman safety control, to be used with a wiimote -->
+  <!-- trigger is momentary deadman, zombie mode is the 3-button sequence: minus, home, plus -->
+  <node if="$(arg deadman)" pkg="lcsr_controllers" type="heartbeat_mux.py" name="heartbeat_mux" output="screen">
+    <remap from="heartbeats" to="/effort_sum/heartbeats"/>
+    <rosparam>
+      buttons: [3]
+      zombie_sequence: [5,10,4]
+    </rosparam>
+  </node>
+
 </launch>

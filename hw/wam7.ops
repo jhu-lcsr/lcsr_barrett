@@ -20,6 +20,11 @@ runScript(ros.find("lcsr_barrett")+"/ops/controllers.ops");
 load_controllers("");
 ik.conman_hook.setDesiredMinPeriod(0.01);
 
+if(barrett_manager.auto_configure_hand) then {
+  /* Connect to inverse dynamics controller */
+  connect("barrett_manager.hand.center_of_mass_out", "inverse_dynamics.end_effector_masses_in", ConnPolicy());
+}
+
 /* setpoint */
 loadComponent("joint_setpoint","lcsr_controllers::JointSetpoint");
 connect("barrett_manager.wam.position_out", "joint_setpoint.joint_position_in", ConnPolicy());
