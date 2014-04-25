@@ -50,12 +50,25 @@ class HydraTeleop(object):
 
         # Check if the deadman is engaged
         if msg.buttons[self.DEADMAN[side]]:
+            try:
+                hydra_frame = fromTf(self.listener.lookupTransform('/hydra_base', '/hydra_'+self.SIDE_STR[side]+'_grab', rospy.Time(0)))
+                tip_frame = fromTf(self.listener.lookupTransform('/world','/wam/wrist_palm_link', rospy.Time(0)))
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                return
+
+            # Capture the current position if we're starting to move
             if not self.last_buttons[self.DEADMAN[side]]:
-                # Capture the current position
-                try:
-                    self.origin = fromTf(self.listener.lookupTransform('/hydra_base', '/hydra_'+self.SIDE_STR[side]+'_pivot', rospy.Time(0)))
-                except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-                    exit(-1)
+                self.cmd_origin = hydra_frame
+                self.tip_origin = tip_frame
+
+            # Update commanded TF frame
+            cmd_twist = kdl.diff(self.cmd_origin, hydra_frame)
+            self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
+
+            print cmd_twist
+
+            tform = toTf(self.cmd_frame)
+            self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), '/wam/cmd2', 'world')
 
             # Generate bhand command
             if (rospy.Time.now() - self.last_hand_cmd) > rospy.Duration(0.1):
@@ -70,6 +83,9 @@ class HydraTeleop(object):
                     self.hand_cmd.cmd = new_cmd
                     self.hand_pub.publish(self.hand_cmd)
                     self.last_hand_cmd = rospy.Time.now()
+
+        self.last_buttons = msg.buttons
+
 
 def main():
     rospy.init_node('hydra_teleop')
