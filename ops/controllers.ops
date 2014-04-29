@@ -26,6 +26,7 @@ export void load_controllers(string prefix) {
   connect(prefix+"barrett_manager.wam.velocity_out", prefix+"traj_rml.joint_velocity_in", ConnPolicy());
   connect(                                           prefix+"traj_rml.joint_position_out", prefix+"pid.joint_position_cmd_in", ConnPolicy());
   connect(                                           prefix+"traj_rml.joint_velocity_out", prefix+"pid.joint_velocity_cmd_in", ConnPolicy());
+  //connect(                                           prefix+"traj_rml.joint_acceleration_out", prefix+"pid.joint_acceleration_cmd_in", ConnPolicy());
 
   /* Create a cartesian impedance controller (jacobian transpose) */
   loadComponent(prefix+"jtns","lcsr_controllers::JTNullspaceController");

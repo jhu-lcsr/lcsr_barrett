@@ -35,10 +35,9 @@
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
   </rosparam>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)jtns:
+  <group ns="$(arg oro_prefix)jtns">
+    <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
       target_frame: $(arg tf_prefix)/cmd
       singularity_avoidance_gain: 1.0
       linear_p_gain: 1000.0
@@ -50,7 +49,14 @@
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
       joint_d_gains: [5.5, 5.5, 5.5, 5.5, 1.01, 1.01, 1.01]
-  </rosparam>
+    </rosparam>
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_base_link
+    </rosparam>
+  </group>
 
   <rosparam subst_value="true">
     $(arg oro_prefix)traj_kdl:
@@ -65,11 +71,17 @@
   <group ns="$(arg oro_prefix)ik">
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
       target_frame: $(arg tf_prefix)/cmd
       hint_modes: [0, 0, 0, 2, 0, 0, 0]
       hint_positions: [0.0, 0.0, 0.0, 1.5707, 0.0, 0.0, 0.0]
       damping: 0.5
+    </rosparam>
+
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_base_link
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
