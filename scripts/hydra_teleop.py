@@ -41,6 +41,7 @@ class HydraTeleop(object):
 
         self.hand_cmd = oro_barrett_msgs.msg.BHandCmd()
         self.last_hand_cmd = rospy.Time.now()
+        self.hand_position = [0,0,0,0]
 
     def hand_state_cb(self,msg):
         self.hand_position = [msg.position[2],msg.position[3],msg.position[4],msg.position[0]]
@@ -68,7 +69,7 @@ class HydraTeleop(object):
             print cmd_twist
 
             tform = toTf(self.cmd_frame)
-            self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), '/wam/cmd2', 'world')
+            self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), '/wam/cmd', 'world')
 
             # Generate bhand command
             if (rospy.Time.now() - self.last_hand_cmd) > rospy.Duration(0.1):
