@@ -13,7 +13,10 @@
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
+  <arg name="empty" default="false" doc="(bool) Launch the robot with an open palm"/>
   <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
+  <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
+  <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
 
   <param name="use_sim_time" value="true"/>
@@ -48,9 +51,39 @@
   <!-- Create nodes in gazebo namespace -->
   <group ns="gazebo">
 
+    <group ns="barrett_manager">
+      <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
+        <rosparam param="source_list" subst_value="true">
+          ["wam/joint_states", "hand/joint_states"]
+        </rosparam>
+        <param name="rate" value="50"/>
+        <remap from="robot_description" to="/robot_description"/>
+      </node>
+      <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
+        <param name="publish_frequency" value="50"/>
+      </node>
+
+      <rosparam subst_value="true">
+        # Auto-configuration
+        auto_configure_wam: true
+        auto_configure_hand: $(arg hand)
+        wam_dof: 7
+        wam_urdf_prefix: wam
+
+        # WAM Parameters
+      </rosparam>
+
+      <rosparam if="$(arg hand)" subst_value="true">
+        hand_urdf_prefix: wam/hand
+      </rosparam>
+    </group>
+
     <!-- Barrett Hardwre Config and Orocos Components -->
-    <include file="$(find lcsr_barrett)/sim/barrett_manager.launch">
-      <arg name="hand" value="$(arg hand)"/>
+    <include file="$(find lcsr_barrett)/sim/orocos_component_params.launch">
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
+      <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
     </include>
 
     <!-- RTT Component parameters -->
