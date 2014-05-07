@@ -18,6 +18,7 @@
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
+  <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
 
   <param name="use_sim_time" value="true"/>
 
@@ -52,6 +53,11 @@
   <group ns="gazebo">
 
     <group ns="barrett_manager">
+
+      <node if="$(arg dash)" pkg="rqt_barrett" type="rqt_barrett" name="rqt_barrett">
+        <remap from="robot_description" to="/robot_description"/>
+        <remap from="joint_states" to="wam/joint_states"/>
+      </node>
       <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
         <rosparam param="source_list" subst_value="true">
           ["wam/joint_states", "hand/joint_states"]
