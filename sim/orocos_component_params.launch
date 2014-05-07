@@ -32,9 +32,9 @@
     $(arg oro_prefix)pid:
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
-      p_gains: [350.0, 350.0, 350.0, 250.0, 20.0, 20.0, 02.0]
+      p_gains: [330.0, 350.0, 350.0, 250.0, 20.0, 20.0, 02.0]
       d_gains: [20.0, 20.0, 20.0, 10.0, 0.5, 0.5, 0.1]
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
+      position_tolerance: [1.1, 1.1, 1.1, 1.1, 1.1, 1.1, 1.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
   </rosparam>
 
@@ -46,7 +46,7 @@
       #note: absolute max joint velocity: 2.0 rad/s
       #note: safe joint velocity: 0.5 rad/s
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
-      velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+      velocity_tolerance: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       max_velocities: [1.5, 1.5, 1.5, 1.5, 2.0, 2.0, 2.0]
       max_accelerations: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.5]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]

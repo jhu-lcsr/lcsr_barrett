@@ -76,6 +76,7 @@
       <rosparam if="$(arg hand)" subst_value="true">
         hand_urdf_prefix: wam/hand
       </rosparam>
+
     </group>
 
     <!-- Barrett Hardwre Config and Orocos Components -->
@@ -85,6 +86,12 @@
       <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
     </include>
+
+    <rosparam ns="effort_sum" subst_value="true">
+      dim: 7
+      require_heartbeat: false
+      heartbeat_max_period: 0.075
+    </rosparam>
 
     <!-- RTT Component parameters -->
     <include file="$(find lcsr_barrett)/sim/orocos_component_params.launch"/>
