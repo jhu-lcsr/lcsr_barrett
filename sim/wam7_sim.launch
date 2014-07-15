@@ -78,7 +78,7 @@
 
         # WAM Parameters
         wam:
-          velocity_smoothing_factor: 0.75
+          velocity_smoothing_factor: 0.99
       </rosparam>
 
       <rosparam if="$(arg hand)" subst_value="true">
