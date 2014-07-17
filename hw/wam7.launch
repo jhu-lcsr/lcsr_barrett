@@ -1,23 +1,30 @@
 <launch>
 
+  <arg name="safe" default="false" doc="(bool) Run in 'safe' mode."/>
   <arg name="log_level" default="info" doc="(int) Set the Orocos log level (0:none) (4:warn) (5:info) (6:debug)"/>
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
-  <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
   <arg name="empty" default="false" doc="(bool) Launch the robot with an open palm"/>
   <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
-  <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
   <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
 
-  <include file="$(find rtt_ros)/launch/deployer.launch">
+  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam7.ops"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="DEBUG" value="$(arg debug)"/>
   </include>
+
+  <node
+    if="$(arg safe)" 
+    name="barrett"
+    pkg="rtt_ros" type="deployer" 
+    args="--noninteractive --no-consolelog -l $(arg log_level) -s $(find lcsr_barrett)/hw/wam7.ops --"
+    output="log">
+  </node>
 
   <param name="robot_description" 
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee)" />
@@ -31,7 +38,7 @@
   <group ns="barrett">
     <group ns="barrett_manager">
 
-      <node if="$(arg dash)" pkg="rqt_barrett" type="rqt_barrett" name="rqt_barrett">
+      <node if="$(arg dash)" pkg="rqt_barrett" type="rqt_barrett" name="rqt_barrett" required="true">
         <remap from="robot_description" to="/robot_description"/>
         <remap from="joint_states" to="wam/joint_states"/>
       </node>
