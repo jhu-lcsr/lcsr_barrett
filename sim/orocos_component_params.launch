@@ -32,7 +32,7 @@
     $(arg oro_prefix)pid:
       root_link: $(arg tf_prefix)/base_link
       tip_link: $(arg tf_prefix)/wrist_palm_link
-      p_gains: [330.0, 350.0, 350.0, 250.0, 20.0, 20.0, 02.0]
+      p_gains: [330.0, 350.0, 350.0, 250.0, 40.0, 40.0, 02.0]
       d_gains: [20.0, 20.0, 20.0, 10.0, 0.5, 0.5, 0.1]
       #i_gains: [5.0, 5.0, 4.0, 3.0, 0.3, 0.2, 0.2]
       #i_clamps: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
@@ -62,16 +62,19 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      singularity_avoidance_gain: 1.0
+      singularity_avoidance_gain: 0.0
+      joint_center_gain: 50.0
       linear_p_gain: 1000.0
-      linear_d_gain: 100.0
-      angular_p_gain: 10.0
-      angular_d_gain: 0.05
-      linear_effort_threshold: 50.0
+      linear_d_gain:  100.0
+      angular_p_gain: 20.0
+      angular_d_gain:  0.1
+      linear_effort_threshold: 100.0
       linear_position_threshold: 0.075
-      angular_effort_threshold: 5.0
+      angular_effort_threshold: 100.0
       angular_position_threshold: 1.5
-      joint_d_gains: [5.5, 5.5, 5.5, 5.5, 1.01, 1.01, 1.01]
+      nullspace_damping: 0.8
+      joint_d_gains: [0.5, 0.5, 0.5, 0.5, 0.1, 0.1, 0.5]
+      projector_type: 3
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
