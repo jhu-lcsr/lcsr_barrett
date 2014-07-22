@@ -106,7 +106,9 @@
       
     <!-- Moveit -->
     <include if="$(arg planning)" file="$(find lcsr_barrett)/sim/wam7_planning.launch">
-      <arg name="joint_states_topic" value="barrett_manager/wam/joint_states"/>
+      <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
     </include>
 
   </group>
