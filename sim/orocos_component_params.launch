@@ -55,7 +55,7 @@
       max_accelerations: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5]
       stop_on_violation: true
-      verbose: true
+      verbose: false
   </rosparam>
 
   <group ns="$(arg oro_prefix)jtns">
