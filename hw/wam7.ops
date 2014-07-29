@@ -1,5 +1,13 @@
 import("rtt_ros");
-ros.import("lcsr_barrett");
+ros.import("rtt_rosnode");
+ros.import("rtt_rospack");
+ros.import("rtt_rosparam");
+ros.import("rtt_rosclock");
+ros.import("rtt_roscomm");
+ros.import("conman");
+ros.import("conman_ros");
+ros.import("conman_blocks");
+ros.import("oro_barrett_hw");
 
 /* Set up TF component */
 import("rtt_tf")
