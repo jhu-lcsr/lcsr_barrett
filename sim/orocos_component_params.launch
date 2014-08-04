@@ -74,7 +74,7 @@
       angular_position_threshold: 1.5
       nullspace_damping: 0.8
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
-      projector_type: 3
+      projector_type: 2
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
