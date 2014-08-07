@@ -41,6 +41,11 @@ export void load_controllers(string prefix) {
   connect(prefix+"barrett_manager.wam.position_out", prefix+"ik.positions_in", ConnPolicy());
   connect(                                           prefix+"ik.trajectories_out", prefix+"traj_rml.joint_traj_cmd_in", ConnPolicy());
 
+  loadComponent(prefix+"cart_servo","lcsr_controllers::CartesianLogisticServo");
+  connectPeers("tf",prefix+"cart_servo");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"cart_servo.positions_in", ConnPolicy());
+  connect(                                           prefix+"cart_servo.framevel_out", prefix+"jtns.framevel_in", ConnPolicy());
+
   /* Configure all components */
   configureComponent(prefix+"inverse_dynamics");
   configureComponent(prefix+"pid");
@@ -48,6 +53,7 @@ export void load_controllers(string prefix) {
   configureComponent(prefix+"traj_rml");
   configureComponent(prefix+"jtns");
   configureComponent(prefix+"ik");
+  configureComponent(prefix+"cart_servo");
 
   /* Add to the conman scheme */
   addPeer("scheme",prefix+"inverse_dynamics");
@@ -56,6 +62,7 @@ export void load_controllers(string prefix) {
   addPeer("scheme",prefix+"traj_rml");
   addPeer("scheme",prefix+"jtns");
   addPeer("scheme",prefix+"ik");
+  addPeer("scheme",prefix+"cart_servo");
 
   /* Add blocks to the scheme */
   scheme.addBlock(prefix+"inverse_dynamics");
@@ -64,6 +71,7 @@ export void load_controllers(string prefix) {
   scheme.addBlock(prefix+"traj_rml");
   scheme.addBlock(prefix+"jtns");
   scheme.addBlock(prefix+"ik");
+  scheme.addBlock(prefix+"cart_servo");
 
   /* Create joint control group */
   var string joint_control = prefix+"joint_control"
@@ -77,6 +85,7 @@ export void load_controllers(string prefix) {
   scheme.addGroup(cart_imp_control);
   scheme.addToGroup(prefix+"inverse_dynamics",cart_imp_control);
   scheme.addToGroup(prefix+"jtns",cart_imp_control);
+  scheme.addToGroup(prefix+"cart_servo",cart_imp_control);
 
   /* Create an IK control group */
   var string ik_control = prefix+"ik_control"

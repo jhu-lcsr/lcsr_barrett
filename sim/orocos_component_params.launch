@@ -61,7 +61,7 @@
   <group ns="$(arg oro_prefix)jtns">
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
-      target_frame: $(arg tf_prefix)/cmd
+      target_frame: ""#$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 50.0
       linear_p_gain: 1000.0
@@ -96,6 +96,25 @@
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
       velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
   </rosparam>
+
+  <group ns="$(arg oro_prefix)cart_servo">
+    <rosparam subst_value="true">
+      root_link: $(arg tf_prefix)/base_link
+      target_frame: $(arg tf_prefix)/cmd
+      max_linear_rate: 40.0
+      max_angular_rate: 200.0
+    </rosparam>
+
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_hand)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_base_link
+    </rosparam>
+  </group>
 
   <group ns="$(arg oro_prefix)ik">
     <rosparam subst_value="true">
