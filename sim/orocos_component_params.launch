@@ -80,7 +80,7 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      tip_link: $(arg tf_prefix)/wrist_palm_link
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
       tip_link: $(arg tf_prefix)/ball/bball_base_link
@@ -109,7 +109,7 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      tip_link: $(arg tf_prefix)/wrist_palm_link
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
       tip_link: $(arg tf_prefix)/ball/bball_base_link
@@ -129,7 +129,7 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      tip_link: $(arg tf_prefix)/wrist_palm_link
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
       tip_link: $(arg tf_prefix)/ball/bball_base_link
