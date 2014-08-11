@@ -18,7 +18,7 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
-      tip_link: $(arg tf_prefix)/ball/bball_base_link
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
     <rosparam if="$(arg ee_bumblebee)" subst_value="true">
       tip_link: $(arg tf_prefix)/bumblebee_mount_link
@@ -130,11 +130,10 @@
     </rosparam>
   </group>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)jtns:
+  <group ns="$(arg oro_prefix)jtns">
+    <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
-      target_frame: $(arg tf_prefix)/cmd
+      target_frame: ""#$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 1000.0
       linear_p_gain: 1000.0
@@ -148,7 +147,36 @@
       nullspace_damping: 0.8
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
       projector_type: 2
-  </rosparam>
+    </rosparam>
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_hand)" subst_value="true">
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
+    </rosparam>
+  </group>
+
+  <group ns="$(arg oro_prefix)cart_servo">
+    <rosparam subst_value="true">
+      root_link: $(arg tf_prefix)/base_link
+      target_frame: $(arg tf_prefix)/cmd
+      max_linear_rate: 0.01
+      max_angular_rate: 0.01
+    </rosparam>
+
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_hand)" subst_value="true">
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
+    </rosparam>
+  </group>
 
   <group ns="$(arg oro_prefix)traj_kdl">
     <rosparam subst_value="true">
@@ -164,11 +192,20 @@
   <group ns="$(arg oro_prefix)ik">
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
       target_frame: $(arg tf_prefix)/cmd
       hint_modes: [0, 0, 0, 2, 0, 0, 0]
       hint_positions: [0.0, 0.0, 0.0, 1.5707, 0.0, 0.0, 0.0]
       damping: 0.5
+    </rosparam>
+
+    <rosparam if="$(arg ee_empty)" subst_value="true">
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+    </rosparam>
+    <rosparam if="$(arg ee_hand)" subst_value="true">
+      tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
+    </rosparam>
+    <rosparam if="$(arg ee_ball)" subst_value="true">
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"

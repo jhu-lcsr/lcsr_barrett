@@ -18,7 +18,7 @@
       tip_link: $(arg tf_prefix)/wrist_palm_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
-      tip_link: $(arg tf_prefix)/ball/bball_base_link
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
     <rosparam if="$(arg ee_bumblebee)" subst_value="true">
       tip_link: $(arg tf_prefix)/bumblebee_mount_link
@@ -83,7 +83,7 @@
       tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
-      tip_link: $(arg tf_prefix)/ball/bball_base_link
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
   </group>
 
@@ -101,8 +101,8 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      max_linear_rate: 40.0
-      max_angular_rate: 200.0
+      max_linear_rate: 0.01
+      max_angular_rate: 0.01
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">
@@ -112,7 +112,7 @@
       tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
-      tip_link: $(arg tf_prefix)/ball/bball_base_link
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
   </group>
 
@@ -132,7 +132,7 @@
       tip_link: $(arg tf_prefix)/hand/bhand_grasp_link
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
-      tip_link: $(arg tf_prefix)/ball/bball_base_link
+      tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"

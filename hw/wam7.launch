@@ -92,6 +92,14 @@
       require_heartbeat: $(arg deadman)
       heartbeat_max_period: 0.075
     </rosparam>
+
+    <!-- Moveit -->
+    <include if="$(arg planning)" file="$(find lcsr_barrett)/sim/wam7_planning.launch">
+      <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
+    </include>
   </group>
 
   <!-- deadman safety control, to be used with a wiimote -->
@@ -103,5 +111,12 @@
       zombie_sequence: [5,10,4]
     </rosparam>
   </node>
+
+  <param name="stage_model" 
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
+  <!--<node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" -->
+    <!--args="-urdf -model stage -param stage_model"/>-->
+  <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
+    args="0 0 0 0 0 0 /world /stage_link 50"/>
 
 </launch>

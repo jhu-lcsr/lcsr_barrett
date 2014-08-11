@@ -4,8 +4,9 @@
   <arg name="joint_states_topic" default="joint_states"/>
   <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
 
-  <arg name="ee_empty" default="true"/>
+  <arg name="ee_empty" default="false"/>
   <arg name="ee_hand" default="false"/>
+  <arg name="ee_ball" default="false"/>
 
   <include file="$(find barrett_wam_moveit_config)/launch/move_group.launch">
     <arg name="fake_execution" value="false"/>
@@ -14,6 +15,7 @@
     <arg name="info" value="true"/>
     <!-- This publishes things like the robot state -->
     <arg name="publish_monitored_planning_scene" value="true"/>
+    <arg name="moveit_manage_controllers" value="false"/>
   </include>
 
   <include file="$(find barrett_wam_moveit_config)/launch/planning_context.launch">
@@ -21,6 +23,7 @@
     <arg name="robot_description" value="/robot_description"/>
     <arg name="ee_empty" value="$(arg ee_empty)"/>
     <arg name="ee_hand" value="$(arg ee_hand)"/>
+    <arg name="ee_ball" value="$(arg ee_ball)"/>
   </include>
 
   <group ns="move_group">
