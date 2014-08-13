@@ -101,8 +101,8 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      max_linear_rate: 0.01
-      max_angular_rate: 0.01
+      max_linear_rate: 40.0
+      max_angular_rate: 200.0
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">

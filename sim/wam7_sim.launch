@@ -14,7 +14,7 @@
   <arg name="gui" default="true" doc="(bool) Launch the gazebo GUI"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
   <arg name="empty" default="false" doc="(bool) Launch the robot with an open palm"/>
-  <arg name="hand" default="true" doc="(bool) Launch the robot with a hand"/>
+  <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
@@ -35,7 +35,7 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' prefix:=wam ops_script:='$(find lcsr_barrett)/sim/wam7_sim.ops' hand:=$(arg hand) initial_group:=$(arg initial_group)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' prefix:=wam ops_script:='$(find lcsr_barrett)/sim/wam7_sim.ops' hand:=$(arg hand) ball:=$(arg ball) initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
@@ -109,6 +109,7 @@
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
     </include>
 
   </group>
