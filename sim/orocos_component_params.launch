@@ -56,6 +56,7 @@
       max_jerks: [2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5]
       stop_on_violation: true
       verbose: false
+      stop_time: 0.25
   </rosparam>
 
   <group ns="$(arg oro_prefix)jtns">
@@ -65,12 +66,12 @@
       singularity_avoidance_gain: 0.0
       joint_center_gain: 50.0
       linear_p_gain: 1000.0
-      linear_d_gain:  100.0
-      angular_p_gain: 20.0
+      linear_d_gain:  200.0
+      angular_p_gain: 10.0
       angular_d_gain:  0.1
-      linear_effort_threshold: 100.0
-      linear_position_threshold: 0.075
-      angular_effort_threshold: 100.0
+      linear_effort_threshold: 50.0
+      linear_position_threshold: 0.1
+      angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
       nullspace_damping: 0.8
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
@@ -87,22 +88,12 @@
     </rosparam>
   </group>
 
-  <rosparam subst_value="true">
-    $(arg oro_prefix)traj_kdl:
-      root_link: $(arg tf_prefix)/base_link
-      tip_link: $(arg tf_prefix)/wrist_palm_link
-      trap_max_vels: [0.5, 0.5, 1.5, 0.8, 4.0, 4.0, 8.0]
-      trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-      velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-  </rosparam>
-
   <group ns="$(arg oro_prefix)cart_servo">
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
       max_linear_rate: 40.0
-      max_angular_rate: 200.0
+      max_angular_rate: 300.0
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">
@@ -115,6 +106,18 @@
       tip_link: $(arg tf_prefix)/ball/bball_center_link
     </rosparam>
   </group>
+
+
+  <rosparam subst_value="true">
+    $(arg oro_prefix)traj_kdl:
+      root_link: $(arg tf_prefix)/base_link
+      tip_link: $(arg tf_prefix)/wrist_palm_link
+      trap_max_vels: [0.5, 0.5, 1.5, 0.8, 4.0, 4.0, 8.0]
+      trap_max_accs: [0.02, 0.06, 0.06, 0.04, 0.06, 0.06, 0.06]
+      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      velocity_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+  </rosparam>
+
 
   <group ns="$(arg oro_prefix)ik">
     <rosparam subst_value="true">
