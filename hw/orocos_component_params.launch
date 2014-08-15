@@ -139,15 +139,15 @@
       target_frame: ""#$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 1000.0
-      linear_p_gain: 1000.0
+      linear_p_gain: 500.0
       linear_d_gain: 50.0
-      angular_p_gain: 3.0
+      angular_p_gain: 3.5
       angular_d_gain: 0.01
       linear_effort_threshold: 50.0
       linear_position_threshold: 0.1
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
-      nullspace_damping: 0.8
+      nullspace_damping: 1.2
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
       projector_type: 2
     </rosparam>
