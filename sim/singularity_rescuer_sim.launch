@@ -15,7 +15,7 @@
         root_link: $(arg tf_prefix)/base_link
         target_frame: $(arg tf_prefix)/cmd
         linear_err_threshold: 0.5
-        angular_err_threshold: 1.0
+        angular_err_threshold: 1.4
         cart_blocks: ['$(arg oro_prefix)cart_servo','$(arg oro_prefix)jtns']
         joint_blocks: ['$(arg oro_prefix)traj_rml','$(arg oro_prefix)pid']
       </rosparam>
