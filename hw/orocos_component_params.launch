@@ -166,10 +166,10 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      max_linear_rate: 50.0
-      max_angular_rate: 200.0
-      linear_p_gain: 1000.0
-      angular_p_gain: 500.0
+      max_linear_rate: 0.1
+      max_angular_rate: 0.5
+      linear_p_gain: 100.0
+      angular_p_gain: 10.0
       linear_position_threshold: 0.1
       angular_position_threshold: 1.0
     </rosparam>
