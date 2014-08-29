@@ -138,18 +138,18 @@
       root_link: $(arg tf_prefix)/base_link
       target_frame: ""#$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
-      joint_center_gain: 1000.0
-      linear_p_gain: 500.0
-      linear_d_gain: 50.0
-      angular_p_gain: 3.5
-      angular_d_gain: 0.01
+      joint_center_gain: 100.0
+      linear_p_gain: 1000.0
+      linear_d_gain: 10.0
+      angular_p_gain: 10.0
+      angular_d_gain: 0.005
       linear_effort_threshold: 50.0
       linear_position_threshold: 0.1
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
       nullspace_damping: 1.2
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
-      projector_type: 2
+      projector_type: 3
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
@@ -166,7 +166,7 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      max_linear_rate: 0.1
+      max_linear_rate: 0.15
       max_linear_error: 0.05
       max_angular_rate: 0.5
       max_angular_error: 0.5
@@ -189,9 +189,9 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      friction_coefficients_neg: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-      friction_coefficients_pos: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
-      zero_slope: 1.0
+      friction_coefficients_neg: [6.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.001]
+      friction_coefficients_pos: [6.0, 3.0, 3.0, 3.0, 3.0, 3.0, 0.001]
+      zero_slope: 100.0
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">
