@@ -48,7 +48,8 @@ export void load_controllers(string prefix) {
 
   loadComponent(prefix+"coulomb","lcsr_controllers::CoulombCompensator");
   connect(prefix+"barrett_manager.wam.position_out", prefix+"coulomb.joint_position_in", ConnPolicy());
-  connect(prefix+"cart_servo.framevel_out",          prefix+"coulomb.framevel_des_in", ConnPolicy());
+  //connect(prefix+"cart_servo.framevel_out",          prefix+"coulomb.framevel_des_in", ConnPolicy());
+  connect(prefix+"jtns.wrench_out",                  prefix+"coulomb.wrench_des_in", ConnPolicy());
   connect(                                           prefix+"coulomb.joint_effort_out", prefix+"effort_sum.feedforward_in", ConnPolicy());
 
   /* Configure all components */
