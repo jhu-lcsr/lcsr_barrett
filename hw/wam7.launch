@@ -63,16 +63,27 @@
         auto_configure_hand: $(arg hand)
         wam_dof: 7
         wam_urdf_prefix: wam
+      </rosparam>
 
-        # WAM Parameters
-        wam:
+      <group ns="wam">
+        <!-- Different calibration posture for empty -->
+        <rosparam unless="$(arg hand)">
           home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
           home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]
+        </rosparam>
 
-          velocity_smoothing_factor: 0.98
+        <!-- Different calibration posture for BHand -->
+        <rosparam if="$(arg hand)">
+          home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.10]
+          home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967, 0.0935728, -0.607456, 2.15064]
+        </rosparam>
+
+        <rosparam>
+          velocity_smoothing_factor: 0.95
           velocity_cutoff: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0]
           torque_scales: [1.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-      </rosparam>
+        </rosparam>
+      </group>
 
       <rosparam if="$(arg hand)" subst_value="true">
         hand_urdf_prefix: wam/hand
