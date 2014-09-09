@@ -74,6 +74,7 @@
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
       nullspace_damping: 0.8
+      jointspace_damping: 1.2
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
       projector_type: 2
     </rosparam>
