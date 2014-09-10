@@ -46,6 +46,12 @@ export void load_controllers(string prefix) {
   connect(prefix+"barrett_manager.wam.position_out", prefix+"cart_servo.positions_in", ConnPolicy());
   connect(                                           prefix+"cart_servo.framevel_out", prefix+"jtns.framevel_in", ConnPolicy());
 
+  loadComponent(prefix+"coulomb","lcsr_controllers::CoulombCompensator");
+  connect(prefix+"barrett_manager.wam.position_out", prefix+"coulomb.joint_position_in", ConnPolicy());
+  //connect(prefix+"cart_servo.framevel_out",          prefix+"coulomb.framevel_des_in", ConnPolicy());
+  connect(prefix+"jtns.wrench_out",                  prefix+"coulomb.wrench_des_in", ConnPolicy());
+  connect(                                           prefix+"coulomb.joint_effort_out", prefix+"effort_sum.feedforward_in", ConnPolicy());
+
   /* Configure all components */
   configureComponent(prefix+"inverse_dynamics");
   configureComponent(prefix+"pid");
@@ -54,6 +60,7 @@ export void load_controllers(string prefix) {
   configureComponent(prefix+"jtns");
   configureComponent(prefix+"ik");
   configureComponent(prefix+"cart_servo");
+  configureComponent(prefix+"coulomb");
 
   /* Add to the conman scheme */
   addPeer("scheme",prefix+"inverse_dynamics");
@@ -63,6 +70,7 @@ export void load_controllers(string prefix) {
   addPeer("scheme",prefix+"jtns");
   addPeer("scheme",prefix+"ik");
   addPeer("scheme",prefix+"cart_servo");
+  addPeer("scheme",prefix+"coulomb");
 
   /* Add blocks to the scheme */
   scheme.addBlock(prefix+"inverse_dynamics");
@@ -72,25 +80,23 @@ export void load_controllers(string prefix) {
   scheme.addBlock(prefix+"jtns");
   scheme.addBlock(prefix+"ik");
   scheme.addBlock(prefix+"cart_servo");
+  scheme.addBlock(prefix+"coulomb");
 
   /* Create joint control group */
   var string joint_control = prefix+"joint_control"
   scheme.addGroup(joint_control);
-  scheme.addToGroup(prefix+"inverse_dynamics",joint_control);
   scheme.addToGroup(prefix+"pid",joint_control);
   scheme.addToGroup(prefix+"traj_rml",joint_control);
 
   /* Create cart impedance control group */
   var string cart_imp_control = prefix+"cart_imp_control"
   scheme.addGroup(cart_imp_control);
-  scheme.addToGroup(prefix+"inverse_dynamics",cart_imp_control);
   scheme.addToGroup(prefix+"jtns",cart_imp_control);
   scheme.addToGroup(prefix+"cart_servo",cart_imp_control);
 
   /* Create an IK control group */
   var string ik_control = prefix+"ik_control"
   scheme.addGroup(ik_control);
-  scheme.addToGroup(prefix+"inverse_dynamics",ik_control);
   scheme.addToGroup(prefix+"ik",ik_control);
   scheme.addToGroup(prefix+"traj_rml",ik_control);
   scheme.addToGroup(prefix+"pid",ik_control);

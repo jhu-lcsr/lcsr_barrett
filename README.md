@@ -82,3 +82,10 @@ The following are notes on simulation realtime performance for various machines 
   * ODE
     * Single WAM arm: 99% 
     * Single WAM arm + BHand: 92% (open) 82% (grasping)
+
+## Versions
+
+### 0.4.0 - Well-Behaved Cartesian Impedance Control 
+
+* `lcsr_controllers` 0.4.0
+* `barrett_model` 0.4.0
