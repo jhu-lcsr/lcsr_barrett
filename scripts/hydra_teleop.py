@@ -39,9 +39,15 @@ class HydraTeleop(object):
 
         self.last_buttons = [0] * 16
 
+        self.tip_link = rospy.get_param('~tip_link')
+        self.cmd_frame_id = rospy.get_param('~cmd_frame','wam/cmd')
+        self.scale = rospy.get_param('~scale',1.0)
+
         self.hand_cmd = oro_barrett_msgs.msg.BHandCmd()
         self.last_hand_cmd = rospy.Time.now()
         self.hand_position = [0,0,0,0]
+
+        self.cmd_frame = None
 
     def hand_state_cb(self,msg):
         self.hand_position = [msg.position[2],msg.position[3],msg.position[4],msg.position[0]]
@@ -53,8 +59,9 @@ class HydraTeleop(object):
         if msg.buttons[self.DEADMAN[side]]:
             try:
                 hydra_frame = fromTf(self.listener.lookupTransform('/hydra_base', '/hydra_'+self.SIDE_STR[side]+'_grab', rospy.Time(0)))
-                tip_frame = fromTf(self.listener.lookupTransform('/world','/wam/wrist_palm_link', rospy.Time(0)))
-            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                tip_frame = fromTf(self.listener.lookupTransform('/world',self.tip_link, rospy.Time(0)))
+            except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
+                rospy.logwarn(str(ex))
                 return
 
             # Capture the current position if we're starting to move
@@ -64,12 +71,8 @@ class HydraTeleop(object):
 
             # Update commanded TF frame
             cmd_twist = kdl.diff(self.cmd_origin, hydra_frame)
+            cmd_twist.vel = self.scale*cmd_twist.vel
             self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
-
-            print cmd_twist
-
-            tform = toTf(self.cmd_frame)
-            self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), '/wam/cmd', 'world')
 
             # Generate bhand command
             if (rospy.Time.now() - self.last_hand_cmd) > rospy.Duration(0.1):
@@ -87,11 +90,17 @@ class HydraTeleop(object):
 
         self.last_buttons = msg.buttons
 
+        # Broadcast the command if it's defined
+        if self.cmd_frame:
+            tform = toTf(self.cmd_frame)
+            self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), self.cmd_frame_id, 'world')
+
+
 
 def main():
     rospy.init_node('hydra_teleop')
 
-    ht = HydraTeleop(HydraTeleop.LEFT)
+    ht = HydraTeleop(HydraTeleop.RIGHT)
 
     rospy.spin()
     
