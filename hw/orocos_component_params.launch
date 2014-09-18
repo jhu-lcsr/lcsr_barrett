@@ -6,6 +6,7 @@
   <arg name="ee_ball" default="false" doc="(bool) True if there is no end-effector"/>
   <arg name="ee_hand" default="false" doc="(bool) True if there is no end-effector"/>
   <arg name="ee_bumblebee" default="false" doc="(bool) True if there is no end-effector"/>
+  <arg name="ee_aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
 
   <group ns="$(arg oro_prefix)inverse_dynamics">
     <rosparam subst_value="true">
@@ -39,8 +40,8 @@
       compensate_friction: false
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
-      p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 0.0]
-      d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.0]
+      p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 1.0]
+      d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.001]
       position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -104,10 +105,10 @@
       #max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1000.0]
-      velocity_tolerance: [0.2, 0.2, 0.2, 0.2, 1.0, 1.0, 1000.0]
-      max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
-      max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1.0]
+      velocity_tolerance: [1.2, 1.2, 1.2, 1.2, 2.0, 2.0, 2.0]
+      max_velocities: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      max_accelerations: [1.5, 1.5, 1.5, 4.0, 4.0, 4.0, 4.0]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">

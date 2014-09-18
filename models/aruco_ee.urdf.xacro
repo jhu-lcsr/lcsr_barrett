@@ -1,0 +1,50 @@
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find barrett_model)/models/common.urdf.xacro"/>
+
+  <!-- High-leveel hand macro -->
+  <xacro:macro name="aruco_palm" params="parent_link prefix xyz rpy">
+    <joint name="${prefix}/aruco_fk_palm_joint" type="fixed">
+      <parent link="${parent_link}"/>
+      <child link="${prefix}/aruco_fk_palm_link"/>
+      <!--<origin xyz="${xyz}" rpy="${rpy}"/>-->
+      <origin xyz="-0.0072 -.0034 0.0778 " rpy="0 0 0"/>
+    </joint>
+    <link name="${prefix}/aruco_fk_palm_link">
+      <inertial>
+        <mass value="0.040" />
+        <inertia
+          ixx="0.000001" ixy="0"  ixz="0"
+          iyy="0.000001" iyz="0"
+          izz="0.000001" />
+      </inertial>
+    </link>
+    <joint name="${prefix}/aruco_marker_joint" type="fixed">
+      <parent link="${prefix}/aruco_fk_palm_link"/>
+      <child link="${prefix}/aruco_fk_marker_link"/>
+      <!--<origin xyz="${xyz}" rpy="${rpy}"/>-->
+      <origin xyz="0 0 0" rpy="${PI/2} 0 -${PI/2-0.01}"/>
+    </joint>
+    <link name="${prefix}/aruco_fk_marker_link">
+      <inertial>
+        <mass value="0.040" />
+        <inertia
+          ixx="0.000001" ixy="0"  ixz="0"
+          iyy="0.000001" iyz="0"
+          izz="0.000001" />
+      </inertial>
+
+      <visual>
+        <material name="WAMGrey">
+          <color rgba="0.9 0.9 0.9 0.0"/>
+        </material>
+        <origin xyz="0 0.004 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.17145 0.008 0.1778"/>
+        </geometry>
+      </visual>
+    </link>
+
+  </xacro:macro>
+
+</robot>

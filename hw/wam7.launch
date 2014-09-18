@@ -10,6 +10,7 @@
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
+  <arg name="aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
 
   <include unless="$(arg safe)" file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
@@ -27,13 +28,16 @@
   </node>
 
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
     <param name="publish_frequency" value="50"/>
     <remap from="joint_states" to="wam_joint_states"/>
   </node>
+
+ <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
+   args="record -j -o /tmp/wam-last.bag -e '/barrett(.*)' '(.*)joint_state(.*)' '(.*)wrench(.*)' /tf"/>   
 
   <group ns="barrett">
     <group ns="barrett_manager">
@@ -67,15 +71,16 @@
 
       <group ns="wam">
         <!-- Different calibration posture for empty -->
-        <rosparam unless="$(arg hand)">
-          home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]
-        </rosparam>
+        <!--<rosparam unless="$(arg hand)">-->
+          <!--home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]-->
+          <!--home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]-->
+        <!--</rosparam>-->
 
         <!-- Different calibration posture for BHand -->
-        <rosparam if="$(arg hand)">
-          home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.10]
-          home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967, 0.0935728, -0.607456, 2.15064]
+        <!--<rosparam if="$(arg hand)">-->
+        <rosparam>
+          home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.0]
+          home_resolver_offset: [1.18423, -1.35297,  1.29775,  -0.707165, -0.260777, -1.43274, 2.15964]
         </rosparam>
 
         <rosparam>
