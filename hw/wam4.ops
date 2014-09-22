@@ -1,22 +1,30 @@
-
 import("rtt_ros");
-import("rtt_rospack");
+ros.import("rtt_rosnode");
+ros.import("rtt_rospack");
+ros.import("rtt_rosparam");
+ros.import("rtt_rosclock");
+ros.import("rtt_roscomm");
+ros.import("conman");
+ros.import("conman_ros");
+ros.import("conman_blocks");
+ros.import("oro_barrett_hw");
 
-/* Load conman */
-runScript(rospack.find("lcsr_barrett")+"/ops/conman.ops");
+/* Set up TF component */
+import("rtt_tf")
+loadComponent("tf","rtt_tf::RTT_TF")
+tf.configure()
+tf.start()
+
+/* Create the conman scheme */
+runScript(ros.find("lcsr_barrett")+"/hw/conman.ops");
 
 /* Load barrett manager, 4-dof wam */
-runScript(rospack.find("lcsr_barrett")+"/ops/barrett_manager.ops");
-runScript(rospack.find("lcsr_barrett")+"/ops/wam4.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/barrett_hw_manager.ops");
+runScript(ros.find("lcsr_barrett")+"/ops/wam7.ops");
+//load_effort_sum("");
 
-/* Load manual controllers */
-runScript(rospack.find("lcsr_barrett")+"/ops/comp_manual.ops");
-
-/* Set initially running blocks */
-scheme.enableBlock("devices",false);
-scheme.enableBlock("manual",false);
-scheme.enableBlock("inverse_dynamics",false);
-
-/* Calibrate joint positions */
-// barrett_manager.wam.initialize()
-// barrett_manager.wam.run()
+scheme.enableBlock("devices",true);
+//scheme.enableBlock("inverse_dynamics",true);
+//scheme.enableBlock("joint_control",true);
+//scheme.enableBlock("ik_control",true);
+//scheme.enableBlock("cart_imp_control",true);

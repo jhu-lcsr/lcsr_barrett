@@ -3,10 +3,12 @@
   <arg name="LOG_LEVEL" default="info"/>
   <arg name="DEBUG" default="false"/>
 
+  <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
+
   <include file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/wam4.ops"/>
-    <arg name="LOG_LEVEL" value="debug"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam4.ops"/>
+    <arg name="LOG_LEVEL" value="warning"/>
     <arg name="DEBUG" value="$(arg DEBUG)"/>
   </include>
 
@@ -15,10 +17,15 @@
     <rosparam>
       barrett_manager:
         bus_id: 0
+        auto_configure_wam: true
+        auto_configure_hand: true
+        hand_urdf_prefix: wam/hand
+        wam_dof: 4
+        wam_urdf_prefix: wam
         wam:
           home_position: [0.0, -1.5708, 0.0, 3.1415]
           home_resolver_offset: [0.544563, -2.09235, 0.944932, -1.35757]
-      wam_effort_sum: { dim: 4 }
+      effort_sum: { dim: 4 }
       man_pid:
         root_link: wam/base_link
         tip_link: wam/stump_link
@@ -39,8 +46,8 @@
     </rosparam>
   </group>
 
-  <param name="robot_description" command="$(find xacro)/xacro.py
-    '$(find barrett_model)/robots/wam_4dof_wam.urdf.xacro'" />
+  <param name="robot_description" 
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam4.urdf.xacro' prefix:=wam  hand:=$(arg hand)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
