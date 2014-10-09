@@ -12,7 +12,7 @@
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
   <arg name="aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
 
-  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/deployer.launch">
+  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
     <arg name="NAME" value="barrett"/>
     <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam7.ops"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
@@ -22,8 +22,8 @@
   <node
     if="$(arg safe)" 
     name="barrett"
-    pkg="rtt_ros" type="deployer" 
-    args="--noninteractive --no-consolelog -l $(arg log_level) -s $(find lcsr_barrett)/hw/wam7.ops --"
+    pkg="rtt_ros" type="ldeployer" 
+    args="$(find lcsr_barrett)/lua/wam_hw.lua --"
     output="log">
   </node>
 

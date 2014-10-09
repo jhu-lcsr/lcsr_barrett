@@ -9,27 +9,7 @@
         <type>oro_barrett_sim::BarrettSimManager</type>
         <name>barrett_manager</name>
       </component>
-      <orocosScript><filename>$(arg ops_script)</filename></orocosScript>
-      <!--
-         -<orocosScript>
-         -  <inline>
-         -    barrett_manager.wam.initialize();
-         -    barrett_manager.wam.run();
-         -  </inline>
-         -</orocosScript>
-         -->
-       <xacro:if value="$(arg hand)">
-         <orocosScript><filename>$(find lcsr_barrett)/sim/bhand_sim.ops</filename></orocosScript>
-         <!--
-           -<orocosScript>
-           -  <inline>
-           -    load_hand("");
-           -    barrett_manager.hand.initialize();
-           -    barrett_manager.hand.run();
-           -  </inline>
-           -</orocosScript>
-           -->
-      </xacro:if>
+      <luaScript><filename>$(arg lua_script)</filename></luaScript>
     </plugin>
   </gazebo>
 

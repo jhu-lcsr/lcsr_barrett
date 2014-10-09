@@ -35,7 +35,7 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' prefix:=wam ops_script:='$(find lcsr_barrett)/sim/wam7_sim.ops' hand:=$(arg hand) ball:=$(arg ball) initial_group:=$(arg initial_group)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/sim/wam7_sim.urdf.xacro' prefix:=wam lua_script:='$(find lcsr_barrett)/lua/wam_sim.lua' hand:=$(arg hand) ball:=$(arg ball) initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 

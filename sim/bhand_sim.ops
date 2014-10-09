@@ -1,9 +1,0 @@
-
-export void load_hand(string prefix) {
-  connect(prefix+"barrett_manager.hand.center_of_mass_out", prefix+"inverse_dynamics.end_effector_masses_in", ConnPolicy());
-}
-
-load_hand("");
-
-barrett_manager.hand.initialize()
-barrett_manager.hand.run()
