@@ -14,7 +14,7 @@
 
   <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam7.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/launch/hw/wam7.ops"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="DEBUG" value="$(arg debug)"/>
   </include>
@@ -28,7 +28,7 @@
   </node>
 
   <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
@@ -96,7 +96,7 @@
     </group>
 
     <!-- RTT Component parameters -->
-    <include file="$(find lcsr_barrett)/hw/orocos_component_params.launch">
+    <include file="$(find lcsr_barrett)/launch/hw/orocos_component_params.launch">
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
       <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
