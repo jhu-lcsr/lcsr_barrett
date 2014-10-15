@@ -14,7 +14,7 @@
 
   <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/launch/hw/wam7.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-g -s $(find lcsr_barrett)/lua/wam_hw.lua"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="DEBUG" value="$(arg debug)"/>
   </include>
