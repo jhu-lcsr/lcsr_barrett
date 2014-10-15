@@ -36,7 +36,11 @@
 
   <!-- Load WAM URDF -->
   <param name="robot_description"
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/sim/wam7_sim.urdf.xacro' prefix:=wam lua_script:='$(find lcsr_barrett)/lua/wam_sim.lua' hand:=$(arg hand) ball:=$(arg ball) initial_group:=$(arg initial_group)" />
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/sim/wam7_sim.urdf.xacro'
+    prefix:=wam
+    lua_script:='$(find lcsr_barrett)/lua/wam_sim.lua'
+    hand:=$(arg hand) ball:=$(arg ball)
+    initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
   <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
@@ -45,8 +49,8 @@
   <!-- Spawn the lcsr stage in Gazebo -->
   <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
-  <!--<node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" -->
-    <!--args="-urdf -model stage -param stage_model"/>-->
+  <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -model stage -param stage_model"/>
   <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
     args="0 0 0 0 0 0 /world /stage_link 50"/>
 
@@ -82,9 +86,14 @@
           velocity_smoothing_factor: 0.99
       </rosparam>
 
-      <rosparam if="$(arg hand)" subst_value="true">
-        hand_urdf_prefix: wam/hand
-      </rosparam>
+      <!-- If using the BHand -->
+      <group if="$(arg hand)">
+        <param name="hand_urdf_prefix" value="wam/hand"/>
+
+        <!-- Mid-Level hand interface -->
+        <node name="bhand_action_server"
+              pkg="oro_barrett_interface" type="bhand_action_server.py"/>
+      </group>
 
     </group>
 
@@ -112,6 +121,7 @@
       <arg name="ee_hand" value="$(arg hand)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
     </include>
+
 
   </group>
 
