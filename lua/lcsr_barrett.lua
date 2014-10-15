@@ -52,8 +52,4 @@ function lcsr_barrett(sim, prefix)
   scheme:enableBlock("devices",true);
   scheme:enableBlock("joint_control",true);
   --scheme.enableBlock("cart_imp_control",true);
-
-  --[[ Start the WAM --]]
-  barrett_manager:provides("wam"):initialize()
-  barrett_manager:provides("wam"):run()
 end

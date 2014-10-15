@@ -30,19 +30,20 @@
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="headless" value="false"/>
+    <arg name="verbose" value="true"/>
     <arg name="world_name" value="$(find lcsr_barrett)/launch/sim/wam.world"/>
   </include>
 
   <!-- Load WAM URDF -->
-  <param name="robot_description" 
+  <param name="robot_description"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/sim/wam7_sim.urdf.xacro' prefix:=wam lua_script:='$(find lcsr_barrett)/lua/wam_sim.lua' hand:=$(arg hand) ball:=$(arg ball) initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
-  <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
+  <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
     args="-urdf -model wam -param robot_description"/>
 
   <!-- Spawn the lcsr stage in Gazebo -->
-  <param name="stage_model" 
+  <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
   <!--<node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" -->
     <!--args="-urdf -model stage -param stage_model"/>-->
@@ -103,7 +104,7 @@
 
     <!-- RTT Component parameters -->
     <include file="$(find lcsr_barrett)/launch/sim/orocos_component_params.launch"/>
-      
+
     <!-- Moveit -->
     <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/sim/wam7_planning.launch">
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
