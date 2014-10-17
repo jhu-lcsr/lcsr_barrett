@@ -83,7 +83,7 @@
 
         # WAM Parameters
         wam:
-          velocity_smoothing_factor: 0.99
+          velocity_smoothing_factor: 0.98
       </rosparam>
 
       <!-- If using the BHand -->
