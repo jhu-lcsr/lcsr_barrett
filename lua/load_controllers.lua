@@ -31,8 +31,8 @@ function load_controllers(depl, scheme, prefix)
   local function connect(from_task, from_port,to_task, to_port, policy)
     policy = policy or cp
     return depl:connect(
-      port_name(from_task, from_port), 
-      port_name(to_task, to_port), 
+      port_name(from_task, from_port),
+      port_name(to_task, to_port),
       policy);
   end
 
@@ -45,7 +45,7 @@ function load_controllers(depl, scheme, prefix)
   --[[ Create joint-space PID controller loop --]]
   pid_name = prefix.."pid"
   depl:loadComponent(pid_name, "lcsr_controllers::JointPIDController");
-  pid = depl:getPeer(pid_name) 
+  pid = depl:getPeer(pid_name)
   connect(wam, "position_out", pid, "joint_position_in");
   connect(wam, "velocity_out", pid, "joint_velocity_in");
   connect(                     pid, "joint_effort_out", effort_sum, "feedback_in");

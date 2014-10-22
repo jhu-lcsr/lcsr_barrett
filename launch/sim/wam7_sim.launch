@@ -20,6 +20,14 @@
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
 
+  <arg name="j0" default="0.0" doc="(float) Joint 0 initial position"/>
+  <arg name="j1" default="0.0" doc="(float) Joint 1 initial position"/>
+  <arg name="j2" default="0.0" doc="(float) Joint 2 initial position"/>
+  <arg name="j3" default="0.0" doc="(float) Joint 3 initial position"/>
+  <arg name="j4" default="0.0" doc="(float) Joint 4 initial position"/>
+  <arg name="j5" default="0.0" doc="(float) Joint 5 initial position"/>
+  <arg name="j6" default="0.0" doc="(float) Joint 6 initial position"/>
+
   <param name="use_sim_time" value="true"/>
 
   <!-- Gazebo -->
@@ -43,8 +51,19 @@
     initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
-  <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-    args="-urdf -model wam -param robot_description"/>
+  <node name="$(anon urdf_spawner)"
+    pkg="gazebo_ros"
+    type="spawn_model"
+    respawn="false"
+    output="screen"
+    args="-urdf -model wam -param robot_description
+    -J wam/base_yaw_joint $(arg j0)
+    -J wam/shoulder_pitch_joint $(arg j1)
+    -J wam/shoulder_yaw_joint $(arg j2)
+    -J wam/elbow_pitch_joint $(arg j3)
+    -J wam/wrist_yaw_joint $(arg j4)
+    -J wam/wrist_pitch_joint $(arg j5)
+    -J wam/palm_yaw_joint $(arg j6)"/>
 
   <!-- Spawn the lcsr stage in Gazebo -->
   <param name="stage_model"
@@ -92,7 +111,9 @@
 
         <!-- Mid-Level hand interface -->
         <node name="bhand_action_server"
-              pkg="oro_barrett_interface" type="bhand_action_server.py"/>
+          pkg="oro_barrett_interface"
+          type="bhand_action_server.py"
+          output="screen"/>
       </group>
 
     </group>
