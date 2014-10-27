@@ -74,7 +74,8 @@ catkin config --init --cmake-args -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIO
 # initialize wstool source checkouts
 cd src
 wstool init
-curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/catkin_build/wam_$SIM_OR_HW.rosinstall | wstool merge -
+curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/barrett/wam_common.rosinstall | wstool merge -
+curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/barrett/wam_$SIM_OR_HW.rosinstall | wstool merge -
 wstool update -j4
 # install the system dependencies for source packages
 rosdep install --from-paths . --ignore-src
