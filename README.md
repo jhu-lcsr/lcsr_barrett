@@ -29,7 +29,7 @@ When running the arm in simulation, we also use the following tools:
 
 *System Packages (not handled by rosdep):*
 ```bash
-sudo apt-get git python-pip curl
+sudo apt-get git python-pip curl google-mock ros-hydro-cmake-modules
 sudo apt-get install omniorb libomniorb4-dev omniidl omniorb-nameserver
 ```
 
