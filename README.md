@@ -25,6 +25,40 @@ When running the arm in simulation, we also use the following tools:
 * [**`rtt_gazebo`**](https://github.com/jhu-lcsr/rtt_gazebo) Tools for running Orocos RTT components in Gazebo
 * [**`gazebo_ros_pkgs`**](https://github.com/ros-simulation/gazebo_ros_pkgs) Tolls for integrating Gazebo and ROS
 
+### Prerequisites
+
+*Catkin Tools:*
+
+```bash
+sudo pip install catkin_tools
+```
+
+*Barrett-Patched LibConfig++:*
+
+```bash
+wget http://web.barrett.com/support/WAM_Installer/libconfig-barrett_1.4.5-1_$(dpkg --print-architecture).deb
+sudo dpkg -i libconfig-barrett_1.4.5-1_$(dpkg --print-architecture).deb
+```
+
+### Source Installation
+
+```bash
+# make the workspace
+mkdir -p barrett_ws/src
+cd barrett_ws
+# initialize catkin
+catkin config --init --cmake-args -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIORB
+# initialize wstool source checkouts
+cd src
+wstool init
+curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/catkin_build/wam_hw.rosinstall | wstool merge -
+wstool update -j4
+# install the system dependencies for source packages
+rosdep install --from-paths . --ignore-src
+# build the workspace
+catkin build
+```
+
 ### Usage
 
 The entry point for any experiments and examples in this repository is a ROS launchfile. Any application should be launchable either on the real robot or in simulation. These launchfiles load the following:
