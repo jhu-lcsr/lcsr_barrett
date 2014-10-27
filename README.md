@@ -36,8 +36,8 @@ sudo pip install catkin_tools
 *Barrett-Patched LibConfig++:*
 
 ```bash
-wget http://web.barrett.com/support/WAM_Installer/libconfig-barrett_1.4.5-1_$(dpkg --print-architecture).deb
-sudo dpkg -i libconfig-barrett_1.4.5-1_$(dpkg --print-architecture).deb
+wget http://web.barrett.com/support/WAM_Installer/libconfig-barrett_1.4.5-1_`dpkg --print-architecture`.deb
+sudo dpkg -i libconfig-barrett_1.4.5-1_`dpkg --print-architecture`.deb
 ```
 
 ### Source Installation
