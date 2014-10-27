@@ -27,6 +27,12 @@ When running the arm in simulation, we also use the following tools:
 
 ### Prerequisites
 
+*System Packages (not handled by rosdep):*
+```bash
+sudo apt-get git python-pip curl
+sudo apt-get install omniorb libomniorb4-dev omniidl omniorb-nameserver
+```
+
 *Catkin Tools:*
 
 ```bash
