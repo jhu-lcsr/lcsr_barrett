@@ -12,23 +12,25 @@
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
   <arg name="aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
 
-  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/deployer.launch">
+  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/hw/wam7.ops"/>
+    <arg name="DEPLOYER_ARGS" value="-g -s $(find lcsr_barrett)/lua/wam_hw.lua"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="DEBUG" value="$(arg debug)"/>
   </include>
 
   <node
-    if="$(arg safe)" 
+    if="$(arg safe)"
     name="barrett"
-    pkg="rtt_ros" type="deployer" 
-    args="--noninteractive --no-consolelog -l $(arg log_level) -s $(find lcsr_barrett)/hw/wam7.ops --"
+    pkg="rtt_ros" type="ldeployer"
+    args="$(find lcsr_barrett)/lua/wam_hw.lua --"
     output="log">
   </node>
 
-  <param name="robot_description" 
-    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/hw/wam7.urdf.xacro' prefix:=wam  hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
+  <param name="robot_description"
+    command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/hw/wam7.urdf.xacro'
+    prefix:=wam
+    hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher"
     name="wam_state_publisher">
@@ -36,8 +38,8 @@
     <remap from="joint_states" to="wam_joint_states"/>
   </node>
 
- <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
-   args="record -j -o /tmp/wam-last.bag -e '/barrett(.*)' '(.*)joint_state(.*)' '(.*)wrench(.*)' /tf"/>   
+  <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
+    args="record -j -o /tmp/wam-last.bag -e '/barrett(.*)' '(.*)joint_state(.*)' '(.*)wrench(.*)' /tf"/>
 
   <group ns="barrett">
     <group ns="barrett_manager">
@@ -59,25 +61,27 @@
       </node>
 
       <rosparam subst_value="true">
+        # Driver parameters
         bus_id: 0
         config_path: $(find lcsr_barrett)/config/libbarrett.conf
-        
+
         # Auto-configuration
         auto_configure_wam: true
         auto_configure_hand: $(arg hand)
+
+        # WAM parameters
         wam_dof: 7
         wam_urdf_prefix: wam
       </rosparam>
 
       <group ns="wam">
-        <!-- Different calibration posture for empty -->
-        <!--<rosparam unless="$(arg hand)">-->
-          <!--home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]-->
-          <!--home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]-->
-        <!--</rosparam>-->
+        <!-- Old calibration posture -->
+        <rosparam if="0">
+          #home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
+          #home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]
+        </rosparam>
 
-        <!-- Different calibration posture for BHand -->
-        <!--<rosparam if="$(arg hand)">-->
+        <!-- New calibration posture (works with end-effector) -->
         <rosparam>
           home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.0]
           home_resolver_offset: [1.18423, -1.35297,  1.29775,  -0.707165, -0.260777, -1.43274, 2.15964]
@@ -90,19 +94,24 @@
         </rosparam>
       </group>
 
-      <rosparam if="$(arg hand)" subst_value="true">
-        hand_urdf_prefix: wam/hand
-      </rosparam>
+      <!-- If using the BHand -->
+      <group if="$(arg hand)">
+        <param name="hand_urdf_prefix" value="wam/hand"/>
+
+        <!-- Mid-Level hand interface -->
+        <node name="bhand_action_server"
+          pkg="oro_barrett_interface" type="bhand_action_server.py"/>
+      </group>
     </group>
 
     <!-- RTT Component parameters -->
-    <include file="$(find lcsr_barrett)/hw/orocos_component_params.launch">
+    <include file="$(find lcsr_barrett)/launch/hw/orocos_component_params.launch">
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
       <arg name="ee_bumblebee" value="$(arg bumblebee)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
     </include>
-    
+
     <rosparam ns="effort_sum" subst_value="true">
       dim: 7
       require_heartbeat: $(arg deadman)
@@ -128,10 +137,9 @@
     </rosparam>
   </node>
 
-  <param name="stage_model" 
+  <!-- Set the stage -->
+  <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
-  <!--<node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" -->
-    <!--args="-urdf -model stage -param stage_model"/>-->
   <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
     args="0 0 0 0 0 0 /world /stage_link 50"/>
 
