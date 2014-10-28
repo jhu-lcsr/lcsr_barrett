@@ -41,9 +41,9 @@ sudo apt-get install omniorb libomniorb4-dev omniidl omniorb-nameserver
 sudo pip install catkin_tools
 ```
 
-#### Software Only
+#### Simulation Only
 
-*More System Packages:*
+*Packages required to build gazebo:*
 
 ```bash
 sudo apt-get install libtar-dev protobuf-compiler libprotobuf-dev
