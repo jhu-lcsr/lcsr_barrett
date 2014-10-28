@@ -41,6 +41,14 @@ sudo apt-get install omniorb libomniorb4-dev omniidl omniorb-nameserver
 sudo pip install catkin_tools
 ```
 
+#### Software Only
+
+*More System Packages:*
+
+```bash
+sudo apt-get install libtar-dev protobuf-compiler libprotobuf-dev
+```
+
 #### Hardware Only
 
 *Barrett-Patched LibConfig++:*
