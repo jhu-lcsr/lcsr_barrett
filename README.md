@@ -27,11 +27,29 @@ When running the arm in simulation, we also use the following tools:
 
 ### Prerequisites
 
+#### Simulation and Hardware
+
+*System Packages (not handled by rosdep):*
+```bash
+sudo apt-get install git python-pip curl google-mock ros-hydro-cmake-modules
+sudo apt-get install omniorb libomniorb4-dev omniidl omniorb-nameserver
+```
+
 *Catkin Tools:*
 
 ```bash
 sudo pip install catkin_tools
 ```
+
+#### Simulation Only
+
+*Packages required to build gazebo:*
+
+```bash
+sudo apt-get install libtar-dev protobuf-compiler libprotobuf-dev
+```
+
+#### Hardware Only
 
 *Barrett-Patched LibConfig++:*
 
@@ -42,6 +60,19 @@ sudo dpkg -i libconfig-barrett_1.4.5-1_`dpkg --print-architecture`.deb
 
 ### Source Installation
 
+First, decide if you want to install the simulation workspace or the hardware workspace:
+
+```bash
+export SIM_OR_HW=sim
+```
+
+or:
+
+```bash
+export SIM_OR_HW=hw
+```
+Then, create, clone, and build the workspace:
+
 ```bash
 # make the workspace
 mkdir -p barrett_ws/src
@@ -51,7 +82,8 @@ catkin config --init --cmake-args -DENABLE_CORBA=ON -DCORBA_IMPLEMENTATION=OMNIO
 # initialize wstool source checkouts
 cd src
 wstool init
-curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/catkin_build/wam_hw.rosinstall | wstool merge -
+curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/barrett/wam_common.rosinstall | wstool merge -
+curl https://raw.githubusercontent.com/jhu-lcsr/rosinstalls/master/barrett/wam_$SIM_OR_HW.rosinstall | wstool merge -
 wstool update -j4
 # install the system dependencies for source packages
 rosdep install --from-paths . --ignore-src
