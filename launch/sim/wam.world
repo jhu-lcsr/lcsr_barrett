@@ -10,11 +10,12 @@
       <uri>model://sun</uri>
     </include>
     <physics type="ode">
-      <!--<ode>-->
-        <!--<solver>-->
+      <ode>
+        <solver>
           <!--<iters>10000</iters>-->
-        <!--</solver>-->
-      <!--</ode>-->
+          <use_dynamic_moi_rescaling>false</use_dynamic_moi_rescaling>
+        </solver>
+      </ode>
       <gravity>0 0 -9.8</gravity>
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
