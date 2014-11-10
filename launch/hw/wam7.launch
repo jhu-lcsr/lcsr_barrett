@@ -80,7 +80,7 @@
       </rosparam>
 
       <!-- WAM hardware parameters (zero calibration, torque scales, etc -->
-      <rosparam ns="wam" command="load" file="$(find lcsr_barrett)/config/wam_$(arg WAM_SN).yaml"/>
+      <rosparam ns="wam" command="load" file="$(find lcsr_barrett)/config/wam_$(arg wam_sn).yaml"/>
 
       <!-- If using the BHand -->
       <group if="$(arg hand)">

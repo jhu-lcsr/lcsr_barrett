@@ -12,3 +12,7 @@ package.path = ros:find("lcsr_barrett") .. "/lua/?.lua" .. ";" .. package.path
 
 require("lcsr_barrett")
 lcsr_barrett()
+
+--[[ Set of initially running blocks --]]
+--scheme:enableBlock("joint_control",true);
+--scheme.enableBlock("cart_imp_control",true);

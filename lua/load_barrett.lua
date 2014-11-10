@@ -17,13 +17,15 @@ function load_barrett(depl, scheme, prefix, sim, urdf_param)
 
   --[ sim or hardware barrett_manager component ]--
   if sim then
-    depl:import("oro_barrett_sim")
-    manager_type = "oro_barrett_sim::BarettSimManager"
+    rtt.logl("Info","Creating simulated barrett manager...")
+    gs:provides("ros"):import("oro_barrett_sim")
+    manager_type = "oro_barrett_sim::BarrettSimManager"
   else
-    depl:import("oro_barrett_hw")
-    manager_type = "oro_barrett_hw::BarettHWManager"
+    rtt.logl("Info", "Creating real barrett manager...")
+    gs:provides("ros"):import("oro_barrett_hw")
+    manager_type = "oro_barrett_hw::BarrettHWManager"
   end
-  
+
   --[[ load and configure barrett manager --]]
   manager_name = prefix.."barrett_manager"
 
@@ -34,8 +36,13 @@ function load_barrett(depl, scheme, prefix, sim, urdf_param)
       manager_exists = true
     end
   end
+
   if not manager_exists then
-    depl:loadComponent(manager_name, manager_type)
+    loaded = depl:loadComponent(manager_name, manager_type)
+    if not loaded then
+      rtt.logl("Error", "Could not load manager: "..manager_type)
+      return nil, nil
+    end
   end
 
   manager = depl:getPeer(manager_name)

@@ -25,3 +25,7 @@ if barrett_manager:getProperty("auto_configure_hand"):get() then
 else
   rtt.log("No hands!")
 end
+
+--[[ Set of initially running blocks --]]
+scheme:enableBlock("joint_control",true);
+--scheme.enableBlock("cart_imp_control",true);

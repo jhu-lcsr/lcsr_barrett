@@ -26,7 +26,6 @@ function lcsr_barrett(sim, prefix)
   if sim then
     scheme:setPeriod(0.001)
     scheme:loadService("sim_clock_activity");
-    scheme:loadService("conman_ros");
   else
     depl:setActivity(
       scheme:getName(),
@@ -34,6 +33,7 @@ function lcsr_barrett(sim, prefix)
       depl:getAttribute("HighestPriority"):get(),
       rtt.globals.ORO_SCHED_RT)
   end
+  scheme:loadService("conman_ros");
   scheme:configure();
 
   --[[ Load barrett manager, wam --]]
@@ -50,6 +50,4 @@ function lcsr_barrett(sim, prefix)
 
   --[[ Set of initially running blocks --]]
   scheme:enableBlock("devices",true);
-  scheme:enableBlock("joint_control",true);
-  --scheme.enableBlock("cart_imp_control",true);
 end
