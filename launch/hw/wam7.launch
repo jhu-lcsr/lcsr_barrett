@@ -4,13 +4,18 @@
   <arg name="log_level" default="info" doc="(int) Set the Orocos log level (0:none) (4:warn) (5:info) (6:debug)"/>
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
+  <arg name="wam_sn" default="60" doc="(int) WAM serial number (used to get config file)"/>
+
+  <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
+  <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
+
+  <!-- End-effectors -->
   <arg name="empty" default="false" doc="(bool) Launch the robot with an open palm"/>
   <arg name="hand" default="false" doc="(bool) Launch the robot with a hand"/>
   <arg name="ball" default="false" doc="(bool) Launch the robot with a ball"/>
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
-  <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
-  <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
   <arg name="aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
+
 
   <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
     <arg name="NAME" value="barrett"/>
@@ -74,25 +79,8 @@
         wam_urdf_prefix: wam
       </rosparam>
 
-      <group ns="wam">
-        <!-- Old calibration posture -->
-        <rosparam if="0">
-          #home_position: [0.0, -1.58153, 0.0, 3.1415, 0.0, -1.5708, 1.5708]
-          #home_resolver_offset: [1.50023,  -0.0122718,  1.21338,  -0.63967,  1.84845,  0.716369,  2.2841]
-        </rosparam>
-
-        <!-- New calibration posture (works with end-effector) -->
-        <rosparam>
-          home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.0]
-          home_resolver_offset: [1.18423, -1.35297,  1.29775,  -0.707165, -0.260777, -1.43274, 2.15964]
-        </rosparam>
-
-        <rosparam>
-          velocity_smoothing_factor: 0.95
-          velocity_cutoff: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0]
-          torque_scales: [1.4, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-        </rosparam>
-      </group>
+      <!-- WAM hardware parameters (zero calibration, torque scales, etc -->
+      <rosparam ns="wam" command="load" file="$(find lcsr_barrett)/config/wam_$(arg WAM_SN).yaml"/>
 
       <!-- If using the BHand -->
       <group if="$(arg hand)">
