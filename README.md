@@ -54,6 +54,7 @@ sudo apt-get install libtar-dev protobuf-compiler libprotobuf-dev
 *Barrett-Patched LibConfig++:*
 
 ```bash
+echo "export OROCOS_TARGET=xenomai" >> ~/.bashrc
 wget http://web.barrett.com/support/WAM_Installer/libconfig-barrett_1.4.5-1_`dpkg --print-architecture`.deb
 sudo dpkg -i libconfig-barrett_1.4.5-1_`dpkg --print-architecture`.deb
 ```
