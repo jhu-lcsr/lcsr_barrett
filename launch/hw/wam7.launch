@@ -5,6 +5,7 @@
   <arg name="debug" default="false" doc="(bool) Launch in debug mode"/>
   <arg name="planning" default="false" doc="(bool) Launch the motion planing pipeline"/>
   <arg name="wam_sn" default="60" doc="(int) WAM serial number (used to get config file)"/>
+  <arg name="bus" default="0"/>
 
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
   <arg name="deadman" default="false" doc="(bool) If true, require a deadman input to send anything other than gravity comp."/>
@@ -67,7 +68,7 @@
 
       <rosparam subst_value="true">
         # Driver parameters
-        bus_id: 0
+        bus_id: $(arg bus)
         config_path: $(find lcsr_barrett)/config/libbarrett.conf
 
         # Auto-configuration
