@@ -1,8 +1,7 @@
-# These are the hardware calibrations for WAM#60
+# These are the hardware calibrations for WAM#40
 # Zerocal
 home_position: [0.0, -1.58153, 0.0, 3.1415, -1.5708, -1.5708, -3.0]
-home_resolver_offset: [-1.5109710760673565, -0.21935925266764755, -0.48166996739609047,
-  -3.1109130378320806, 1.349903093339364, -0.8851069146100148, -2.5065246074051366]
+home_resolver_offset: [-1.5109710760673565, -0.21935925266764755, -0.48166996739609047, -3.1109130378320806, -1.2011, -0.8851069146100148, -2.5065246074051366]
 # Velocity filtering
 velocity_cutoff: [10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 1.0]
 velocity_smoothing_factor: 0.95
