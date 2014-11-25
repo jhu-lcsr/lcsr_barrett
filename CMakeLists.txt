@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 2.8.6)
 
 project(lcsr_barrett)
 
-find_package(catkin REQUIRED COMPONENTS rtt_ros kdl_urdf_tools control_toolbox)
+find_package(catkin REQUIRED COMPONENTS 
+  rtt_ros kdl_urdf_tools control_toolbox cmake_modules)
 
-find_package(cmake_modules REQUIRED)
 
 find_package(OROCOS-RTT REQUIRED)
 include(${OROCOS-RTT_USE_FILE_PATH}/UseOROCOS-RTT.cmake )
