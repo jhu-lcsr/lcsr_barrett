@@ -1,3 +1,9 @@
+Forthcoming
+-----------
+* Adding inertia rate params
+* updating mass rate params
+* Contributors: Jonathan Bohren
+
 0.7.0 (2014-12-08)
 ------------------
 * removing unneeded dependencies
