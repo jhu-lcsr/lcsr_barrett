@@ -1,5 +1,5 @@
-Forthcoming
------------
+0.7.0 (2014-12-08)
+------------------
 * removing unneeded dependencies
 * Merge pull request `#16 <https://github.com/jhu-lcsr/lcsr_barrett/issues/16>`_ from nasnysom/cmake_depend
   attempting indigo build.
