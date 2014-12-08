@@ -1,5 +1,5 @@
-Forthcoming
------------
+0.8.0 (2014-12-08)
+------------------
 * Adding inertia rate params
 * updating mass rate params
 * Contributors: Jonathan Bohren
