@@ -105,6 +105,7 @@
       #max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       #max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       #max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
+      temporal_tolerance: 0.0
       goal_position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
       goal_velocity_tolerance: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
     </rosparam>

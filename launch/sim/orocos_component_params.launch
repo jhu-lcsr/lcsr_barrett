@@ -73,6 +73,7 @@
       stop_on_violation: true
       verbose: false
       stop_time: 0.25
+      temporal_tolerance: 0.005
       goal_position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
       goal_velocity_tolerance: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
     </rosparam>
