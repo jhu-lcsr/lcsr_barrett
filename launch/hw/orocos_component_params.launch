@@ -245,9 +245,17 @@
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
       args="0 0 0 0 0 0 /world /ik/world 50"/>
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
-      <remap from="joint_states" to="joint_state_desired"/>
-      <param name="publish_frequency" value="50"/>
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
+      <rosparam param="source_list" subst_value="true">
+        ["joint_state_desired", "hand/joint_states"]
+      </rosparam>
+      <param name="rate" value="10"/>
+      <remap from="robot_description" to="/robot_description"/>
+      <remap from="joint_states" to="joint_state_desired_full"/>
+    </node>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
+      <remap from="joint_states" to="joint_state_desired_full"/>
+      <param name="publish_frequency" value="10"/>
       <param name="tf_prefix" value="ik"/>
       <remap from="robot_description" to="/robot_description"/>
     </node>
