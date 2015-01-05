@@ -4,6 +4,9 @@
   <arg name="joint_states_topic" default="joint_states"/>
   <arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
 
+  <arg name="depth_filter" default="false"/>
+  <arg name="depth_registration" default="hw"/>
+
   <arg name="ee_empty" default="false"/>
   <arg name="ee_hand" default="false"/>
   <arg name="ee_ball" default="false"/>
@@ -28,13 +31,40 @@
 
   <group ns="move_group">
     <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
-    <rosparam subst_value="true">
-      controller_list:
+    <rosparam ns="controller_list" subst_value="true">
       - name: "$(arg oro_prefix)traj_rml"
         action_ns: action
         type: FollowJointTrajectory
         default: true
         joints:  ['$(arg tf_prefix)/base_yaw_joint', '$(arg tf_prefix)/shoulder_pitch_joint', '$(arg tf_prefix)/shoulder_yaw_joint', '$(arg tf_prefix)/elbow_pitch_joint', '$(arg tf_prefix)/wrist_yaw_joint', '$(arg tf_prefix)/wrist_pitch_joint', '$(arg tf_prefix)/palm_yaw_joint']
+    </rosparam>
+    <rosparam if="$(arg depth_filter)" ns="sensors" subst_value="true">
+      - sensor_plugin: occupancy_map_monitor/RealtimeURDFFilterOctomapUpdater
+        fixed_frame: /world
+        camera_frame: "/$(arg camera_ns)_rgb_optical_frame" # this is sepcified in the launchfile
+        depth_input_image_topic: "$(arg camera_ns)/depth_registered/$(arg depth_registration)_registered/image_rect_raw"
+        depth_input_camera_info_topic: "$(arg camera_ns)/depth_registered/camera_info"
+        depth_filtered_topic: "$(arg camera_ns)/depth_registered_filtered/$(arg depth_registration)_registered/image_rect_raw"
+        depth_mask_topic: "$(arg camera_ns)/depth_registered/filtered_mask"
+        camera_offset:
+          translation:   [0.0,0.0,0.0] #[0.00,0.0,-0.06]
+          rotation:    [0.0,0.0,0.0,1.0]
+        # There is one entry for each URDIF that should be filtered
+        models:
+          - model: "/robot_description"
+            tf_prefix: ""
+        #- model: "/arm_1/robot_description"
+        #  tf_prefix: "/arm_0"
+        #- model: "table_description"
+        #  tf_prefix: ""
+        # how far in front of the robot model is still deleted? (e.g. 0.05 = 5cm)
+        depth_distance_threshold: -0.02
+        show_gui: true
+        filter_replace_value: 0.0
+        # collision or visual
+        geometry_type: collision
+        # inflation distance [m]
+        inflation: 0.010
     </rosparam>
   </group>
 </launch>

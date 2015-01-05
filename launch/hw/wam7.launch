@@ -59,11 +59,11 @@
         <rosparam param="source_list" subst_value="true">
           ["wam/joint_states", "hand/joint_states"]
         </rosparam>
-        <param name="rate" value="50"/>
+        <param name="rate" value="100"/>
         <remap from="robot_description" to="/robot_description"/>
       </node>
       <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
-        <param name="publish_frequency" value="50"/>
+        <param name="publish_frequency" value="100"/>
       </node>
 
       <rosparam subst_value="true">
