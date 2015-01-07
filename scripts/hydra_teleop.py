@@ -2,6 +2,8 @@
 
 import rospy
 
+from std_msgs.msg import ColorRGBA
+from visualization_msgs.msg import Marker, MarkerArray
 from telemanip_msgs.msg import TelemanipCommand
 import oro_barrett_msgs.msg
 import sensor_msgs.msg
@@ -20,6 +22,26 @@ def sigm(s, r, x):
     """Simple sigmoidal filter"""
     return 2*s*(1/(1+math.exp(-r*x))-0.5)
 
+def sign(v):
+    return (1.0 if v < 0.0 else -1.0)
+
+def finger_point(a, r = 0.08, l = 0.025):
+    # a: finger joint angle
+    # r: marker radius
+    # l: finger radius center offset
+
+    dx = math.sin(a)
+    dy = -math.cos(a)
+    dr = 1.0
+    D = l * -math.cos(a)
+    desc = r*r - D*D
+
+    if abs(a) > math.pi/2:
+        return (D*dy - sign(dy) * dx * math.sqrt(desc),
+                -D*dx + abs(dy) * math.sqrt(desc), -0.08)
+    else:
+        return (D*dy + sign(dy) * dx * math.sqrt(desc),
+                -D*dx - abs(dy) * math.sqrt(desc), -0.08)
 
 class HydraTeleop(object):
 
@@ -85,6 +107,81 @@ class HydraTeleop(object):
         self.joy_sub = rospy.Subscriber('hydra_joy', sensor_msgs.msg.Joy, self.joy_cb)
         # ROS generica telemanip command
         self.telemanip_cmd_pub = rospy.Publisher('telemanip_cmd_out', TelemanipCommand)
+        # goal marker
+        self.marker_pub = rospy.Publisher('master_target_markers', MarkerArray)
+
+        self.master_target_markers = MarkerArray()
+
+        self.color_gray = ColorRGBA(0.5, 0.5, 0.5, 1.0)
+        self.color_orange = ColorRGBA(1.0, 0.5, 0.0, 1.0)
+        self.color_green = ColorRGBA(0.0, 1.0, 0.0, 1.0)
+        self.color_red = ColorRGBA(1.0, 0.0, 0.0, 1.0)
+
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'finger_marker'
+        m.id = 0
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        p = m.pose.position
+        o = m.pose.orientation
+        p.x, p.y, p.z = finger_point(0.0)
+        o.x, o.y, o.z, o.w = (0, 0, 0, 1.0)
+        m.color = self.color_gray
+        m.scale.x = m.scale.y = m.scale.z = 0.02
+        m.frame_locked = True
+        m.mesh_resource = 'package://lcsr_barrett/models/teleop_finger_marker.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
+
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'finger_marker'
+        m.id = 1
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        p = m.pose.position
+        o = m.pose.orientation
+        p.x, p.y, p.z = finger_point(0.0)
+        o.x, o.y, o.z, o.w = (0, 0, 0, 1.0)
+        m.color = self.color_gray
+        m.scale.x = m.scale.y = m.scale.z = 0.02
+        m.frame_locked = True
+        m.mesh_resource = 'package://lcsr_barrett/models/teleop_finger_marker.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
+
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'finger_marker'
+        m.id = 2
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        p = m.pose.position
+        o = m.pose.orientation
+        p.x, p.y, p.z = (0.0, 0.08, -0.08)
+        o.x, o.y, o.z, o.w = (0, 0, 0, 1.0)
+        m.color = self.color_gray
+        m.scale.x = m.scale.y = m.scale.z = 0.02
+        m.frame_locked = True
+        m.mesh_resource = 'package://lcsr_barrett/models/teleop_finger_marker.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
+
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'master_target_markers'
+        m.id = 3
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        o = m.pose.orientation
+        o.x, o.y, o.z, o.w = (-0.7071, 0.0, 0.0, 0.7071)
+        m.color = self.color_gray
+        m.scale.x = m.scale.y = m.scale.z = 0.02
+        m.frame_locked = True
+        m.mesh_resource = 'package://lcsr_barrett/models/teleop_target.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
 
     def handle_cart_cmd(self, msg):
         side = self.side
@@ -106,6 +203,7 @@ class HydraTeleop(object):
                 self.deadman_engaged = True
                 self.cmd_origin = hydra_frame
                 self.tip_origin = tip_frame
+
             else:
                 self.deadman_max = max(self.deadman_max, msg.axes[self.DEADMAN[side]])
                 # Update commanded TF frame
@@ -154,6 +252,7 @@ class HydraTeleop(object):
                 self.hand_pub.publish(self.hand_cmd)
                 self.last_hand_cmd = rospy.Time.now()
 
+
     def hand_state_cb(self, msg):
         self.hand_position = [msg.position[2], msg.position[3], msg.position[4], msg.position[0]]
 
@@ -163,7 +262,7 @@ class HydraTeleop(object):
         b = msg.buttons
         lb = self.last_buttons
 
-        if (rospy.Time.now() - self.last_hand_cmd) < rospy.Duration(0.1):
+        if (rospy.Time.now() - self.last_hand_cmd) < rospy.Duration(0.03):
             return
 
         # Update enabled fingers
@@ -188,6 +287,29 @@ class HydraTeleop(object):
 
         self.last_buttons = msg.buttons
         self.last_axes = msg.axes
+
+        # republish markers
+        for i,m in enumerate(self.master_target_markers.markers):
+            m.header.stamp = rospy.Time.now()
+
+            if (i <3 and not self.move_f[i]) or (i==3 and not self.move_spread):
+                m.color = self.color_orange
+            elif not self.move_all:
+                m.color = self.color_red
+            else:
+                if self.deadman_engaged:
+                    m.color = self.color_green
+                else:
+                    m.color = self.color_gray
+
+            if i < 3:
+                if i != 2:
+                    p = m.pose.position
+                    s = (-1.0 if i == 0 else 1.0)
+                    p.x, p.y, p.z = finger_point(
+                        self.hand_position[3] * s, 
+                        l = 0.025 * s)
+        self.marker_pub.publish(self.master_target_markers)
 
         # Broadcast the command if it's defined
         if self.cmd_frame:
