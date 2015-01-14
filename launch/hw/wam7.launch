@@ -38,12 +38,6 @@
     prefix:=wam
     hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
 
-  <node pkg="robot_state_publisher" type="robot_state_publisher"
-    name="wam_state_publisher">
-    <param name="publish_frequency" value="50"/>
-    <remap from="joint_states" to="wam_joint_states"/>
-  </node>
-
   <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
     args="record -j -o /tmp/wam-last.bag -e '/barrett(.*)' '(.*)joint_state(.*)' '(.*)wrench(.*)' /tf"/>
 
@@ -130,6 +124,6 @@
   <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
   <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
-    args="0 0 0 0 0 0 /world /stage_link 50"/>
+    args="0 0 0 0 0 0 /world /stage_link 100"/>
 
 </launch>
