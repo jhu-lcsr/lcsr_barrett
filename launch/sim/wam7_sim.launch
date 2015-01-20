@@ -19,6 +19,7 @@
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
+  <arg name="rescuer" default="false" doc="(bool) If true, use the singularity rescuer."/>
 
   <arg name="j0" default="0.0" doc="(float) Joint 0 initial position"/>
   <arg name="j1" default="0.0" doc="(float) Joint 1 initial position"/>
@@ -136,13 +137,21 @@
     <include file="$(find lcsr_barrett)/launch/sim/orocos_component_params.launch"/>
 
     <!-- Moveit -->
-    <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/sim/wam7_planning.launch">
+    <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/wam7_planning.launch">
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
     </include>
 
+    <!-- Run singularity rescuer -->
+    <include
+      if="$(arg rescuer)"
+      file="$(find lcsr_barrett)/launch/singularity_rescuer.launch">
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
+    </include>
 
   </group>
 
