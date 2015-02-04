@@ -64,10 +64,10 @@
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      p_gains: [350.0, 350.0, 350.0, 300.0, 15.0, 15.0, 2.0]
-      d_gains: [20.0, 10.0, 10.0, 11.0, 0.4, 0.5, 0.01]
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5]
-      velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+      p_gains: [350.0, 300.0, 300.0, 250.0, 15.0, 15.0, 2.0]
+      d_gains: [10.0, 5.0, 5.0, 2.0, 0.4, 0.5, 0.01]
+      position_tolerance: [0.1, 0.1, 0.1, 0.2, 0.3, 0.3, 0.5]
+      velocity_tolerance: [3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 4.0]
     </rosparam>
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
@@ -107,13 +107,13 @@
       sampling_resolution: 0.002
       stop_on_violation: true
       verbose: false
-      stop_time: 0.5
+      stop_time: 1.0
       #note: absolute max joint velocity: 2.0 rad/s
       #note: safe joint velocity: 0.5 rad/s
       #max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       #max_accelerations: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       #max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
-      temporal_tolerance: 0.0
+      temporal_tolerance: 0.005
       goal_position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
       goal_velocity_tolerance: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
     </rosparam>
@@ -153,15 +153,15 @@
       target_frame: ""#$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 0.0
-      linear_p_gain: 1000.0
-      linear_d_gain: 10.0
-      angular_p_gain: 10.0
-      angular_d_gain: 0.005
+      linear_p_gain: 500.0
+      linear_d_gain: 5.0
+      angular_p_gain: 5.0
+      angular_d_gain: 0.002
       linear_effort_threshold: 50.0
       linear_position_threshold: 0.1
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
-      nullspace_damping: 1.2
+      nullspace_damping: 0.8
       jointspace_damping: 1.2
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.2]
       projector_type: 3
@@ -187,6 +187,7 @@
       max_angular_error: 0.5
       linear_p_gain: 100.0
       angular_p_gain: 10.0
+      max_effort_norm_error: 0.5
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">

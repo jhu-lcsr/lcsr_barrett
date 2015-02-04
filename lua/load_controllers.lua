@@ -11,7 +11,8 @@ function load_controllers(depl, scheme, prefix)
 
   --[[ get required components --]]
   barrett_manager = depl:getPeer(prefix.."barrett_manager")
-  effort_sum = depl:getPeer(prefix.."effort_sum")
+  effort_sum_name = prefix.."effort_sum"
+  effort_sum = depl:getPeer(effort_sum_name)
   tf = depl:getPeer("tf")
 
   local wam = barrett_manager:getName()..".wam"
@@ -82,8 +83,10 @@ function load_controllers(depl, scheme, prefix)
   cart_servo_name = prefix.."cart_servo"
   depl:loadComponent(cart_servo_name,"lcsr_controllers::CartesianLogisticServo");
   cart_servo = depl:getPeer(cart_servo_name)
-  connect(wam, "position_out", cart_servo, "positions_in");
-  connect(                     cart_servo, "framevel_out", jtns, "framevel_in");
+  connect(effort_sum, "sum_out", cart_servo, "effort_cmd_in");
+  connect(wam, "effort_out",     cart_servo, "effort_in");
+  connect(wam, "position_out",   cart_servo, "positions_in");
+  connect(                       cart_servo, "framevel_out", jtns, "framevel_in");
   cart_servo:connectPeers(tf)
 
   --[[ Create a coulomb friction compensator --]]
@@ -152,6 +155,8 @@ function load_controllers(depl, scheme, prefix)
   scheme:addGroup(cart_imp_control);
   scheme:addToGroup(jtns_name, cart_imp_control);
   scheme:addToGroup(cart_servo_name, cart_imp_control);
+  --[[ latch connections from effort sum to the cart_servo --]]
+  scheme:latchConnections(effort_sum_name, cart_servo_name, true);
 
   --[[ Create an IK control group --]]
   ik_control = prefix.."ik_control"
