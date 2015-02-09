@@ -28,6 +28,7 @@
   <arg name="j4" default="0.0" doc="(float) Joint 4 initial position"/>
   <arg name="j5" default="0.0" doc="(float) Joint 5 initial position"/>
   <arg name="j6" default="0.0" doc="(float) Joint 6 initial position"/>
+  <arg name="initial_joint_positions" default="$(arg j0), $(arg j1), $(arg j2), $(arg j3), $(arg j4), $(arg j5), $(arg j6)" doc="(comma-separated floats) Initial joint positions"/>
 
   <param name="use_sim_time" value="true"/>
 
@@ -52,19 +53,24 @@
     initial_group:=$(arg initial_group)" />
 
   <!-- Spawn the robot in Gazebo -->
-  <node name="$(anon urdf_spawner)"
+  <node name="aa_$(anon urdf_spawner)"
     pkg="gazebo_ros"
     type="spawn_model"
     respawn="false"
     output="screen"
-    args="-urdf -model wam -param robot_description
-    -J wam/base_yaw_joint $(arg j0)
-    -J wam/shoulder_pitch_joint $(arg j1)
-    -J wam/shoulder_yaw_joint $(arg j2)
-    -J wam/elbow_pitch_joint $(arg j3)
-    -J wam/wrist_yaw_joint $(arg j4)
-    -J wam/wrist_pitch_joint $(arg j5)
-    -J wam/palm_yaw_joint $(arg j6)"/>
+    args="-urdf -model wam -param robot_description">
+    <rosparam subst_value="true">
+      initial_joint_names:
+        - "wam/base_yaw_joint"
+        - "wam/shoulder_pitch_joint"
+        - "wam/shoulder_yaw_joint"
+        - "wam/elbow_pitch_joint"
+        - "wam/wrist_yaw_joint"
+        - "wam/wrist_pitch_joint"
+        - "wam/palm_yaw_joint"
+      initial_joint_positions: [$(arg initial_joint_positions)]
+    </rosparam>
+  </node>
 
   <!-- Spawn the lcsr stage in Gazebo -->
   <param name="stage_model"
