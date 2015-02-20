@@ -75,8 +75,8 @@ class HydraTeleop(WAMTeleop):
             self.deadman_engaged = False
             self.deadman_max = 0.0
         else:
-            self.handle_hand_cmd(msg, msg.axes[self.THUMB_Y[side]], msg.axes[self.THUMB_X[side]])
-            self.handle_cart_cmd(msg, msg.axes[self.DEADMAN[side]])
+            self.handle_hand_cmd(msg.axes[self.THUMB_Y[side]], msg.axes[self.THUMB_X[side]])
+            self.handle_cart_cmd(msg.axes[self.DEADMAN[side]])
 
         self.last_buttons = msg.buttons
         self.last_axes = msg.axes

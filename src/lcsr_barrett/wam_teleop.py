@@ -55,6 +55,10 @@ class WAMTeleop(object):
         self.listener = tf.TransformListener()
         self.broadcaster = tf.TransformBroadcaster()
 
+        # State
+        self.cmd_origin = kdl.Frame()
+        self.tip_origin = kdl.Frame()
+
         # Command state
         self.cmd_frame = None
         self.deadman_engaged = False
@@ -166,27 +170,27 @@ class WAMTeleop(object):
 
         try:
             # Get the current position of the hydra
-            hydra_frame = fromTf(self.listener.lookupTransform(
+            input_frame = fromTf(self.listener.lookupTransform(
                 self.input_ref_frame_id,
                 self.input_frame_id,
                 rospy.Time(0)))
 
             # Get the current position of the end-effector
             tip_frame = fromTf(self.listener.lookupTransform(
-                '/world',
+                self.input_ref_frame_id,
                 self.tip_link,
                 rospy.Time(0)))
 
             # Capture the current position if we're starting to move
             if not self.deadman_engaged:
                 self.deadman_engaged = True
-                self.cmd_origin = hydra_frame
+                self.cmd_origin = input_frame
                 self.tip_origin = tip_frame
 
             else:
                 self.deadman_max = max(self.deadman_max, deadman_ref)
                 # Update commanded TF frame
-                cmd_twist = kdl.diff(self.cmd_origin, hydra_frame)
+                cmd_twist = kdl.diff(self.cmd_origin, input_frame)
                 cmd_twist.vel = self.scale*self.deadman_max*cmd_twist.vel
                 self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
 
