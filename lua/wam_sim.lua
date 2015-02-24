@@ -25,6 +25,7 @@ barrett_manager:provides("wam"):run()
 --[[ Start the hand --]]
 if barrett_manager:getProperty("auto_configure_hand"):get() then
   rtt.log("Running hand...")
+  barrett_manager:provides("hand"):initialize()
   barrett_manager:provides("hand"):run()
   barrett_manager:provides("hand"):open()
 else
