@@ -109,15 +109,17 @@
 
         # WAM Parameters
         wam:
-          velocity_smoothing_factor: 0.98
+          velocity_smoothing_factor: 0.01
 
         # Hand Parameters
         hand:
+          trap_vel: 2.0
+          trap_accel: 10.0
           p_gain: 1.0
           d_gain: 0.01
-          finger_acceleration: 1.0
           max_torque: 3.0
           stop_torque: 3.0
+          finger_acceleration: 1.0
           inner_breakaway_gain: 0.001
           inner_breakaway_torque: 0.5
           outer_recouple_velocity: 1.0
