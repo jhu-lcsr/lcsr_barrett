@@ -49,7 +49,9 @@ function load_barrett(depl, scheme, prefix, sim, urdf_param)
   manager:loadService("rosparam")
   manager:provides("rosparam"):getAll()
   manager:provides("rosparam"):getParam(urdf_param,"robot_description")
-  manager:configure()
+  if not manager:configure() then
+    return nil, nil
+  end
 
   --[[ configure effort sum --]]
   effort_sum_name = prefix.."effort_sum"

@@ -1,4 +1,4 @@
-# These are the hardware calibrations for WAM#60
+# These are the hardware calibrations for WAM#40
 # Zerocal
 home_position: [0.0, -1.5708, 0.0, 3.1415, -1.5708, -1.5708, -3.5112]
 home_resolver_offset: [0.3911651009108388, -0.7086991240031661, 0.25003886842535916,

@@ -50,14 +50,6 @@ function load_controllers(depl, scheme, prefix)
   connect(wam, "velocity_out", pid, "joint_velocity_in");
   connect(                     pid, "joint_effort_out", effort_sum, "feedback_in");
 
-  --[[ Create joint-space trapezoidal trajectory generation with KDL --]]
-  traj_kdl_name = prefix.."traj_kdl"
-  loadComponent(traj_kdl_name, "lcsr_controllers::JointTrajGeneratorKDL");
-  traj_kdl = depl:getPeer(traj_kdl_name)
-  connect(wam, "position_out", traj_kdl, "joint_position_in");
-  connect(                     traj_kdl, "joint_position_out", pid, "joint_position_cmd_in");
-  connect(                     traj_kdl, "joint_velocity_out", pid, "joint_velocity_cmd_in");
-
   --[[ Create joint-space RML trajectory generator --]]
   traj_rml_name = prefix.."traj_rml"
   depl:loadComponent(traj_rml_name,"lcsr_controllers::JointTrajGeneratorRML");
@@ -121,7 +113,6 @@ function load_controllers(depl, scheme, prefix)
 
   --[[ Configure all components --]]
   pid:configure();
-  traj_kdl:configure();
   traj_rml:configure();
   jtns:configure();
   ik:configure();
@@ -132,7 +123,6 @@ function load_controllers(depl, scheme, prefix)
 
   --[[ Add to the conman scheme --]]
   scheme:addPeer(pid);
-  scheme:addPeer(traj_kdl);
   scheme:addPeer(traj_rml);
   scheme:addPeer(jtns);
   scheme:addPeer(ik);
@@ -143,7 +133,6 @@ function load_controllers(depl, scheme, prefix)
 
   --[[ Add blocks to the scheme --]]
   scheme:addBlock(pid_name);
-  scheme:addBlock(traj_kdl_name);
   scheme:addBlock(traj_rml_name);
   scheme:addBlock(jtns_name);
   scheme:addBlock(ik_name);
