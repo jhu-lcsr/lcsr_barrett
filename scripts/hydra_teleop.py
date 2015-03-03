@@ -82,7 +82,7 @@ class HydraTeleop(WAMTeleop):
         self.last_axes = msg.axes
 
         # republish markers
-        self.publish_cmd_ring_markers()
+        self.publish_cmd_ring_markers(msg.header.stamp)
 
         # Broadcast the command if it's defined
         resync_pose = msg.buttons[self.THUMB_CLICK[side]] == 1
@@ -92,7 +92,7 @@ class HydraTeleop(WAMTeleop):
             grasp_opening = 1.0
         else:
             grasp_opening = 0.5
-        self.publish_cmd(resync_pose, grasp_opening)
+        self.publish_cmd(resync_pose, grasp_opening, msg.header.stamp)
 
 
 def main():

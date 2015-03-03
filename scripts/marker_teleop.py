@@ -247,10 +247,10 @@ class MarkerTeleop(WAMTeleop):
             rospy.logdebug('deadman: %s (%d)' % (str(self.deadman_engaged), update_age.to_sec()))
 
             # republish markers
-            self.publish_cmd_ring_markers()
+            self.publish_cmd_ring_markers(rospy.Time.now())
 
             # Broadcast the command if it's defined
-            self.publish_cmd(self.resync_pose, self.finger_ref)
+            self.publish_cmd(self.resync_pose, self.finger_ref, rospy.Time.now())
 
             r.sleep()
 

@@ -236,11 +236,11 @@ class WAMTeleop(object):
                 self.hand_pub.publish(self.hand_cmd)
                 self.last_hand_cmd = rospy.Time.now()
 
-    def publish_cmd_ring_markers(self):
+    def publish_cmd_ring_markers(self, time):
         """publish wam command ring"""
 
         for i,m in enumerate(self.master_target_markers.markers):
-            m.header.stamp = rospy.Time.now()
+            m.header.stamp = time #rospy.Time.now()
 
             if (i <3 and not self.move_f[i]) or (i==3 and not self.move_spread):
                 m.color = self.color_orange
@@ -262,7 +262,7 @@ class WAMTeleop(object):
 
         self.marker_pub.publish(self.master_target_markers)
 
-    def publish_cmd(self, resync_pose, grasp_opening):
+    def publish_cmd(self, resync_pose, grasp_opening, time):
         """publish the raw tf frame and the telemanip command"""
 
         if not self.cmd_frame:
@@ -270,12 +270,12 @@ class WAMTeleop(object):
 
         # Broadcast command frame
         tform = toTf(self.cmd_frame)
-        self.broadcaster.sendTransform(tform[0], tform[1], rospy.Time.now(), self.cmd_frame_id, 'world')
+        self.broadcaster.sendTransform(tform[0], tform[1], time, self.cmd_frame_id, 'world')
 
         # Broadcast telemanip command
         telemanip_cmd = TelemanipCommand()
         telemanip_cmd.header.frame_id = 'world'
-        telemanip_cmd.header.stamp = rospy.Time.now()
+        telemanip_cmd.header.stamp = time
         telemanip_cmd.posetwist.pose = toMsg(self.cmd_frame)
         telemanip_cmd.resync_pose = resync_pose
         telemanip_cmd.deadman_engaged = self.deadman_engaged
