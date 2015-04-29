@@ -158,9 +158,6 @@
       heartbeat_max_period: 0.075
     </rosparam>
 
-    <!-- RTT Component parameters -->
-    <include file="$(find lcsr_barrett)/launch/sim/orocos_component_params.launch"/>
-
     <!-- Moveit -->
     <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/wam7_planning.launch">
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>

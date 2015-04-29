@@ -12,7 +12,7 @@
   <arg name="ee_ball" default="false"/>
 
   <include file="$(find barrett_wam_moveit_config)/launch/move_group.launch">
-    <arg name="debug" value="true"/>
+    <arg name="debug" value="false"/>
     <arg name="fake_execution" value="false"/>
     <arg name="allow_trajectory_execution" value="true"/>
     <arg name="joint_states_topic" default="$(arg joint_states_topic)"/>

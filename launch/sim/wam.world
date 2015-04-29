@@ -9,16 +9,26 @@
       <uri>model://sun</uri>
     </include>
     <physics type="ode">
+      <gravity>0 0 -9.81</gravity>
+      <max_step_size>0.001</max_step_size>
+      <real_time_update_rate>1000</real_time_update_rate>
+      <!-- real_time_factor is completely ignored by gazebo -->
+      <!--<real_time_factor>0.01</real_time_factor>-->
       <ode>
         <solver>
-          <!--<iters>10000</iters>-->
+          <type>quick</type>
           <use_dynamic_moi_rescaling>false</use_dynamic_moi_rescaling>
+          <!--<min_step_size>0.001</min_step_size>-->
+          <iters>50</iters>
+          <sor>1.4</sor>
         </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.0</contact_surface_layer>
+        </constraints>
       </ode>
-      <gravity>0 0 -9.8</gravity>
-      <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
-      <real_time_update_rate>1000</real_time_update_rate>
     </physics>
   </world>
 </sdf>
