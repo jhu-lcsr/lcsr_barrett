@@ -11,6 +11,7 @@ import tf
 import PyKDL as kdl
 from tf_conversions.posemath import fromTf, toTf, toMsg
 import math
+import time
 
 
 def sigm(s, r, x):
@@ -52,6 +53,7 @@ class WAMTeleop(object):
         self.use_hand = rospy.get_param('~use_hand', True)
 
         # TF structures
+        self.last_time_check = rospy.Time.now()
         self.listener = tf.TransformListener()
         self.broadcaster = tf.TransformBroadcaster()
 
@@ -160,6 +162,15 @@ class WAMTeleop(object):
         m.mesh_resource = 'package://lcsr_barrett/models/teleop_target.dae'
         m.mesh_use_embedded_materials = False
         self.master_target_markers.markers.append(m)
+
+    def check_for_backwards_time_jump(self):
+        now = rospy.Time.now()
+        if (now - self.last_time_check).to_sec() < 0.0:
+            rospy.logwarn("WARNING: Time went backwards!")
+            while (rospy.Time.now() - now).to_sec() < 2.0:
+                self.listener.clear()
+                rospy.sleep(0.05)
+        self.last_time_check = now
 
     def hand_state_cb(self, msg):
         """update the hand state"""

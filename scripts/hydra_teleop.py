@@ -55,6 +55,8 @@ class HydraTeleop(WAMTeleop):
         b = msg.buttons
         lb = self.last_buttons
 
+        self.check_for_backwards_time_jump()
+
         if (rospy.Time.now() - self.last_hand_cmd) < rospy.Duration(0.03):
             return
 
