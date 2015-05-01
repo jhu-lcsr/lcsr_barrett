@@ -1,6 +1,9 @@
 <?xml version ='1.0'?>
 <sdf version ='1.4'>
   <world name='default'>
+    <plugin name="initial_time" filename="libgazebo_initial_time.so">
+      <wall_time/>
+    </plugin>
     <include>
       <uri>model://ground_plane</uri>
       <pose>0 0 -1 0 0 0</pose>
@@ -10,8 +13,8 @@
     </include>
     <physics type="ode">
       <gravity>0 0 -9.81</gravity>
-      <max_step_size>0.001</max_step_size>
-      <real_time_update_rate>1000</real_time_update_rate>
+      <max_step_size>0.0013</max_step_size>
+      <real_time_update_rate>769.23</real_time_update_rate>
       <!-- real_time_factor is completely ignored by gazebo -->
       <!--<real_time_factor>0.01</real_time_factor>-->
       <ode>
