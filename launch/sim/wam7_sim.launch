@@ -109,16 +109,16 @@
 
         # WAM Parameters
         wam:
-          velocity_smoothing_factor: 0.01
+          velocity_cutoff_frequency: 300
 
         # Hand Parameters
         hand:
           trap_vel: 2.0
           trap_accel: 10.0
-          p_gain: 7.0
+          p_gain: 10.0
           i_gain: 0.0
           i_clamp: 0.0
-          d_gain: 0.01
+          d_gain: 0.02
           max_torque: 3.0
           stop_torque: 3.0
           spread_p_gain: 10.0
