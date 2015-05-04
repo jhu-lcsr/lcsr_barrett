@@ -72,6 +72,7 @@ class WAMTeleop(object):
             self.hand_cmd = oro_barrett_msgs.msg.BHandCmd()
             self.last_hand_cmd = rospy.Time.now()
             self.hand_position = [0, 0, 0, 0]
+            self.hand_velocity = [0, 0, 0, 0]
 
             self.move_f = [True, True, True]
             self.move_spread = True
@@ -175,6 +176,7 @@ class WAMTeleop(object):
     def hand_state_cb(self, msg):
         """update the hand state"""
         self.hand_position = [msg.position[2], msg.position[3], msg.position[4], msg.position[0]]
+        self.hand_velocity = [msg.velocity[2], msg.velocity[3], msg.velocity[4], msg.velocity[0]]
 
     def handle_cart_cmd(self, deadman_ref):
         """"""
@@ -208,21 +210,31 @@ class WAMTeleop(object):
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
             rospy.logwarn(str(ex))
 
-    def handle_hand_cmd(self, finger_ref, spread_ref):
+    def handle_hand_cmd(
+        self, 
+        finger_pos=None,
+        spread_vel=None,
+        spread_pos=None):
         """"""
 
         # Capture the current position if we're starting to move
         if self.deadman_engaged:
             # Generate bhand command
-            f_max = 2.5
+            f_max = 140.0/180.0*math.pi
 
-            finger_cmd = max(0, min(f_max, 0.5*f_max*(1.0-finger_ref)))
-            spread_cmd = 3.0*(-1.0 + 2.0/(1.0 + math.exp(-4*spread_ref)))
+            # Finger commands
+            finger_pos = f_max*max(0, min(1.0, finger_pos))
+            finger_cmds = [finger_pos-cur for cur in self.hand_position[0:3]]
 
-            new_cmd = [sigm(5.0, 1.0, finger_cmd-cur) for cur in self.hand_position[0:3]] + [spread_cmd]
-            new_mode = \
-                [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 3 +\
-                [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY]
+            # Spread command
+            if spread_pos is not None:
+                spread_pos = math.pi*max(0, min(1.0, spread_pos))
+                spread_cmd = [(spread_pos-self.hand_position[3])]
+            elif spread_vel is not None:
+                spread_cmd = [3.0*(-1.0 + 2.0/(1.0 + math.exp(-4*spread_vel)))]
+
+            new_cmd = finger_cmds + spread_cmd
+            new_mode = [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 4
 
             for i in range(3):
                 if not self.move_f[i] or not self.move_all:
@@ -230,22 +242,26 @@ class WAMTeleop(object):
                     new_mode[i] = oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY
             if not self.move_spread or not self.move_all:
                 new_cmd[3] = 0.0
+        else:
+            new_cmd = [0,0,0,0]
+            new_mode = [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 4
 
-            new_finger_cmd = [abs(old-new) > 0.001
-                              for (old, new)
-                              in zip(self.hand_cmd.cmd[:3], self.hand_position[:3])]
-            new_spread_cmd = [abs(old-new) > 0.001 or abs(cur-new) > 0.01
-                              for (old, cur, new)
-                              in [(self.hand_cmd.cmd[3], self.hand_position[3], new_cmd[3])]]
+        new_finger_cmd = [abs(old-new) > 0.1
+                          for (old, new)
+                          in zip(self.hand_cmd.cmd[:3], new_cmd[:3])]
+        new_spread_cmd = [abs(old-new) > 0.1
+                          for (old, cur, new)
+                          in [(self.hand_cmd.cmd[3], self.hand_velocity[3], new_cmd[3])]]
 
-            # Only send a new command if the goal has changed
-            # TODO: take advantage of new SAME/IGNORE joint command mode
-            if True or any(new_finger_cmd) or any(new_spread_cmd):
-                self.hand_cmd.mode = new_mode
-                self.hand_cmd.cmd = new_cmd
-                rospy.logdebug('hand command: \n'+str(self.hand_cmd))
-                self.hand_pub.publish(self.hand_cmd)
-                self.last_hand_cmd = rospy.Time.now()
+        # Only send a new command if the goal has changed
+        # TODO: take advantage of new SAME/IGNORE joint command mode
+        if True or any(new_finger_cmd) or any(new_spread_cmd):
+            self.hand_cmd.header.stamp = rospy.Time.now()
+            self.hand_cmd.mode = new_mode
+            self.hand_cmd.cmd = new_cmd
+            rospy.logdebug('hand command: \n'+str(self.hand_cmd))
+            self.hand_pub.publish(self.hand_cmd)
+            self.last_hand_cmd = rospy.Time.now()
 
     def publish_cmd_ring_markers(self, time):
         """publish wam command ring"""

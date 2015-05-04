@@ -131,10 +131,10 @@ class MarkerTeleop(WAMTeleop):
         if not checked:
             self.menu_handler.setCheckState(handle, MenuHandler.CHECKED)
             rospy.loginfo('grasp')
-            self.finger_ref = 0.0
+            self.finger_ref = 1.0
         else:
             self.menu_handler.setCheckState(handle, MenuHandler.UNCHECKED)
-            self.finger_ref = 0.5
+            self.finger_ref = 0.25
 
         self.transform.header.stamp = rospy.Time.now()
 
@@ -147,10 +147,10 @@ class MarkerTeleop(WAMTeleop):
         if not checked:
             self.menu_handler.setCheckState(handle, MenuHandler.CHECKED)
             rospy.loginfo('release')
-            self.finger_ref = 1.0
+            self.finger_ref = 0.0
         else:
             self.menu_handler.setCheckState(handle, MenuHandler.UNCHECKED)
-            self.finger_ref = 0.5
+            self.finger_ref = 0.25
 
         self.transform.header.stamp = rospy.Time.now()
 
@@ -226,7 +226,7 @@ class MarkerTeleop(WAMTeleop):
     def cmd_thread(self):
         """"""
 
-        r = rospy.Rate(30.0)
+        r = rospy.Rate(10.0)
         while not rospy.is_shutdown():
 
             # update poses
@@ -234,7 +234,7 @@ class MarkerTeleop(WAMTeleop):
             self.publish_transform()
 
             # compute hand command
-            self.handle_hand_cmd(self.finger_ref, 0.0)
+            self.handle_hand_cmd(finger_pos=self.finger_ref, spread_pos=0.0)
 
             # compute the command
             update_age = rospy.Time.now() - self.transform.header.stamp
