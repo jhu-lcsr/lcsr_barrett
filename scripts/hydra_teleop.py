@@ -15,13 +15,13 @@ class HydraTeleop(WAMTeleop):
 
     LEFT = 0
     RIGHT = 1
-    TRIGGER = [10, 11]
+    TOP_TRIGGER = [10, 11]
 
     THUMB_X = [0, 2]
     THUMB_Y = [1, 3]
     THUMB_CLICK = [1, 2]
 
-    DEADMAN = [8, 9]
+    BOT_TRIGGER = [8, 9]
 
     B_CENTER = [0, 3]
     B1 = [7, 15]
@@ -38,14 +38,43 @@ class HydraTeleop(WAMTeleop):
         self.side = self.SIDE_MAP.get(rospy.get_param("~side",''), self.RIGHT)
         input_ref_frame_id = rospy.get_param('~ref_frame', '/hydra_base')
         input_frame_id = rospy.get_param('~input_frame', '/hydra_'+self.SIDE_STR[self.side]+'_grab')
-
         super(HydraTeleop, self).__init__(input_ref_frame_id, input_frame_id)
+
+        # Get the clutch button
+        # This is the (0-based) index of the button in the clutch joy topic
+        self.clutch_button = rospy.get_param('~clutch_button', 0)
+        # Get the clutch duration
+        # This is the time over which the cart command scale is increased
+        self.clutch_duration = rospy.get_param('~clutch_duration', 0.3)
 
         # Button state
         self.last_buttons = [0] * 16
+        self.clutch_enabled = False
+        self.clutch_enable_time = None
 
         # Hydra Joy input
         self.joy_sub = rospy.Subscriber('hydra_joy', sensor_msgs.msg.Joy, self.joy_cb)
+        self.clutch_sub = rospy.Subscriber('clutch_joy', sensor_msgs.msg.Joy, self.clutch_cb)
+
+    def clutch_cb(self, msg):
+        """Handle clutch joy messages."""
+
+        clutch_enabled_now = msg.buttons[self.clutch_button]
+
+        if self.clutch_enabled != clutch_enabled_now:
+            # The clutch has changed mode
+            if clutch_enabled_now:
+                # The clutch has been enabled
+                self.clutch_enable_time = rospy.Time.now()
+            else:
+                # The clutch has been disabled, so stop the hand
+                self.hand_cmd.mode = [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 4
+                self.hand_cmd.cmd = [0.0, 0.0, 0.0, 0.0]
+                self.hand_pub.publish(self.hand_cmd)
+                self.last_hand_cmd = rospy.Time.now()
+
+        # Update the clutch value
+        self.clutch_enabled = clutch_enabled_now
 
     def joy_cb(self, msg):
         """Generate a cart/hand cmd from a hydra joy message"""
@@ -68,33 +97,21 @@ class HydraTeleop(WAMTeleop):
         self.move_all =    self.move_all ^    (b[self.B_CENTER[side]] and not lb[self.B_CENTER[side]])
 
         # Check if the deadman is engaged
-        if msg.axes[self.DEADMAN[side]] < 0.01:
-            if self.deadman_engaged:
-                self.hand_cmd.mode = [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 4
-                self.hand_cmd.cmd = [0.0, 0.0, 0.0, 0.0]
-                self.hand_pub.publish(self.hand_cmd)
-                self.last_hand_cmd = rospy.Time.now()
-            self.deadman_engaged = False
-            self.deadman_max = 0.0
-        else:
-            self.handle_hand_cmd(msg.axes[self.THUMB_Y[side]], msg.axes[self.THUMB_X[side]])
-            self.handle_cart_cmd(msg.axes[self.DEADMAN[side]])
+        if self.clutch_enabled:
+            self.cart_scale = max(1.0, (rospy.Time.now() - self.clutch_enable_time) / self.clutch_duration)
+            self.handle_hand_cmd(msg.axes[self.BOT_TRIGGER[side]], msg.axes[self.THUMB_X[side]])
+            self.handle_cart_cmd(self.cart_scale)
 
+        # Update last raw command values
         self.last_buttons = msg.buttons
         self.last_axes = msg.axes
 
+        # Broadcast the command if it's defined
+        resync_pose = msg.buttons[self.TOP_TRIGGER[side]] == 0
+        self.publish_cmd(resync_pose, (1.0 - self.BOT_TRIGGER), msg.header.stamp)
+
         # republish markers
         self.publish_cmd_ring_markers(msg.header.stamp)
-
-        # Broadcast the command if it's defined
-        resync_pose = msg.buttons[self.THUMB_CLICK[side]] == 1
-        if msg.axes[self.THUMB_Y[side]] > 0.5:
-            grasp_opening = 0.0
-        elif msg.axes[self.THUMB_Y[side]] < -0.5:
-            grasp_opening = 1.0
-        else:
-            grasp_opening = 0.5
-        self.publish_cmd(resync_pose, grasp_opening, msg.header.stamp)
 
 
 def main():
