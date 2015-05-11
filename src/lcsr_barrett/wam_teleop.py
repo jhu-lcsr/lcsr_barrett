@@ -64,7 +64,7 @@ class WAMTeleop(object):
         # Command state
         self.cmd_frame = None
         self.deadman_engaged = False
-        self.deadman_max = 0.0
+        self.cmd_scaling = 0.0
 
         # Hand structures
         if self.use_hand:
@@ -178,7 +178,7 @@ class WAMTeleop(object):
         self.hand_position = [msg.position[2], msg.position[3], msg.position[4], msg.position[0]]
         self.hand_velocity = [msg.velocity[2], msg.velocity[3], msg.velocity[4], msg.velocity[0]]
 
-    def handle_cart_cmd(self, deadman_ref):
+    def handle_cart_cmd(self, scaling):
         """"""
 
         try:
@@ -199,19 +199,18 @@ class WAMTeleop(object):
                 self.deadman_engaged = True
                 self.cmd_origin = input_frame
                 self.tip_origin = tip_frame
-
             else:
-                self.deadman_max = max(self.deadman_max, deadman_ref)
+                self.cart_scaling = scaling
                 # Update commanded TF frame
                 cmd_twist = kdl.diff(self.cmd_origin, input_frame)
-                cmd_twist.vel = self.scale*self.deadman_max*cmd_twist.vel
+                cmd_twist.vel = self.scale*self.cart_scaling*cmd_twist.vel
                 self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
             rospy.logwarn(str(ex))
 
     def handle_hand_cmd(
-        self, 
+        self,
         finger_pos=None,
         spread_vel=None,
         spread_pos=None):

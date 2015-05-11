@@ -72,6 +72,7 @@ class HydraTeleop(WAMTeleop):
                 self.hand_cmd.cmd = [0.0, 0.0, 0.0, 0.0]
                 self.hand_pub.publish(self.hand_cmd)
                 self.last_hand_cmd = rospy.Time.now()
+                self.deadman_engaged = False
 
         # Update the clutch value
         self.clutch_enabled = clutch_enabled_now
@@ -98,7 +99,7 @@ class HydraTeleop(WAMTeleop):
 
         # Check if the deadman is engaged
         if self.clutch_enabled:
-            self.cart_scale = max(1.0, (rospy.Time.now() - self.clutch_enable_time) / self.clutch_duration)
+            self.cart_scale = min(1.0, (rospy.Time.now() - self.clutch_enable_time).to_sec() / self.clutch_duration)
             self.handle_hand_cmd(msg.axes[self.BOT_TRIGGER[side]], msg.axes[self.THUMB_X[side]])
             self.handle_cart_cmd(self.cart_scale)
 
@@ -108,7 +109,7 @@ class HydraTeleop(WAMTeleop):
 
         # Broadcast the command if it's defined
         resync_pose = msg.buttons[self.TOP_TRIGGER[side]] == 0
-        self.publish_cmd(resync_pose, (1.0 - self.BOT_TRIGGER), msg.header.stamp)
+        self.publish_cmd(resync_pose, (1.0 - self.BOT_TRIGGER[side]), msg.header.stamp)
 
         # republish markers
         self.publish_cmd_ring_markers(msg.header.stamp)
