@@ -121,8 +121,8 @@
           d_gain: 0.02
           max_torque: 3.0
           stop_torque: 3.0
-          spread_p_gain: 10.0
-          spread_d_gain: 0.01
+          spread_p_gain: 5.0
+          spread_d_gain: 0.0
           finger_acceleration: 1.0
           inner_breakaway_gain: 0.001
           inner_breakaway_torque: 0.5
