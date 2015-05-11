@@ -223,7 +223,7 @@ class WAMTeleop(object):
 
             # Finger commands
             finger_pos = f_max*max(0, min(1.0, finger_pos))
-            finger_cmds = [finger_pos-cur for cur in self.hand_position[0:3]]
+            finger_cmds = [2.0*(finger_pos-cur) for cur in self.hand_position[0:3]]
 
             # Spread command
             if spread_pos is not None:
