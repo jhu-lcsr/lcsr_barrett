@@ -52,6 +52,12 @@
     hand:=$(arg hand) ball:=$(arg ball)
     initial_group:=$(arg initial_group)" />
 
+  <node name="shadow_generator"
+    pkg="rviz_virtual_shadow"
+    type="make_virtual_shadow.py">
+    <param name="model_param" value="robot_description"/>
+  </node>
+
   <!-- Spawn the robot in Gazebo -->
   <node name="aa_$(anon urdf_spawner)"
     pkg="gazebo_ros"
