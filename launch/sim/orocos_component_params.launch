@@ -12,7 +12,7 @@
       robot_description_param: /robot_description
       root_link: $(arg tf_prefix)/base_link
       end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link
-      gravity: [-9.8, 0.0, 0.0]
+      gravity: [-6.92965, 0.0, 6.92965]
       inertia_mass_rate: 0.3
       inertia_com_rate: 0.05
     </rosparam>
