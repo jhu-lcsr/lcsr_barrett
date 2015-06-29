@@ -32,4 +32,9 @@
       </collision>
     </link>
 
+    <gazebo reference="platform_link">
+      <kp>50000</kp>
+      <kd>8</kd>
+    </gazebo>
+
 </robot>
