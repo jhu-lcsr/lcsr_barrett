@@ -34,4 +34,4 @@ end
 
 --[[ Set of initially running blocks --]]
 scheme:enableBlock("joint_control",true);
---scheme.enableBlock("cart_imp_control",true);
+--scheme:enableBlock("cart_imp_control",true);
