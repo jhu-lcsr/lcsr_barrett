@@ -23,6 +23,9 @@
         <geometry>
           <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
         </geometry>
+        <material name="white">
+          <color rgba="0.75 0.80 1 1"/>
+        </material>
       </visual>
       <collision>
         <origin rpy="0 0 0 " xyz="0 0 0"/>
