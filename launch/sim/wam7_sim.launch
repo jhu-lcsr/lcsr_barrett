@@ -119,6 +119,8 @@
 
         # Hand Parameters
         hand:
+          admittance_control: false
+          admittance_gain: 0.1
           trap_vel: 2.0
           trap_accel: 10.0
           p_gain: 10.0
@@ -133,8 +135,8 @@
           inner_breakaway_gain: 0.001
           inner_breakaway_torque: 0.5
           outer_recouple_velocity: 1.0
-          outer_coupling_p_gain: 1.0
-          outer_coupling_d_gain: 0.001
+          outer_coupling_p_gain: 15.0
+          outer_coupling_d_gain: 0.01
       </rosparam>
 
       <!-- If using the BHand -->
@@ -142,7 +144,7 @@
         <param name="hand_urdf_prefix" value="wam/hand"/>
 
         <!-- Mid-Level hand interface -->
-        <node name="bhand_action_server"
+        <node if="0" name="bhand_action_server"
           pkg="oro_barrett_interface"
           type="bhand_action_server.py"
           output="screen"/>

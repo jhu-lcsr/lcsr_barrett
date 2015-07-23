@@ -93,6 +93,7 @@ class WAMTeleop(object):
 
         self.master_target_markers = MarkerArray()
 
+        self.color_blue = ColorRGBA(0.0, 0.66, 1.0, 1.0)
         self.color_gray = ColorRGBA(0.5, 0.5, 0.5, 1.0)
         self.color_orange = ColorRGBA(1.0, 0.5, 0.0, 1.0)
         self.color_green = ColorRGBA(0.0, 1.0, 0.0, 1.0)
@@ -284,7 +285,10 @@ class WAMTeleop(object):
                 m.color = self.color_red
             else:
                 if self.deadman_engaged:
-                    m.color = self.color_green
+                    if self.engage_augmenter:
+                        m.color = self.color_blue
+                    else:
+                        m.color = self.color_green
                 else:
                     m.color = self.color_gray
 
