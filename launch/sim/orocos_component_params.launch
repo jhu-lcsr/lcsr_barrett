@@ -15,6 +15,7 @@
       gravity: [0.0, -9.8, 0.0]
       inertia_mass_rate: 0.3
       inertia_com_rate: 0.05
+      max_attached_mass: 3.0
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
