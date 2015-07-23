@@ -298,7 +298,7 @@ class WAMTeleop(object):
 
         self.marker_pub.publish(self.master_target_markers)
 
-    def publish_cmd(self, resync_pose, grasp_opening, time):
+    def publish_cmd(self, resync_pose, augmenter_engaged, grasp_opening, time):
         """publish the raw tf frame and the telemanip command"""
 
         if not self.cmd_frame:
@@ -315,6 +315,7 @@ class WAMTeleop(object):
         telemanip_cmd.posetwist.pose = toMsg(self.cmd_frame)
         telemanip_cmd.resync_pose = resync_pose
         telemanip_cmd.deadman_engaged = self.deadman_engaged
+        telemanip_cmd.augmenter_engaged = augmenter_engaged
         telemanip_cmd.grasp_opening = grasp_opening
         telemanip_cmd.estop = False  # TODO: add master estop control
         self.telemanip_cmd_pub.publish(telemanip_cmd)

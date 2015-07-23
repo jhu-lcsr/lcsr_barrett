@@ -75,6 +75,7 @@ class AttachedObjectVisualizer(object):
                 m.header.stamp = rospy.Time.now()
 
                 # Get the local pose in the gripper frame
+                m_ps = None
                 try:
                     # Get the transform from the collision frame (world) 
                     self.listener.waitForTransform(
@@ -87,11 +88,15 @@ class AttachedObjectVisualizer(object):
                         aco.link_name,
                         PoseStamped(aco.object.header, pose))
 
-                    rospy.logdebug("transform from {} to {}: \n{}".format(aco.object.header.frame_id, aco.link_name, m_ps))
-
                     #m.header = m_ps.header
                     m.pose = m_ps.pose
                 except (Exception, tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as exc:
+                    rospy.loginfo("Transform from {} to {} @ {}: \n{}".format(
+                        aco.object.header.frame_id, 
+                        aco.link_name, 
+                        aco.object.header.stamp,
+                        m_ps))
+
                     rospy.logwarn("Couldn't get pose in gripper: {}".format(exc))
                     continue
         else:

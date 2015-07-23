@@ -115,9 +115,10 @@ class HydraTeleop(WAMTeleop):
         self.last_axes = msg.axes
 
         # Broadcast the command if it's defined
-        resync_pose = msg.buttons[self.TOP_TRIGGER[side]] == 0
+        resync_pose = False
+        augmenter_engaged = msg.buttons[self.TOP_TRIGGER[side]] == 0
         grasp_opening = 1.0 - msg.axes[self.BOT_TRIGGER[side]]
-        self.publish_cmd(resync_pose, grasp_opening, msg.header.stamp)
+        self.publish_cmd(resync_pose, augmenter_engaged, grasp_opening, msg.header.stamp)
 
         # republish markers
         self.publish_cmd_ring_markers(msg.header.stamp)
