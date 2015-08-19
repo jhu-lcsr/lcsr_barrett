@@ -10,7 +10,7 @@ ros = gs:provides("ros")
 ros:import("lcsr_barrett")
 
 --[ Set log-level ]--
-rtt.setLogLevel("Info")
+rtt.setLogLevel("Debug")
 
 --[[ add lua dir to the lua path --]]
 package.path = ros:find("lcsr_barrett") .. "/lua/?.lua" .. ";" .. package.path
