@@ -52,6 +52,9 @@ class HydraTeleop(WAMTeleop):
         self.clutch_enabled = False
         self.clutch_enable_time = None
 
+        self.cart_scale = None
+        self.last_joy_cmd = rospy.Time.now()
+
         # Hydra Joy input
         self.joy_sub = rospy.Subscriber('hydra_joy', sensor_msgs.msg.Joy, self.joy_cb)
         self.clutch_sub = rospy.Subscriber('clutch_joy', sensor_msgs.msg.Joy, self.clutch_cb)
@@ -87,6 +90,10 @@ class HydraTeleop(WAMTeleop):
 
         self.check_for_backwards_time_jump()
 
+        if msg.header.stamp - self.last_joy_cmd < rospy.Duration(0.03):
+            self.last_joy_cmd = msg.header.stamp
+            return
+
         if (rospy.Time.now() - self.last_hand_cmd) < rospy.Duration(0.03):
             return
 
@@ -109,7 +116,8 @@ class HydraTeleop(WAMTeleop):
 
         # Broadcast the command if it's defined
         resync_pose = msg.buttons[self.TOP_TRIGGER[side]] == 0
-        self.publish_cmd(resync_pose, (1.0 - self.BOT_TRIGGER[side]), msg.header.stamp)
+        grasp_opening = 1.0 - msg.axes[self.BOT_TRIGGER[side]]
+        self.publish_cmd(resync_pose, grasp_opening, msg.header.stamp)
 
         # republish markers
         self.publish_cmd_ring_markers(msg.header.stamp)

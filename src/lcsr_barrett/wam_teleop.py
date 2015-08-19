@@ -93,6 +93,7 @@ class WAMTeleop(object):
 
         self.master_target_markers = MarkerArray()
 
+        self.color_blue = ColorRGBA(0.0, 0.66, 1.0, 1.0)
         self.color_gray = ColorRGBA(0.5, 0.5, 0.5, 1.0)
         self.color_orange = ColorRGBA(1.0, 0.5, 0.0, 1.0)
         self.color_green = ColorRGBA(0.0, 1.0, 0.0, 1.0)
@@ -178,6 +179,15 @@ class WAMTeleop(object):
         self.hand_position = [msg.position[2], msg.position[3], msg.position[4], msg.position[0]]
         self.hand_velocity = [msg.velocity[2], msg.velocity[3], msg.velocity[4], msg.velocity[0]]
 
+    def hold_cart_cmd(self):
+        """"""
+
+        try:
+            self.cmd_frame.header.stamp = rospy.Time.now()
+
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
+            rospy.logwarn(str(ex))
+
     def handle_cart_cmd(self, scaling):
         """"""
 
@@ -204,6 +214,7 @@ class WAMTeleop(object):
                 # Update commanded TF frame
                 cmd_twist = kdl.diff(self.cmd_origin, input_frame)
                 cmd_twist.vel = self.scale*self.cart_scaling*cmd_twist.vel
+                rospy.logwarn(cmd_twist)
                 self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
@@ -274,7 +285,10 @@ class WAMTeleop(object):
                 m.color = self.color_red
             else:
                 if self.deadman_engaged:
-                    m.color = self.color_green
+                    if self.engage_augmenter:
+                        m.color = self.color_blue
+                    else:
+                        m.color = self.color_green
                 else:
                     m.color = self.color_gray
 

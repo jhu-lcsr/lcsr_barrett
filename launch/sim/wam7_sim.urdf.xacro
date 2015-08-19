@@ -16,7 +16,7 @@
       <sceneName>B08</sceneName>
       <robotName>wam</robotName>
       <updatePeriod>0.033</updatePeriod>
-      <topicName>planning_scene</topicName>
+      <topicName>raw_planning_scene</topicName>
     </plugin>
   </gazebo>
 
@@ -29,7 +29,7 @@
   <!-- r = R.RotZ(pi/2)*R.RotY(-3*pi/4); r.GetRPY() -->
   <xacro:wam_7dof prefix="$(arg prefix)" parent_link="world" xyz="0.0 0.46 1.0" rpy="1.5707963267948966 6.123233995736766e-17 1.5707963267948966"/>
   <xacro:if value="$(arg hand)">
-    <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+    <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0" primitive="true"/>
   </xacro:if>
   <xacro:if value="$(arg ball)">
     <xacro:bball prefix="$(arg prefix)/ball" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
