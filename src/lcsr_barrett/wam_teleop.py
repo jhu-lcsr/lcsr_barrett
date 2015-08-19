@@ -13,6 +13,8 @@ from tf_conversions.posemath import fromTf, toTf, toMsg
 import math
 import time
 
+import ascent_augmenter.msg
+
 
 def sigm(s, r, x):
     """Simple sigmoidal filter"""
@@ -49,6 +51,7 @@ class WAMTeleop(object):
         # Parameters
         self.tip_link = rospy.get_param('~tip_link')
         self.cmd_frame_id = rospy.get_param('~cmd_frame', 'wam/cmd')
+        self.hand_cmd_frame_id = rospy.get_param('~hand_cmd_base_frame', 'wam/hand_cmd_base')
         self.scale = rospy.get_param('~scale', 1.0)
         self.use_hand = rospy.get_param('~use_hand', True)
 
@@ -61,10 +64,18 @@ class WAMTeleop(object):
         self.cmd_origin = kdl.Frame()
         self.tip_origin = kdl.Frame()
 
+        self.augmenter_resources = []
+        self.augmenter_predicates = dict()
+
         # Command state
         self.cmd_frame = None
         self.deadman_engaged = False
+        self.augmenter_engaged = False
         self.cmd_scaling = 0.0
+        self.finger_pos = None
+        self.finger_sync = False
+        self.finger_detached = True
+        self.send_estop = False
 
         # Hand structures
         if self.use_hand:
@@ -73,6 +84,8 @@ class WAMTeleop(object):
             self.last_hand_cmd = rospy.Time.now()
             self.hand_position = [0, 0, 0, 0]
             self.hand_velocity = [0, 0, 0, 0]
+            self.finger_mean = 0.0
+            self.finger_cmd_pos = -1.0
 
             self.move_f = [True, True, True]
             self.move_spread = True
@@ -88,6 +101,8 @@ class WAMTeleop(object):
 
         # ROS generic telemanip command
         self.telemanip_cmd_pub = rospy.Publisher('telemanip_cmd_out', TelemanipCommand)
+        self.hand_cmd_joint_states_pub = rospy.Publisher('~hand/cmd_joint_states', sensor_msgs.msg.JointState)
+
         # goal marker
         self.marker_pub = rospy.Publisher('master_target_markers', MarkerArray)
 
@@ -165,6 +180,48 @@ class WAMTeleop(object):
         m.mesh_use_embedded_materials = False
         self.master_target_markers.markers.append(m)
 
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'grasp_marker'
+        m.id = 0
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        p = m.pose.position
+        o = m.pose.orientation
+        p.x, p.y, p.z = (0,0,0)
+        o.x, o.y, o.z, o.w = (0, 0, 0, 1.0)
+        m.color = self.color_gray
+        m.color.a = 0.5
+        m.scale.x = m.scale.y = m.scale.z = 0.01
+        m.frame_locked = True
+        m.mesh_resource = 'package://lcsr_barrett/models/teleop_finger_marker.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
+
+        m = Marker()
+        m.header.frame_id = self.cmd_frame_id
+        m.ns = 'palm_marker'
+        m.id = 0
+        m.type = m.MESH_RESOURCE
+        m.action = 0
+        p = m.pose.position
+        o = m.pose.orientation
+        p.x, p.y, p.z = (0,0,-0.12)
+        o.x, o.y, o.z, o.w = (0, 0, 0, 1.0)
+        m.color = self.color_gray
+        m.color.a = 0.5
+        m.scale.x = m.scale.y = m.scale.z = 1.0
+        m.frame_locked = True
+        m.mesh_resource = 'package://barrett_model/models/sw_meshes/bhand/bhand_palm_link_convex_decomposition.dae'
+        m.mesh_use_embedded_materials = False
+        self.master_target_markers.markers.append(m)
+
+        # Augmenter integration
+        self.augmenter_state_sub = rospy.Subscriber(
+            'augmenter/state',
+            ascent_augmenter.msg.AugmenterState,
+            self.augmenter_state_cb)
+
     def check_for_backwards_time_jump(self):
         now = rospy.Time.now()
         if (now - self.last_time_check).to_sec() < 0.0:
@@ -174,10 +231,18 @@ class WAMTeleop(object):
                 rospy.sleep(0.05)
         self.last_time_check = now
 
+    def augmenter_state_cb(self, msg):
+        self.augmenter_resources = msg.resources
+        self.augmenter_predicates = dict(zip(msg.predicate_keys, msg.predicate_vals))
+
+        if self.augmenter_predicates.get('estop',False):
+            self.send_estop = False
+
     def hand_state_cb(self, msg):
         """update the hand state"""
         self.hand_position = [msg.position[2], msg.position[3], msg.position[4], msg.position[0]]
         self.hand_velocity = [msg.velocity[2], msg.velocity[3], msg.velocity[4], msg.velocity[0]]
+        self.finger_mean = sum(self.hand_position[0:3])/3.0
 
     def hold_cart_cmd(self):
         """"""
@@ -188,7 +253,7 @@ class WAMTeleop(object):
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
             rospy.logwarn(str(ex))
 
-    def handle_cart_cmd(self, scaling):
+    def handle_cart_cmd(self, scaling, reset_to_tip=True):
         """"""
 
         try:
@@ -208,7 +273,11 @@ class WAMTeleop(object):
             if not self.deadman_engaged:
                 self.deadman_engaged = True
                 self.cmd_origin = input_frame
-                self.tip_origin = tip_frame
+                if reset_to_tip:
+                    self.tip_origin = tip_frame
+                    self.send_estop = True
+                else:
+                    self.tip_origin = self.cmd_frame
             else:
                 self.cart_scaling = scaling
                 # Update commanded TF frame
@@ -279,28 +348,66 @@ class WAMTeleop(object):
         for i,m in enumerate(self.master_target_markers.markers):
             m.header.stamp = time #rospy.Time.now()
 
-            if (i <3 and not self.move_f[i]) or (i==3 and not self.move_spread):
-                m.color = self.color_orange
-            elif not self.move_all:
-                m.color = self.color_red
-            else:
-                if self.deadman_engaged:
-                    if self.engage_augmenter:
-                        m.color = self.color_blue
-                    else:
-                        m.color = self.color_green
-                else:
-                    m.color = self.color_gray
-
             if i < 3:
+                if 'gripper' in self.augmenter_resources:
+                    m.color = self.color_orange
+                elif not self.finger_sync:
+                    m.color = self.color_red
+                elif self.augmenter_engaged:
+                    m.color = self.color_green
+                else:
+                    m.color = self.color_blue
+
                 if i != 2:
                     p = m.pose.position
                     s = (-1.0 if i == 0 else 1.0)
                     p.x, p.y, p.z = finger_point(
                         self.hand_position[3] * s,
                         l = 0.025 * s)
+            else:
+                if 'manipulator' in self.augmenter_resources:
+                    m.color = self.color_orange
+                elif self.augmenter_predicates.get('detached_command', False):
+                    m.color = self.color_red
+                elif self.augmenter_engaged:
+                    m.color = self.color_green
+                else:
+                    m.color = self.color_blue
+
+            if self.deadman_engaged:
+                m.color.a = 1.0
+            else:
+                m.color.a = 0.5
+
+        # Update gripper markers
 
         self.marker_pub.publish(self.master_target_markers)
+
+        if self.finger_sync:
+            if self.deadman_engaged:
+                self.finger_pos = self.finger_cmd_pos 
+        else:
+            if self.finger_detached:
+                self.finger_pos = self.finger_mean
+
+
+        if self.finger_pos is not None:
+            hand_joint_state = sensor_msgs.msg.JointState()
+            hand_joint_state.header.stamp = time+rospy.Duration(0.05)
+            hand_joint_state.name = [
+                'wam_cmd/bhand/finger_1/prox_joint',
+                'wam_cmd/bhand/finger_2/prox_joint',
+                'wam_cmd/bhand/finger_1/med_joint',
+                'wam_cmd/bhand/finger_2/med_joint',
+                'wam_cmd/bhand/finger_3/med_joint',
+                'wam_cmd/bhand/finger_1/dist_joint',
+                'wam_cmd/bhand/finger_2/dist_joint',
+                'wam_cmd/bhand/finger_3/dist_joint']
+            hand_joint_state.position = [0.0] * 2 + [self.finger_pos] * 3 + [0.33*fp for fp in [self.finger_pos] * 3]
+            hand_joint_state.velocity = [0.0] * 8
+            hand_joint_state.effort = [0.0] * 8
+            self.hand_cmd_joint_states_pub.publish(hand_joint_state)
+
 
     def publish_cmd(self, resync_pose, augmenter_engaged, grasp_opening, time):
         """publish the raw tf frame and the telemanip command"""
@@ -321,6 +428,30 @@ class WAMTeleop(object):
         telemanip_cmd.deadman_engaged = self.deadman_engaged
         telemanip_cmd.augmenter_engaged = augmenter_engaged
         telemanip_cmd.grasp_opening = grasp_opening
-        telemanip_cmd.estop = False  # TODO: add master estop control
+        telemanip_cmd.estop = self.send_estop
         self.telemanip_cmd_pub.publish(telemanip_cmd)
+
+        # Broadcast frame for hand state (future date it to frame-lock it)
+        self.broadcaster.sendTransform((0,0,-0.12), (0,0,0,1), time+rospy.Duration(1.0), self.hand_cmd_frame_id, self.cmd_frame_id)
+
+        # Broadcast desired hand state
+        # TODO: Make the augmenter and this script use the sane numbers for this
+        FINGER_MAX_POS = 140.0 / 180.0 * math.pi
+
+        # Clip the finger command
+        self.finger_cmd_pos = FINGER_MAX_POS*max(0, min(1.0, 1.0 - grasp_opening))
+
+        if 'gripper' not in self.augmenter_resources:
+            if self.deadman_engaged:
+                # If the fingers are commanded closed further than the current finger command, then re-sync command
+                if self.finger_cmd_pos > self.finger_mean:
+                    self.finger_sync = True
+                    self.finger_detached = False
+            else:
+                self.finger_sync = False
+        else:
+            # If the gripper is being used, show that as the commanded value
+            self.finger_sync = False
+            self.finger_detached = True
+
 
