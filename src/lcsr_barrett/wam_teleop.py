@@ -12,6 +12,7 @@ import PyKDL as kdl
 from tf_conversions.posemath import fromTf, toTf, toMsg
 import math
 import time
+import colorsys
 
 import ascent_augmenter.msg
 
@@ -86,6 +87,7 @@ class WAMTeleop(object):
             self.hand_velocity = [0, 0, 0, 0]
             self.finger_mean = 0.0
             self.finger_cmd_pos = -1.0
+            self.grasp_opening = 1.0
 
             self.move_f = [True, True, True]
             self.move_spread = True
@@ -374,10 +376,11 @@ class WAMTeleop(object):
                 else:
                     m.color = self.color_blue
 
-            if self.deadman_engaged:
-                m.color.a = 1.0
-            else:
-                m.color.a = 0.5
+            if not self.deadman_engaged:
+                rgb = (m.color.r, m.color.g, m.color.b)
+                hsv = colorsys.rgb_to_hsv(*rgb)
+                mrgb = colorsys.hsv_to_rgb(hsv[0], hsv[1]/2.0, hsv[2]/4.0)
+                m.color = ColorRGBA(mrgb[0],mrgb[1],mrgb[2],1.0)
 
         # Update gripper markers
 
@@ -415,6 +418,33 @@ class WAMTeleop(object):
         if not self.cmd_frame:
             return
 
+        # Broadcast desired hand state
+        # TODO: Make the augmenter and this script use the sane numbers for this
+        FINGER_MAX_POS = 140.0 / 180.0 * math.pi
+
+        # Clip the finger command
+        finger_cmd_pos = FINGER_MAX_POS*max(0, min(1.0, 1.0 - grasp_opening))
+
+        if 'gripper' not in self.augmenter_resources:
+            if self.deadman_engaged:
+                # If the fingers are commanded closed further than the current finger command, then re-sync command
+                if finger_cmd_pos > self.finger_mean or finger_cmd_pos > 0.95*FINGER_MAX_POS:
+                    self.finger_sync = True
+                    self.finger_detached = False
+
+                if self.finger_sync:
+                    self.finger_cmd_pos = finger_cmd_pos
+                    self.grasp_opening = grasp_opening
+                else:
+                    self.grasp_opening = -1.0
+            else:
+                if finger_cmd_pos <= self.finger_mean:
+                    self.finger_sync = False
+        else:
+            # If the gripper is being used, show that as the commanded value
+            self.finger_sync = False
+            self.finger_detached = True
+
         # Broadcast command frame
         tform = toTf(self.cmd_frame)
         self.broadcaster.sendTransform(tform[0], tform[1], time, self.cmd_frame_id, 'world')
@@ -427,31 +457,12 @@ class WAMTeleop(object):
         telemanip_cmd.resync_pose = resync_pose
         telemanip_cmd.deadman_engaged = self.deadman_engaged
         telemanip_cmd.augmenter_engaged = augmenter_engaged
-        telemanip_cmd.grasp_opening = grasp_opening
+        telemanip_cmd.grasp_opening = self.grasp_opening
         telemanip_cmd.estop = self.send_estop
         self.telemanip_cmd_pub.publish(telemanip_cmd)
 
         # Broadcast frame for hand state (future date it to frame-lock it)
         self.broadcaster.sendTransform((0,0,-0.12), (0,0,0,1), time+rospy.Duration(1.0), self.hand_cmd_frame_id, self.cmd_frame_id)
 
-        # Broadcast desired hand state
-        # TODO: Make the augmenter and this script use the sane numbers for this
-        FINGER_MAX_POS = 140.0 / 180.0 * math.pi
-
-        # Clip the finger command
-        self.finger_cmd_pos = FINGER_MAX_POS*max(0, min(1.0, 1.0 - grasp_opening))
-
-        if 'gripper' not in self.augmenter_resources:
-            if self.deadman_engaged:
-                # If the fingers are commanded closed further than the current finger command, then re-sync command
-                if self.finger_cmd_pos > self.finger_mean:
-                    self.finger_sync = True
-                    self.finger_detached = False
-            else:
-                self.finger_sync = False
-        else:
-            # If the gripper is being used, show that as the commanded value
-            self.finger_sync = False
-            self.finger_detached = True
 
 
