@@ -135,8 +135,8 @@
           inner_breakaway_gain: 0.001
           inner_breakaway_torque: 0.5
           outer_recouple_velocity: 1.0
-          outer_coupling_p_gain: 15.0
-          outer_coupling_d_gain: 0.01
+          outer_coupling_p_gain: 5.0
+          outer_coupling_d_gain: 0.1
       </rosparam>
 
       <!-- If using the BHand -->
@@ -164,6 +164,7 @@
       dim: 7
       require_heartbeat: false
       heartbeat_max_period: 0.075
+      feedback_effort_limits: [54.0, 54.0, 40.0, 27.0, 9.0, 9.0, 9.0]
     </rosparam>
 
     <!-- Moveit -->
