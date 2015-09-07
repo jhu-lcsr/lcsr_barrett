@@ -1,5 +1,6 @@
 
 function load_controllers(depl, scheme, prefix)
+  --depl:import("rtt_dynamic_reconfigure");
 
   --[[ default arguments --]]
   local prefix = prefix or ""
@@ -50,6 +51,8 @@ function load_controllers(depl, scheme, prefix)
   connect(wam, "position_out", pid, "joint_position_in");
   connect(wam, "velocity_out", pid, "joint_velocity_in");
   connect(                     pid, "joint_effort_out", effort_sum, "feedback_in");
+  --depl:loadService(pid_name, "reconfigure")
+  --pid.reconfigure.advertise(pid_name.."reconfigure")
 
   --[[ Create joint-space RML trajectory generator --]]
   traj_rml_name = prefix.."traj_rml"
