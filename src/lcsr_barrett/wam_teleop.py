@@ -400,7 +400,7 @@ class WAMTeleop(object):
             self.hand_cmd.mode = [oro_barrett_msgs.msg.BHandCmd.MODE_VELOCITY] * 4
             self.hand_cmd.cmd = finger_cmds + spread_cmd
 
-        rospy.loginfo('opening: {} / {}'.format(grasp_opening, self.grasp_opening))
+        rospy.logdebug('opening: {} / {}'.format(grasp_opening, self.grasp_opening))
 
     def hold_hand_cmd(self):
         """Hold the hand at its current position."""
@@ -438,7 +438,7 @@ class WAMTeleop(object):
         self.telemanip_cmd.posetwist.pose = toMsg(self.cmd_frame)
 
         self.telemanip_cmd.resync_pose = resync_pose
-        self.telemanip_cmd.deadman_engaged = deadman_engaged
+        self.telemanip_cmd.deadman_engaged = deadman_engaged or augmenter_engaged
         self.telemanip_cmd.augmenter_engaged = augmenter_engaged
         self.telemanip_cmd.estop = send_estop
 

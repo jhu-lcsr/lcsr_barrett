@@ -43,6 +43,7 @@ class HydraTeleop(WAMTeleop):
 
         # Alpha pub
         self.alpha_pub = rospy.Publisher('/alpha', Float64)
+        self.opacity = 1.0
 
         # Get the clutch button
         # This is the (0-based) index of the button in the clutch joy topic
@@ -88,7 +89,7 @@ class HydraTeleop(WAMTeleop):
             return
 
         # Get the current deadman and augmenter state
-        deadman_engaged_now = msg.buttons[self.deadman_button]
+        deadman_engaged_now = msg.buttons[self.deadman_button] or msg.buttons[self.augmenter_button]
         self.augmenter_engaged = msg.buttons[self.augmenter_button]
 
         # Check if the clutch state has changed
@@ -115,15 +116,15 @@ class HydraTeleop(WAMTeleop):
         self.gripper_min = min(self.gripper_min, gripper_val)
         self.gripper_max = max(self.gripper_max, gripper_val)
 
-        # Do nothing until gripper range has been established
-        if self.gripper_max < self.gripper_min or abs(self.gripper_min - self.gripper_max) < 0.5:
-            rospy.logwarn("Trigger has not yet been calibrated, please move it through it's entire range to calibrate.")
-            rospy.logwarn("{} <= {} <= {}".format(self.gripper_min, gripper_val, self.gripper_max))
-            return
-
         # Don't run too fast
         if msg.header.stamp - self.last_joy_cmd < rospy.Duration(0.03):
             self.last_joy_cmd = msg.header.stamp
+            return
+
+        # Do nothing until gripper range has been established
+        if self.gripper_max < self.gripper_min or abs(self.gripper_min - self.gripper_max) < 0.5:
+            rospy.logwarn("Trigger has not yet been calibrated, please move it through it's entire range.")
+            rospy.logwarn("{} <= {} <= {}".format(self.gripper_min, gripper_val, self.gripper_max))
             return
 
         #if (rospy.Time.now() - self.last_hand_cmd_time) < rospy.Duration(0.03):
@@ -160,8 +161,8 @@ class HydraTeleop(WAMTeleop):
         self.publish_cart_cmd(msg.header.stamp)
         self.publish_telemanip_cmd(
             self.deadman_engaged,
-            self.rescue_engaged,
             self.augmenter_engaged,
+            self.rescue_engaged,
             reset_command,
             msg.header.stamp)
 
