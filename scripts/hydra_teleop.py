@@ -131,7 +131,10 @@ class HydraTeleop(WAMTeleop):
             #return
 
         # Publish marker opacity
-        self.opacity = min(max(0.0, self.opacity + 0.2 * msg.axes[self.THUMB_Y[side]]), 1.0)
+        opacity_increment = 0.1 * msg.axes[self.THUMB_Y[side]]
+        if abs(opacity_increment) < 0.01:
+            opacity_increment = 0.0
+        self.opacity = min(max(0.0, self.opacity + opacity_increment), 1.0)
         self.alpha_pub.publish(Float64(self.opacity))
 
         # Check if the clutch is engaged
