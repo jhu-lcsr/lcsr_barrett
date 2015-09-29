@@ -16,6 +16,7 @@ import time
 import colorsys
 
 import ascent_augmenter.msg
+from ascent_augmenter.state import State
 
 
 def sigm(s, r, x):
@@ -57,6 +58,7 @@ def finger_angle(opening):
 class WAMTeleop(object):
 
     def __init__(self, input_ref_frame_id, input_frame_id):
+        self.state = State()
 
         self.input_ref_frame_id = input_ref_frame_id
         self.input_frame_id = input_frame_id
@@ -238,7 +240,7 @@ class WAMTeleop(object):
 
         # Augmenter integration
         self.augmenter_state_sub = rospy.Subscriber(
-            'augmenter/state',
+            'gazebo/augmenter/state',
             ascent_augmenter.msg.AugmenterState,
             self.augmenter_state_cb)
 
@@ -260,8 +262,13 @@ class WAMTeleop(object):
         self.last_time_check = now
 
     def augmenter_state_cb(self, msg):
-        self.augmenter_resources = msg.resources
-        self.augmenter_predicates = dict(zip(msg.predicate_keys, msg.predicate_vals))
+        self.state.assign_from_msg(msg)
+
+        self.augmenter_resources = set(msg.resources + msg.pending_resources)#self.state.get_resources(remote=True)
+        self.augmenter_predicates = self.state.predicates
+
+        #rospy.logwarn('resources: {}'.format(msg.resources))
+        #rospy.logwarn('resources: {}'.format(self.augmenter_resources))
 
         if self.augmenter_predicates.get('estop',False):
             self.send_estop = False

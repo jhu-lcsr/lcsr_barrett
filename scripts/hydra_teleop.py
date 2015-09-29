@@ -34,6 +34,7 @@ class HydraTeleop(WAMTeleop):
     SIDE_MAP = {'left': LEFT, 'right': RIGHT}
 
     def __init__(self):
+        self.last_cmd_time = rospy.Time.now()
 
         # Get WAMTeleop params
         self.side = self.SIDE_MAP.get(rospy.get_param("~side",''), self.RIGHT)
@@ -123,12 +124,14 @@ class HydraTeleop(WAMTeleop):
 
         # Do nothing until gripper range has been established
         if self.gripper_max < self.gripper_min or abs(self.gripper_min - self.gripper_max) < 0.5:
-            rospy.logwarn("Trigger has not yet been calibrated, please move it through it's entire range.")
-            rospy.logwarn("{} <= {} <= {}".format(self.gripper_min, gripper_val, self.gripper_max))
+            rospy.logdebug("Trigger has not yet been calibrated, please move it through it's entire range.")
+            rospy.logdebug("{} <= {} <= {}".format(self.gripper_min, gripper_val, self.gripper_max))
             return
 
-        #if (rospy.Time.now() - self.last_hand_cmd_time) < rospy.Duration(0.03):
-            #return
+        # Don't run too fast (hydra publishes @ 250Hz)
+        if (rospy.Time.now() - self.last_cmd_time) < rospy.Duration(0.03):
+            return
+        self.last_cmd_time = rospy.Time.now()
 
         # Publish marker opacity
         opacity_increment = 0.1 * msg.axes[self.THUMB_Y[side]]
