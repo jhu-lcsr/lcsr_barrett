@@ -3,38 +3,45 @@
 
   <link name="world"/>
 
-    <joint name="platform_link_fixed_joint"  type="fixed">
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <parent link="world"/>
-      <child link="platform_link"/>
-    </joint>
+  <joint name="platform_link_fixed_joint"  type="fixed">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="world"/>
+    <child link="platform_link"/>
+  </joint>
 
-    <link name = "platform_link">
-      <inertial>
-        <origin xyz="0 0 0" />
-        <mass value="25" />
-        <inertia
-          ixx="1" ixy="0"   ixz="0"
-                  iyy="1"   iyz="0"
-                            izz="1" />
-      </inertial>
-      <visual>
-        <origin rpy="0 0 0 " xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
-        </geometry>
-      </visual>
-      <collision>
-        <origin rpy="0 0 0 " xyz="0 0 0"/>
-        <geometry>
-          <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
-        </geometry>
-      </collision>
-    </link>
+  <link name = "platform_link">
+    <inertial>
+      <origin xyz="0 0 0" />
+      <mass value="25" />
+      <inertia
+        ixx="1" ixy="0"   ixz="0"
+        iyy="1"   iyz="0"
+        izz="1" />
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0 " xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0 " xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
+      </geometry>
+    </collision>
+  </link>
 
-    <gazebo reference="platform_link">
-      <kp>50000</kp>
-      <kd>8</kd>
-    </gazebo>
+  <gazebo reference="platform_link">
+    <kp>50000</kp>
+    <kd>8</kd>
+    <visual name="visual">
+      <material>
+        <ambient>0 0 0 0</ambient>
+        <specular>0.8 0.8 0.8 0.1</specular>
+        <diffuse>1.0 1.0 1.0 1.0</diffuse>
+      </material>
+    </visual>
+  </gazebo>
 
 </robot>
