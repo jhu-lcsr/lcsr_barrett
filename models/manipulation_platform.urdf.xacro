@@ -20,6 +20,7 @@
       </inertial>
       <visual>
         <origin rpy="0 0 0 " xyz="0 0 0"/>
+        <material>Gazebo/DarkGrey</material>
         <geometry>
           <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
         </geometry>
