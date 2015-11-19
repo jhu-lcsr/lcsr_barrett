@@ -215,7 +215,7 @@ class WAMTeleop(object):
                 # Update commanded TF frame
                 cmd_twist = kdl.diff(self.cmd_origin, input_frame)
                 cmd_twist.vel = self.scale*self.cart_scaling*cmd_twist.vel
-                rospy.logwarn(cmd_twist)
+                #rospy.logwarn(cmd_twist)
                 self.cmd_frame = kdl.addDelta(self.tip_origin, cmd_twist)
 
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as ex:
