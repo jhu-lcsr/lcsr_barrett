@@ -64,6 +64,7 @@ class WAMTeleop(object):
         # Command state
         self.cmd_frame = None
         self.deadman_engaged = False
+        self.engage_augmenter = False
         self.cmd_scaling = 0.0
 
         # Hand structures
