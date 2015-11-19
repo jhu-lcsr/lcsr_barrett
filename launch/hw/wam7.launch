@@ -18,31 +18,28 @@
   <arg name="aruco" default="false" doc="(bool) True if the end-effector is an aruco target"/>
 
 
-  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/ldeployer.launch">
+  <include unless="$(arg safe)" file="$(find rtt_ros)/launch/deployer.launch">
     <arg name="NAME" value="barrett"/>
-    <arg name="DEPLOYER_ARGS" value="-g -s $(find lcsr_barrett)/lua/wam_hw.lua"/>
+    <arg name="DEPLOYER_ARGS" value="-s $(find lcsr_barrett)/lua/wam_hw.lua"/>
     <arg name="LOG_LEVEL" value="$(arg log_level)"/>
     <arg name="DEBUG" value="$(arg debug)"/>
   </include>
 
+  <!-- TODO: update safe mode to use rttlua program -->
+  <!--
   <node
     if="$(arg safe)"
     name="barrett"
     pkg="rtt_ros" type="ldeployer"
-    args="$(find lcsr_barrett)/lua/wam_hw.lua --"
+    args="$(find lcsr_barrett)/lua/wam_hw.lua - -"
     output="log">
   </node>
+  -->
 
   <param name="robot_description"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/launch/hw/wam7.urdf.xacro'
     prefix:=wam
     hand:=$(arg hand) ball:=$(arg ball) bumblebee:=$(arg bumblebee) aruco:=$(arg aruco)" />
-
-  <node pkg="robot_state_publisher" type="robot_state_publisher"
-    name="wam_state_publisher">
-    <param name="publish_frequency" value="50"/>
-    <remap from="joint_states" to="wam_joint_states"/>
-  </node>
 
   <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
     args="record -j -o /tmp/wam-last.bag -e '/barrett(.*)' '(.*)joint_state(.*)' '(.*)wrench(.*)' /tf"/>
@@ -59,11 +56,11 @@
         <rosparam param="source_list" subst_value="true">
           ["wam/joint_states", "hand/joint_states"]
         </rosparam>
-        <param name="rate" value="50"/>
+        <param name="rate" value="100"/>
         <remap from="robot_description" to="/robot_description"/>
       </node>
       <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
-        <param name="publish_frequency" value="50"/>
+        <param name="publish_frequency" value="100"/>
       </node>
 
       <rosparam subst_value="true">
@@ -108,7 +105,7 @@
     </rosparam>
 
     <!-- Moveit -->
-    <include if="$(arg planning)" file="$(find lcsr_barrett)/sim/wam7_planning.launch">
+    <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/wam7_planning.launch">
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
@@ -130,6 +127,6 @@
   <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
   <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
-    args="0 0 0 0 0 0 /world /stage_link 50"/>
+    args="0 0 0 0 0 0 /world /stage_link 100"/>
 
 </launch>

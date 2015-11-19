@@ -1,4 +1,9 @@
 
+--[[ conventional globals --]]
+gs = rtt.provides()
+tc = rtt.getTC()
+depl = tc
+
 --[[ get ROS global service --]]
 depl:import("rtt_ros")
 ros = gs:provides("ros")

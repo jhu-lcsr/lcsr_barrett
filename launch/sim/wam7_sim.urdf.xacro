@@ -11,6 +11,13 @@
       </component>
       <luaScript><filename>$(arg lua_script)</filename></luaScript>
     </plugin>
+    <plugin name="gazebo_ros_moveit_planning_scene" filename="libgazebo_ros_moveit_planning_scene.so">
+      <robotNamespace>~</robotNamespace>
+      <sceneName>B08</sceneName>
+      <robotName>wam</robotName>
+      <updatePeriod>0.033</updatePeriod>
+      <topicName>raw_planning_scene</topicName>
+    </plugin>
   </gazebo>
 
   <!-- Includea all the WAM stuff -->
@@ -19,9 +26,10 @@
   <!-- Root link is in the world frame-->
   <link name="world"/>
 
-  <xacro:wam_7dof prefix="$(arg prefix)" parent_link="world" xyz="0.04 0.46 1.0" rpy="${PI} ${-PI/2} 0"/>
+  <!-- r = R.RotZ(pi/2)*R.RotY(-3*pi/4); r.GetRPY() -->
+  <xacro:wam_7dof prefix="$(arg prefix)" parent_link="world" xyz="0.0 0.46 1.0" rpy="1.5707963267948966 6.123233995736766e-17 1.5707963267948966"/>
   <xacro:if value="$(arg hand)">
-    <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>
+    <xacro:bhand prefix="$(arg prefix)/hand" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0" primitive="true"/>
   </xacro:if>
   <xacro:if value="$(arg ball)">
     <xacro:bball prefix="$(arg prefix)/ball" parent_link="$(arg prefix)/wrist_palm_link" xyz="0.0 0.0 0.06" rpy="0 0 0"/>

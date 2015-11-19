@@ -12,9 +12,10 @@
       robot_description_param: /robot_description
       root_link: $(arg tf_prefix)/base_link
       end_effector_frame_link: $(arg tf_prefix)/wrist_palm_link
-      gravity: [-9.8, 0.0, 0.0]
+      gravity: [0.0, -9.81, 0.0]
       inertia_mass_rate: 0.3
       inertia_com_rate: 0.05
+      max_attached_mass: 3.0
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       tip_link: $(arg tf_prefix)/wrist_palm_link
@@ -45,7 +46,7 @@
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 1.0]
-      d_gains: [20.0, 5.0, 3.0, 5.0, 0.4, 0.4, 0.001]
+      d_gains: [40.0, 40.0, 30.0, 20.0, 6.5, 4.5, 1.1]
       position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -57,7 +58,7 @@
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
       p_gains: [350.0, 350.0, 350.0, 300.0, 25.0, 25.0, 2.0]
-      d_gains: [40.0, 40.0, 30.0, 20.0, 6.5, 4.5, 1.1]
+      d_gains: [10.0, 20.0, 20.0, 10.0, 4.5, 3.5, 0.8]
       position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -73,14 +74,15 @@
       stop_on_violation: true
       verbose: false
       stop_time: 0.25
+      temporal_tolerance: 0.005
       goal_position_tolerance: [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]
       goal_velocity_tolerance: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05]
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
-      position_tolerance: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 1.0]
-      velocity_tolerance: [1.2, 1.2, 1.2, 1.2, 2.0, 2.0, 2.0]
-      max_velocities: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
-      max_accelerations: [1.5, 1.5, 1.5, 4.0, 4.0, 4.0, 4.0]
+      position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
+      velocity_tolerance: [3.2, 3.2, 3.2, 3.2, 3.0, 3.0, 3.0]
+      max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
+      max_accelerations: [1.5, 1.5, 1.5, 4.0, 8.0, 8.0, 8.0]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
     <rosparam if="$(arg ee_ball)" subst_value="true">
@@ -93,6 +95,8 @@
     <rosparam if="$(arg ee_hand)" subst_value="true">
       position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       velocity_tolerance: [3.2, 3.2, 3.2, 3.2, 3.0, 3.0, 3.0]
+      goal_position_tolerance: [0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1]
+      goal_velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       max_accelerations: [1.5, 1.5, 1.5, 4.0, 8.0, 8.0, 8.0]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
@@ -105,16 +109,18 @@
       target_frame: "" #$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 0.0
-      linear_p_gain: 1000.0
-      linear_d_gain:  200.0
-      angular_p_gain: 10.0
-      angular_d_gain:  0.1
+      linear_p_gain: 500.0
+      linear_d_gain:  100.0
+      angular_p_gain: 5.0
+      angular_d_gain:  1.5
+      #angular_p_gain: 5.0
+      #angular_d_gain:  1.5
       linear_effort_threshold: 50.0
       linear_position_threshold: 0.1
       angular_effort_threshold: 5.0
       angular_position_threshold: 1.5
-      nullspace_damping: 0.8
-      jointspace_damping: 1.2
+      nullspace_damping: 0.0
+      jointspace_damping: 0.0
       joint_d_gains: [0.8, 0.8, 0.8, 0.8, 0.1, 0.1, 0.5]
       projector_type: 3
     </rosparam>
@@ -133,12 +139,12 @@
     <rosparam subst_value="true">
       root_link: $(arg tf_prefix)/base_link
       target_frame: $(arg tf_prefix)/cmd
-      max_linear_rate: 0.1
-      max_linear_error: 0.05
-      max_angular_rate: 0.5
-      max_angular_error: 0.5
-      linear_p_gain: 100.0
-      angular_p_gain: 10.0
+      max_linear_rate: 0.5
+      max_linear_error: 0.1
+      max_angular_rate: 1.0
+      max_angular_error: 0.7
+      linear_p_gain: 200.0
+      angular_p_gain: 50.0
     </rosparam>
 
     <rosparam if="$(arg ee_empty)" subst_value="true">
@@ -206,9 +212,17 @@
 
     <node pkg="tf" type="static_transform_publisher" name="$(anon stp)"
       args="0 0 0 0 0 0 /world /ik/world 50"/>
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="$(anon joint_state_publisher)">
+      <rosparam param="source_list" subst_value="true">
+        ["joint_state_desired", "hand/joint_states"]
+      </rosparam>
+      <param name="rate" value="10"/>
+      <remap from="robot_description" to="/robot_description"/>
+      <remap from="joint_states" to="joint_state_desired_full"/>
+    </node>
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="$(anon robot_state_publisher)">
-      <remap from="joint_states" to="joint_state_desired"/>
-      <param name="publish_frequency" value="50"/>
+      <remap from="joint_states" to="joint_state_desired_full"/>
+      <param name="publish_frequency" value="10"/>
       <param name="tf_prefix" value="ik"/>
       <remap from="robot_description" to="/robot_description"/>
     </node>

@@ -1,11 +1,16 @@
 
+--[[ conventional globals --]]
+gs = rtt.provides();
+tc = rtt.getTC();
+depl = tc;
+
 --[[ get ROS global service --]]
 depl:import("rtt_ros")
 ros = gs:provides("ros")
 ros:import("lcsr_barrett")
 
 --[ Set log-level ]--
-rtt.setLogLevel("Warning")
+rtt.setLogLevel("Info")
 
 --[[ add lua dir to the lua path --]]
 package.path = ros:find("lcsr_barrett") .. "/lua/?.lua" .. ";" .. package.path
@@ -20,6 +25,7 @@ barrett_manager:provides("wam"):run()
 --[[ Start the hand --]]
 if barrett_manager:getProperty("auto_configure_hand"):get() then
   rtt.log("Running hand...")
+  barrett_manager:provides("hand"):initialize()
   barrett_manager:provides("hand"):run()
   barrett_manager:provides("hand"):open()
 else
@@ -28,4 +34,4 @@ end
 
 --[[ Set of initially running blocks --]]
 scheme:enableBlock("joint_control",true);
---scheme.enableBlock("cart_imp_control",true);
+--scheme:enableBlock("cart_imp_control",true);

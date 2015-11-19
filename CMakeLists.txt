@@ -4,3 +4,5 @@ project(lcsr_barrett)
 
 find_package(catkin REQUIRED COMPONENTS)
 
+catkin_python_setup()
+

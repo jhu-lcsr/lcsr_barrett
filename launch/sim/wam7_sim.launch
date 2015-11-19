@@ -19,6 +19,7 @@
   <arg name="bumblebee" default="false" doc="(bool) Launch the robot with a bumblebee"/>
   <arg name="initial_group" default="joint_control" doc="(string) Initial active controller group"/>
   <arg name="dash" default="true" doc="(bool) If true, display the barrett dashboard."/>
+  <arg name="rescuer" default="false" doc="(bool) If true, use the singularity rescuer."/>
 
   <arg name="j0" default="0.0" doc="(float) Joint 0 initial position"/>
   <arg name="j1" default="0.0" doc="(float) Joint 1 initial position"/>
@@ -27,6 +28,7 @@
   <arg name="j4" default="0.0" doc="(float) Joint 4 initial position"/>
   <arg name="j5" default="0.0" doc="(float) Joint 5 initial position"/>
   <arg name="j6" default="0.0" doc="(float) Joint 6 initial position"/>
+  <arg name="initial_joint_positions" default="$(arg j0), $(arg j1), $(arg j2), $(arg j3), $(arg j4), $(arg j5), $(arg j6)" doc="(comma-separated floats) Initial joint positions"/>
 
   <param name="use_sim_time" value="true"/>
 
@@ -50,25 +52,36 @@
     hand:=$(arg hand) ball:=$(arg ball)
     initial_group:=$(arg initial_group)" />
 
+  <node name="shadow_generator"
+    pkg="rviz_virtual_shadow"
+    type="make_virtual_shadow.py">
+    <param name="model_param" value="robot_description"/>
+  </node>
+
   <!-- Spawn the robot in Gazebo -->
-  <node name="$(anon urdf_spawner)"
+  <node name="aa_$(anon urdf_spawner)"
     pkg="gazebo_ros"
     type="spawn_model"
     respawn="false"
     output="screen"
-    args="-urdf -model wam -param robot_description
-    -J wam/base_yaw_joint $(arg j0)
-    -J wam/shoulder_pitch_joint $(arg j1)
-    -J wam/shoulder_yaw_joint $(arg j2)
-    -J wam/elbow_pitch_joint $(arg j3)
-    -J wam/wrist_yaw_joint $(arg j4)
-    -J wam/wrist_pitch_joint $(arg j5)
-    -J wam/palm_yaw_joint $(arg j6)"/>
+    args="-urdf -model wam -param robot_description">
+    <rosparam subst_value="true">
+      initial_joint_names:
+        - "wam/base_yaw_joint"
+        - "wam/shoulder_pitch_joint"
+        - "wam/shoulder_yaw_joint"
+        - "wam/elbow_pitch_joint"
+        - "wam/wrist_yaw_joint"
+        - "wam/wrist_pitch_joint"
+        - "wam/palm_yaw_joint"
+      initial_joint_positions: [$(arg initial_joint_positions)]
+    </rosparam>
+  </node>
 
   <!-- Spawn the lcsr stage in Gazebo -->
   <param name="stage_model"
     command="$(find xacro)/xacro.py '$(find lcsr_barrett)/models/stage.urdf.xacro'" />
-  <node name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+  <node if="false" name="$(anon urdf_spawner)" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
     args="-urdf -model stage -param stage_model"/>
   <node name="stage_pose_broadcaster" pkg="tf" type="static_transform_publisher"
     args="0 0 0 0 0 0 /world /stage_link 50"/>
@@ -102,7 +115,28 @@
 
         # WAM Parameters
         wam:
-          velocity_smoothing_factor: 0.98
+          velocity_cutoff_frequency: 300
+
+        # Hand Parameters
+        hand:
+          admittance_control: false
+          admittance_gain: 0.1
+          trap_vel: 2.0
+          trap_accel: 10.0
+          p_gain: 10.0
+          i_gain: 0.0
+          i_clamp: 0.0
+          d_gain: 0.02
+          max_torque: 3.0
+          stop_torque: 3.0
+          spread_p_gain: 5.0
+          spread_d_gain: 0.0
+          finger_acceleration: 1.0
+          inner_breakaway_gain: 0.001
+          inner_breakaway_torque: 0.5
+          outer_recouple_velocity: 1.0
+          outer_coupling_p_gain: 5.0
+          outer_coupling_d_gain: 0.1
       </rosparam>
 
       <!-- If using the BHand -->
@@ -110,7 +144,7 @@
         <param name="hand_urdf_prefix" value="wam/hand"/>
 
         <!-- Mid-Level hand interface -->
-        <node name="bhand_action_server"
+        <node if="0" name="bhand_action_server"
           pkg="oro_barrett_interface"
           type="bhand_action_server.py"
           output="screen"/>
@@ -130,19 +164,25 @@
       dim: 7
       require_heartbeat: false
       heartbeat_max_period: 0.075
+      feedback_effort_limits: [54.0, 54.0, 40.0, 27.0, 9.0, 9.0, 9.0]
     </rosparam>
 
-    <!-- RTT Component parameters -->
-    <include file="$(find lcsr_barrett)/launch/sim/orocos_component_params.launch"/>
-
     <!-- Moveit -->
-    <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/sim/wam7_planning.launch">
+    <include if="$(arg planning)" file="$(find lcsr_barrett)/launch/wam7_planning.launch">
       <arg name="joint_states_topic" value="barrett_manager/joint_states"/>
       <arg name="ee_empty" value="$(arg empty)"/>
       <arg name="ee_hand" value="$(arg hand)"/>
       <arg name="ee_ball" value="$(arg ball)"/>
     </include>
 
+    <!-- Run singularity rescuer -->
+    <include
+      if="$(arg rescuer)"
+      file="$(find lcsr_barrett)/launch/singularity_rescuer.launch">
+      <arg name="ee_empty" value="$(arg empty)"/>
+      <arg name="ee_hand" value="$(arg hand)"/>
+      <arg name="ee_ball" value="$(arg ball)"/>
+    </include>
 
   </group>
 
