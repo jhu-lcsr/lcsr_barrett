@@ -20,6 +20,9 @@
     </inertial>
     <visual>
       <origin rpy="0 0 0 " xyz="0 0 0"/>
+      <material name="white">
+        <color rgba="0.8 0.8 0.8 1"/>
+      </material>
       <geometry>
         <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
       </geometry>
