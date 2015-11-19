@@ -131,7 +131,7 @@ class MarkerTeleop(WAMTeleop):
         if not checked:
             self.menu_handler.setCheckState(handle, MenuHandler.CHECKED)
             rospy.loginfo('grasp')
-            self.finger_ref = 0.0
+            self.finger_ref = 1.0
         else:
             self.menu_handler.setCheckState(handle, MenuHandler.UNCHECKED)
             self.finger_ref = 0.25
@@ -147,10 +147,10 @@ class MarkerTeleop(WAMTeleop):
         if not checked:
             self.menu_handler.setCheckState(handle, MenuHandler.CHECKED)
             rospy.loginfo('release')
-            self.finger_ref = 1.0
+            self.finger_ref = 0.0
         else:
             self.menu_handler.setCheckState(handle, MenuHandler.UNCHECKED)
-            self.finger_ref = 0.25
+            self.finger_ref = 0.50
 
         self.transform.header.stamp = rospy.Time.now()
 

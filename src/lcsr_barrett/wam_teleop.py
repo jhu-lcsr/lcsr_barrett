@@ -64,6 +64,7 @@ class WAMTeleop(object):
         # Command state
         self.cmd_frame = None
         self.deadman_engaged = False
+        self.engage_augmenter = False
         self.cmd_scaling = 0.0
 
         # Hand structures
@@ -84,12 +85,12 @@ class WAMTeleop(object):
                 sensor_msgs.msg.JointState,
                 self.hand_state_cb)
 
-            self.hand_pub = rospy.Publisher('hand/cmd', oro_barrett_msgs.msg.BHandCmd)
+            self.hand_pub = rospy.Publisher('hand/cmd', oro_barrett_msgs.msg.BHandCmd, queue_size=1000)
 
         # ROS generic telemanip command
-        self.telemanip_cmd_pub = rospy.Publisher('telemanip_cmd_out', TelemanipCommand)
+        self.telemanip_cmd_pub = rospy.Publisher('telemanip_cmd_out', TelemanipCommand, queue_size=1000)
         # goal marker
-        self.marker_pub = rospy.Publisher('master_target_markers', MarkerArray)
+        self.marker_pub = rospy.Publisher('master_target_markers', MarkerArray, queue_size=1000)
 
         self.master_target_markers = MarkerArray()
 
