@@ -250,7 +250,7 @@ class MarkerTeleop(WAMTeleop):
             self.publish_cmd_ring_markers(rospy.Time.now())
 
             # Broadcast the command if it's defined
-            self.publish_cmd(self.resync_pose, self.finger_ref, rospy.Time.now())
+            self.publish_cmd(self.resync_pose, False, self.finger_ref, rospy.Time.now())
 
             r.sleep()
 
