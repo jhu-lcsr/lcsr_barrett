@@ -58,7 +58,7 @@
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
       p_gains: [350.0, 350.0, 350.0, 300.0, 25.0, 25.0, 2.0]
-      d_gains: [30.0, 30.0, 20.0, 10.0, 4.5, 3.5, 0.8]
+      d_gains: [20.0, 20.0, 10.0, 10.0, 2.5, 1.5, 0.5]
       position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
@@ -111,8 +111,8 @@
       joint_center_gain: 0.0
       linear_p_gain: 500.0
       linear_d_gain:  100.0
-      angular_p_gain: 5.0
-      angular_d_gain:  1.5
+      angular_p_gain: 1.0
+      angular_d_gain:  0.5
       #angular_p_gain: 5.0
       #angular_d_gain:  1.5
       linear_effort_threshold: 50.0

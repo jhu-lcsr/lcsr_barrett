@@ -27,10 +27,18 @@
           <!--<mesh><uri>file://$(find lcsr_barrett)/models/meshes/platform.stl</uri></mesh>-->
         </geometry>
 
+        <surface>
+          <friction>
+            <ode>
+              <mu>1.0</mu>
+            </ode>
+          </friction>
+        </surface>
+
         <contact>
           <ode>
-            <kp>5000</kp>
-            <kd>8</kd>
+            <!--<kp>100</kp>-->
+            <!--<kd>0.5</kd>-->
           </ode>
         </contact>
       </collision>

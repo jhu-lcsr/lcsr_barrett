@@ -15,7 +15,7 @@
       <robotNamespace>/gazebo</robotNamespace>
       <sceneName>B08</sceneName>
       <robotName>wam</robotName>
-      <updatePeriod>0.033</updatePeriod>
+      <updatePeriod>0.33</updatePeriod>
       <topicName>raw_planning_scene</topicName>
     </plugin>
   </gazebo>
