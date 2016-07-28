@@ -15,6 +15,9 @@ function lcsr_barrett(sim, prefix)
   --[[ set up TF component -]]
   depl:import("rtt_tf")
   depl:loadComponent("tf","rtt_tf::RTT_TF")
+  --depl:setActivity( "tf" 0.01,
+    --depl:getAttribute("HighestPriority"):get(),
+    --rtt.globals.ORO_SCHED_OTHER)
   tf = depl:getPeer("tf")
   tf:configure()
   tf:start()

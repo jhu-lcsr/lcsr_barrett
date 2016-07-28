@@ -1,0 +1,16 @@
+
+material lcsr_barrett/ManipulationPlatform
+{
+  receive_shadows on
+
+  technique
+  {
+    pass main
+    {
+      ambient 0.7 0.7 0.7 1.0
+      diffuse 0.2 0.2 0.2 1.0
+      specular 0.1 0.1 0.1 1.000000 0.00500
+    }
+  }
+}
+

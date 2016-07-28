@@ -21,13 +21,13 @@
       <visual>
         <origin rpy="0 0 0 " xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
+          <mesh filename="package://lcsr_barrett/models/meshes/platform.stl"/>
         </geometry>
       </visual>
       <collision>
         <origin rpy="0 0 0 " xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://lcsr_barrett/models/meshes/manipulation_platform.stl"/>
+          <mesh filename="package://lcsr_barrett/models/meshes/platform.stl"/>
         </geometry>
       </collision>
     </link>

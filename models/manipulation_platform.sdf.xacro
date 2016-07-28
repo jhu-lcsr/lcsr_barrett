@@ -1,0 +1,53 @@
+<?xml version='1.0'?>
+<sdf version="1.4">
+<model name="manipulation_platform">
+
+  <static>true</static>
+
+  <static>true</static>
+    <link name="link">
+      <kp>50000</kp>
+      <kd>8</kd>
+
+      <inertial>
+        <mass>10.0</mass>
+        <inertia>
+          <ixx>1.0</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyy>1.0</iyy>
+          <iyz>0.0</iyz>
+          <izz>1.0</izz>
+        </inertia>
+      </inertial>
+
+      <collision name="collision">
+        <geometry>
+          <box><size>1 1 0.1</size></box>
+          <!--<mesh><uri>file://$(find lcsr_barrett)/models/meshes/platform.stl</uri></mesh>-->
+        </geometry>
+
+        <contact>
+          <ode>
+            <kp>5000</kp>
+            <kd>8</kd>
+          </ode>
+        </contact>
+      </collision>
+
+      <visual name="visual5">
+        <cast_shadows>false</cast_shadows>
+        <material>
+          <script>
+            <uri>file://$(find lcsr_barrett)/models/manipulation_platform.material</uri>
+            <name>lcsr_barrett/ManipulationPlatform</name>
+          </script>
+        </material>
+        <geometry>
+          <box><size>1 1 0.1</size></box>
+          <!--<mesh><uri>file://$(find lcsr_barrett)/models/meshes/platform.stl</uri></mesh>-->
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

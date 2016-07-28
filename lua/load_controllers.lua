@@ -81,6 +81,7 @@ function load_controllers(depl, scheme, prefix)
   connect(wam, "position_out", ik, "positions_in");
   connect(                     ik, "trajectories_out", traj_rml, "joint_traj_cmd_in");
   ik:connectPeers(tf)
+  ik:connectServices(tf)
 
   --[[ Create a cartesian interpolator --]]
   cart_servo_name = prefix.."cart_servo"
@@ -91,6 +92,7 @@ function load_controllers(depl, scheme, prefix)
   connect(wam, "position_out",   cart_servo, "positions_in");
   connect(                       cart_servo, "framevel_out", jtns, "framevel_in");
   cart_servo:connectPeers(tf)
+  cart_servo:connectServices(tf)
 
   --[[ Create a coulomb friction compensator --]]
   coulomb_name = prefix.."coulomb"

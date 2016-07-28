@@ -56,7 +56,7 @@ class AttachedObjectVisualizer(object):
 
         self.attached_marker_arrays = {}
 
-        self.marker_pub = rospy.Publisher('markers', MarkerArray)
+        self.marker_pub = rospy.Publisher('markers', MarkerArray, queue_size=1)
 
         self.planning_scene_sub = rospy.Subscriber('attached_collision_object', AttachedCollisionObject, self.aco_cb)
 
