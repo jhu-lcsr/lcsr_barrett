@@ -39,10 +39,10 @@
       static_deadband: [0.001, 0.001, 0.001, 0.01, 0.01, 0.01, 0.01]
       static_effort: [4.0, 1.0, 2.0, 1.0, 0.2, 0.2, 0.05]
       static_eps: 0.020
-      #i_gains: [5.0, 5.0, 4.0, 3.0, 0.3, 0.2, 0.2]
-      #i_clamps: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      i_gains: [5.0, 5.0, 5.0, 5.0, 5.0, 3.0, 3.0]
+      i_clamps: [0.5, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5]
       compensate_friction: false
-      verbose: false
+      verbose: true
     </rosparam>
     <rosparam if="$(arg ee_empty)" subst_value="true">
       p_gains: [350.0, 300.0, 200.0, 170.0, 12.0, 12.0, 1.0]
@@ -57,10 +57,10 @@
       velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      p_gains: [350.0, 350.0, 350.0, 300.0, 25.0, 25.0, 2.0]
-      d_gains: [20.0, 20.0, 10.0, 10.0, 2.5, 1.5, 0.5]
-      position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-      velocity_tolerance: [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]
+      p_gains: [300.0, 250.0, 250.0, 200.0, 25.0, 25.0, 2.0]
+      d_gains: [18.0, 18.0, 15.0, 15.0, 10.5, 4.5, 3.5]
+      position_tolerance: [1.0, 1.0, 1.0, 1.0, 0.5, 0.5, 0.5]
+      velocity_tolerance: [4.0, 3.0, 4.0, 3.0, 4.0, 2.0, 2.0]
     </rosparam>
   </group>
 
@@ -93,12 +93,12 @@
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
     <rosparam if="$(arg ee_hand)" subst_value="true">
-      position_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-      velocity_tolerance: [3.2, 3.2, 3.2, 3.2, 3.0, 3.0, 3.0]
+      position_tolerance: [1.5, 1.5, 1.5, 1.5, 1.0, 0.5, 0.5]
+      velocity_tolerance: [5.2, 5.2, 5.2, 4.2, 3.0, 3.0, 3.0]
       goal_position_tolerance: [0.05, 0.05, 0.05, 0.05, 0.1, 0.1, 0.1]
       goal_velocity_tolerance: [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]
-      max_velocities: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
-      max_accelerations: [1.5, 1.5, 1.5, 4.0, 8.0, 8.0, 8.0]
+      max_velocities: [2.5, 2.5, 2.5, 3.5, 3.5, 5.5, 5.5]
+      max_accelerations: [1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5]
       max_jerks: [2.5, 2.5, 2.5, 2.5, 5.5, 5.5, 5.0]
     </rosparam>
   </group>
@@ -109,15 +109,15 @@
       target_frame: "" #$(arg tf_prefix)/cmd
       singularity_avoidance_gain: 0.0
       joint_center_gain: 0.0
-      linear_p_gain: 500.0
+      linear_p_gain: 600.0
       linear_d_gain:  100.0
-      angular_p_gain: 1.0
-      angular_d_gain:  0.5
+      angular_p_gain: 5.0
+      angular_d_gain:  0.7
       #angular_p_gain: 5.0
       #angular_d_gain:  1.5
-      linear_effort_threshold: 50.0
+      linear_effort_threshold: 5000.0
       linear_position_threshold: 0.1
-      angular_effort_threshold: 5.0
+      angular_effort_threshold: 500.0
       angular_position_threshold: 1.5
       nullspace_damping: 0.0
       jointspace_damping: 0.0
